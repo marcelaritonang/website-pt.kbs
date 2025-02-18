@@ -3,6 +3,7 @@
 import HeroSection from '@/app/components/home/HeroSection'
 import ServicesSection from './components/home/ServicesSection'
 import StatsSection from './components/home/StatsSection'
+import LocationSection from './components/home/LocationSection'
 import ContactSection from './components/home/ContactSection'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
@@ -39,6 +40,8 @@ export default function Home() {
       
       <VisionMissionSection />
 
+      <LocationSection />
+      
       <ServicesSection />
       
       <StatsSection />  

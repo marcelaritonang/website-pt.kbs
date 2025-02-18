@@ -34,7 +34,7 @@ const AnimatedIsometric = () => {
 
   return (
     <motion.div 
-      className="absolute -right-48 top-1/2 -translate-y-1/2 w-[600px] h-[600px]"
+      className="absolute -right-24 top-1/2 -translate-y-1/2 w-[400px] h-[400px]"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
@@ -196,7 +196,7 @@ const VisionMissionSection = () => {
   };
 
   return (
-    <section className="relative bg-white py-24 overflow-hidden min-h-screen">
+    <section className="relative bg-white py-8 overflow-hidden h-screen flex items-center">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-blue-50" />
       
@@ -204,17 +204,17 @@ const VisionMissionSection = () => {
       <AnimatedIsometric />
       
       {/* Content Container */}
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div 
           variants={textContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-16"
+          className="text-center mb-6"
         >
           <motion.h2 
-            className="text-5xl font-bold text-gray-900 mb-6"
+            className="text-3xl font-bold text-gray-900 mb-4"
             variants={textContainerVariants}
           >
             {splitText("Visi & Misi Perusahaan")}
@@ -226,24 +226,24 @@ const VisionMissionSection = () => {
         </motion.div>
 
         {/* Vision & Mission Content */}
-        <div className="space-y-8">
+        <div className="space-y-4">
           {/* Vision Card */}
           <motion.div
             variants={textContainerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="relative group bg-white/80 backdrop-blur-xl p-8 rounded-2xl border border-blue-100 shadow-xl"
+            className="relative group bg-white/80 backdrop-blur-xl p-4 rounded-2xl border border-blue-100 shadow-xl"
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 rounded-xl bg-blue-50 border border-blue-100">
-                <EyeIcon className="w-6 h-6 text-blue-500" />
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100">
+                <EyeIcon className="w-5 h-5 text-blue-500" />
               </div>
-              <motion.h3 variants={textVariants} className="text-3xl font-bold text-gray-900">
+              <motion.h3 variants={textVariants} className="text-2xl font-bold text-gray-900">
                 Visi
               </motion.h3>
             </div>
-            <motion.p className="text-gray-600 leading-relaxed text-lg">
+            <motion.p className="text-gray-600 leading-relaxed text-base">
               {splitText("Menjadi perusahaan terpercaya dan terdepan dalam layanan General Contractor, Dump Truck, dan Heavy Equipment, dengan menghadirkan solusi pembangunan yang inovatif, berkualitas tinggi, dan berkelanjutan.")}
             </motion.p>
           </motion.div>
@@ -254,17 +254,17 @@ const VisionMissionSection = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="relative group bg-white/80 backdrop-blur-xl p-8 rounded-2xl border border-blue-100 shadow-xl"
+            className="relative group bg-white/80 backdrop-blur-xl p-4 rounded-2xl border border-blue-100 shadow-xl"
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 rounded-xl bg-blue-50 border border-blue-100">
-                <BookmarkIcon className="w-6 h-6 text-blue-500" />
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100">
+                <BookmarkIcon className="w-5 h-5 text-blue-500" />
               </div>
-              <motion.h3 variants={textVariants} className="text-3xl font-bold text-gray-900">
+              <motion.h3 variants={textVariants} className="text-2xl font-bold text-gray-900">
                 Misi
               </motion.h3>
             </div>
-            <ul className="space-y-6">
+            <ul className="space-y-3">
               {[
                 "Memberikan Layanan Berkualitas Tinggi Menyediakan layanan konstruksi, pengangkutan, dan alat berat yang memenuhi standar keselamatan, efisiensi, dan kepuasan pelanggan.",
                 "Meningkatkan Kompetensi dan Inovasi Mengadopsi teknologi terkini dan memberdayakan sumber daya manusia profesional untuk menciptakan solusi pembangunan yang efektif dan modern."
@@ -272,12 +272,12 @@ const VisionMissionSection = () => {
                 <motion.li
                   key={index}
                   variants={textVariants}
-                  className="flex gap-4"
+                  className="flex gap-3"
                 >
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mt-1">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mt-1">
                     <CheckIcon className="w-3 h-3 text-blue-500" />
                   </div>
-                  <p className="text-gray-600 leading-relaxed text-lg">
+                  <p className="text-gray-600 leading-relaxed text-base">
                     {splitText(mission)}
                   </p>
                 </motion.li>
