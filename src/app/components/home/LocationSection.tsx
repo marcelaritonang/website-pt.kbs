@@ -12,7 +12,7 @@ const brandColors = {
 };
 
 const officeLocation = {
-  top: "60%",
+  top: "58%",
   left: "25%",
   name: "Kantor Pusat Jakarta",
   address: "Jl. Raya Jatiwaringin No.06 2, RT.2/RW.13, Cipinang Melayu, Kec. Makasar, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13620"
