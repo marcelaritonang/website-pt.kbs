@@ -1,84 +1,106 @@
-    import { Phone, Mail, MapPin } from 'lucide-react'
-import Image from 'next/image'
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Instagram, Twitter, Youtube, Linkedin, Facebook } from 'lucide-react';
 
-export default function Footer() {
+const Footer = () => {
+  const mainLinks = [
+    { name: "Contact Us", href: "/contact" },
+    { name: "Code of Ethics", href: "/ethics" },
+    { name: "Career Information", href: "/careers" },
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Tools & Resources", href: "/resources" }
+  ];
+
+  const socialLinks = [
+    { 
+      icon: <Instagram className="w-5 h-5" />, 
+      href: "https://instagram.com/kbs",
+      label: "Instagram"
+    },
+    { 
+      icon: <Twitter className="w-5 h-5" />, 
+      href: "https://twitter.com/kbs",
+      label: "Twitter"
+    },
+    { 
+      icon: <Youtube className="w-5 h-5" />, 
+      href: "https://youtube.com/kbs",
+      label: "Youtube"
+    },
+    { 
+      icon: <Linkedin className="w-5 h-5" />, 
+      href: "https://linkedin.com/company/kbs",
+      label: "LinkedIn"
+    },
+    { 
+      icon: <Facebook className="w-5 h-5" />, 
+      href: "https://facebook.com/kbs",
+      label: "Facebook"
+    }
+  ];
+
   return (
-    <footer className="bg-[#091242] text-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-          {/* Company Info */}
-          <div>
-            <div className="flex items-center space-x-4 mb-6">
-              <Image
-                src="/logo.png"
-                alt="KBS Logo"
-                width={40}
-                height={40}
-                className="h-10 w-auto"
-              />
-              <span className="text-2xl font-bold">KBS</span>
-            </div>
-            <p className="text-gray-400">
-              Konstruksi berkualitas dengan standar internasional
-            </p>
+    <footer className="bg-white">
+      <div className="max-w-screen-xl mx-auto px-4">
+        {/* Top Navigation */}
+        <nav className="py-6">
+          <ul className="flex flex-wrap justify-center sm:justify-start items-center gap-x-8 gap-y-2">
+            {mainLinks.map((link, index) => (
+              <li key={index}>
+                <Link
+                  href={link.href}
+                  className="text-[#153969] hover:text-[#1E4D2B] transition-colors text-sm"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Middle Section with Logo and Social */}
+        <div className="py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          {/* Logo */}
+          <div className="w-16 h-16">
+            <Image 
+              src="/images/logo.jpg" 
+              alt="KBS Logo" 
+              width={64}
+              height={64}
+              className="w-full h-full object-contain"
+            />
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-xl font-bold mb-6">Quick Links</h3>
-            <ul className="space-y-4">
-              {['About Us', 'Services', 'Projects', 'Contact'].map((item) => (
-                <li key={item}>
-                  <a href={`#${item.toLowerCase()}`} className="text-gray-400 hover:text-white transition-colors">
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h3 className="text-xl font-bold mb-6">Services</h3>
-            <ul className="space-y-4">
-              {[
-                'Building Construction',
-                'Project Planning',
-                'Interior Design',
-                'Renovation'
-              ].map((service) => (
-                <li key={service} className="text-gray-400">
-                  {service}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-xl font-bold mb-6">Contact Info</h3>
-            <ul className="space-y-4">
-              <li className="flex items-center space-x-3 text-gray-400">
-                <Phone className="h-5 w-5" />
-                <span>+62 123 4567 890</span>
-              </li>
-              <li className="flex items-center space-x-3 text-gray-400">
-                <Mail className="h-5 w-5" />
-                <span>info@kbs.co.id</span>
-              </li>
-              <li className="flex items-center space-x-3 text-gray-400">
-                <MapPin className="h-5 w-5" />
-                <span>Jakarta, Indonesia</span>
-              </li>
-            </ul>
+          {/* Social Media Links */}
+          <div className="flex items-center gap-4">
+            {socialLinks.map((social, index) => (
+              <a
+                key={index}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#153969] hover:text-[#1E4D2B] transition-colors"
+                aria-label={social.label}
+              >
+                {social.icon}
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} PT Karya Bangun Semesta. All rights reserved.</p>
+        {/* Copyright Section */}
+        <div className="py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+          <p className="text-sm text-gray-600">
+            Copyright © {new Date().getFullYear()} PT Karya Bangun Semesta
+          </p>
+          <p className="text-sm text-gray-600">
+            All rights reserved
+          </p>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
+
+export default Footer;
