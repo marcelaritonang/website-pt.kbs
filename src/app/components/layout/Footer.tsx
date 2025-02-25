@@ -1,13 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Instagram, Twitter, Youtube, Linkedin, Facebook } from 'lucide-react';
+import { Instagram, Twitter, Youtube, Linkedin, Facebook, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
   const mainLinks = [
     { name: "Contact Us", href: "/contact" },
     { name: "Code of Ethics", href: "/ethics" },
-    { name: "Career Information", href: "/careers" },
+    { name: "Career Information", href: "/karir" },
     { name: "Privacy Policy", href: "/privacy" },
     { name: "Tools & Resources", href: "/resources" }
   ];
@@ -33,8 +33,12 @@ const Footer = () => {
       href: "https://linkedin.com/company/kbs",
       label: "LinkedIn"
     }
-
   ];
+
+  const contactInfo = {
+    email: "karyabangunsemestas@gmail.com",
+    whatsapp: "+6281218127503" // Replace with your actual WhatsApp number
+  };
 
   return (
     <footer className="bg-white">
@@ -55,17 +59,40 @@ const Footer = () => {
           </ul>
         </nav>
 
-        {/* Middle Section with Logo and Social */}
-        <div className="py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          {/* Logo */}
-          <div className="w-16 h-16">
-            <Image 
-              src="/images/logo.jpg" 
-              alt="KBS Logo" 
-              width={64}
-              height={64}
-              className="w-full h-full object-contain"
-            />
+        {/* Middle Section with Logo, Contact and Social */}
+        <div className="py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          {/* Left column: Logo and Contact Info */}
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            {/* Logo */}
+            <div className="w-16 h-16">
+              <Image 
+                src="/images/logo.jpg" 
+                alt="KBS Logo" 
+                width={64}
+                height={64}
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* Contact Information */}
+            <div className="flex flex-col gap-2">
+              <a 
+                href={`mailto:${contactInfo.email}`}
+                className="flex items-center text-gray-700 hover:text-[#1E4D2B] transition-colors"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                <span className="text-sm">{contactInfo.email}</span>
+              </a>
+              <a 
+                href={`https://wa.me/${contactInfo.whatsapp.replace(/\+/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center text-gray-700 hover:text-[#1E4D2B] transition-colors"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                <span className="text-sm">{contactInfo.whatsapp}</span>
+              </a>
+            </div>
           </div>
 
           {/* Social Media Links */}
@@ -84,6 +111,9 @@ const Footer = () => {
             ))}
           </div>
         </div>
+
+        {/* Divider */}
+        <div className="border-t border-gray-100"></div>
 
         {/* Copyright Section */}
         <div className="py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
