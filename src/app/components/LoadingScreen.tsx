@@ -23,7 +23,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isLoading, setIsLoading }
         <motion.div
           initial={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: '-100%' }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
           className="fixed inset-0 bg-white z-50 flex items-center justify-center"
         >
           <div className="relative w-[200px] h-[200px]">
@@ -36,7 +36,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isLoading, setIsLoading }
                 strokeWidth="4"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ duration: 1, ease: "easeInOut" }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
               />
 
 
@@ -49,7 +49,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isLoading, setIsLoading }
                 strokeWidth="4"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ duration: 1, delay: 1.5, ease: "easeInOut" }}
+                transition={{ duration: 0.5, delay: 1.5, ease: "easeInOut" }}
               />
 
               {/* Additional decorative lines */}
@@ -72,7 +72,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isLoading, setIsLoading }
                 className="h-full bg-gradient-to-r from-[#FF3A2D] to-[#153969]"
                 initial={{ width: '0%' }}
                 animate={{ width: '100%' }}
-                transition={{ duration: 3.5, ease: "easeInOut" }}
+                transition={{ duration: 1.75, ease: "easeInOut" }}
               />
             </motion.div>
 
@@ -90,7 +90,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isLoading, setIsLoading }
                 }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: 2 + index * 0.1 }}
+                transition={{ delay: 1 + index * 0.05 }}
               >
                 <svg viewBox="0 0 24 24" className="w-full h-full">
                   <motion.path
@@ -100,7 +100,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isLoading, setIsLoading }
                     fill="none"
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.5, delay: 2 + index * 0.1 }}
+                    transition={{ duration: 0.25, delay: 1 + index * 0.05 }}
                   />
                 </svg>
               </motion.div>
