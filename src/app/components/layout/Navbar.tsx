@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname, useRouter } from 'next/navigation'
-import { ChevronDown, Globe, ExternalLink } from 'lucide-react'
+import { ChevronDown, Globe } from 'lucide-react'
 
 // Define types
 interface NavItem {
@@ -40,197 +40,57 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const langDropdownRef = useRef<HTMLDivElement>(null)
 
-  // Navigation data for English
-  const navItemsEn: NavLinkItem[] = useMemo(() => [
-    {
-      name: 'Home',
-      href: '/',
-      hasDropdown: false
-    },
-    {
-      name: 'Who We Are',
-      href: '/about',
-      hasDropdown: true,
-      sections: [
-        {
-          title: 'About Us',
-          items: [
-            { name: 'Company Profile', href: '/about/profile' },
-            { name: 'Our History', href: '/about/history' },
-            { name: 'ISO Certifications', href: '/about/iso' },
-            { name: 'Our Team', href: '/about/team' },
-            { name: 'Certifications', href: '/about/certifications' }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Services',
-      href: '/services',
-      hasDropdown: true,
-      sections: [
-        {
-          title: 'Construction Services',
-          items: [
-            { name: 'Building Construction', href: '/services/building-construction' },
-            { name: 'Infrastructure Development', href: '/services/infrastructure' },
-            { name: 'Project Management', href: '/services/project-management' }
-          ]
-        },
-        {
-          title: 'Heavy Equipment',
-          items: [
-            { name: 'Equipment Rental', href: '/services/equipment-rental' },
-            { name: 'Operator Services', href: '/services/equipment-operators' },
-            { name: 'Maintenance', href: '/services/equipment-maintenance' }
-          ]
-        },
-        {
-          title: 'Dump Truck Services',
-          items: [
-            { name: 'Material Hauling', href: '/services/material-hauling' },
-            { name: 'Fleet Management', href: '/services/fleet-management' },
-            { name: 'Logistics Solutions', href: '/services/logistics' }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Projects',
-      href: '/projects',
-      hasDropdown: false
-    },
-    {
-      name: 'Resources',
-      href: '/resources',
-      hasDropdown: true,
-      sections: [
-        {
-          title: 'Resources',
-          items: [
-            { name: 'Tools & Resources', href: '/resources' },
-            { name: 'Code of Ethics', href: '/ethics' },
-            { name: 'Privacy Policy', href: '/privacy' }
-          ]
-        },
-        {
-          title: 'Industry Insights',
-          items: [
-            { name: 'Blog', href: '/blog' },
-            { name: 'Case Studies', href: '/case-studies' },
-            { name: 'White Papers', href: '/white-papers' }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Career',
-      href: '/career',
-      hasDropdown: false
-    },
-    {
-      name: 'Contact',
-      href: '/contact',
-      hasDropdown: false
-    }
-  ], []);
+  // Improved scroll handler
+  useEffect(() => {
+    // Enable smooth scrolling globally
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 50);
+      setIsScrollingUp(currentScrollY < lastScrollY || currentScrollY <= 0);
+      setLastScrollY(currentScrollY);
+    };
+    
+    // Use passive listener for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      // Reset scroll behavior on cleanup
+      document.documentElement.style.scrollBehavior = '';
+    };
+  }, [lastScrollY]);
 
-  // Navigation data for Indonesian
-  const navItemsId: NavLinkItem[] = useMemo(() => [
-    {
-      name: 'Beranda',
-      href: '/',
-      hasDropdown: false
-    },
-    {
-      name: 'Tentang Kami',
-      href: '/about',
-      hasDropdown: true,
-      sections: [
-        {
-          title: 'Tentang Kami',
-          items: [
-            { name: 'Profil Perusahaan', href: '/about/profile' },
-            { name: 'Sejarah Kami', href: '/about/history' },
-            { name: 'Sertifikasi ISO', href: '/about/iso' },
-            { name: 'Tim Kami', href: '/about/team' },
-            { name: 'Sertifikasi', href: '/about/certifications' }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Layanan',
-      href: '/services',
-      hasDropdown: true,
-      sections: [
-        {
-          title: 'Layanan Konstruksi',
-          items: [
-            { name: 'Konstruksi Bangunan', href: '/services/building-construction' },
-            { name: 'Pengembangan Infrastruktur', href: '/services/infrastructure' },
-            { name: 'Manajemen Proyek', href: '/services/project-management' }
-          ]
-        },
-        {
-          title: 'Peralatan Berat',
-          items: [
-            { name: 'Penyewaan Peralatan', href: '/services/equipment-rental' },
-            { name: 'Layanan Operator', href: '/services/equipment-operators' },
-            { name: 'Pemeliharaan', href: '/services/equipment-maintenance' }
-          ]
-        },
-        {
-          title: 'Layanan Dump Truck',
-          items: [
-            { name: 'Pengangkutan Material', href: '/services/material-hauling' },
-            { name: 'Manajemen Armada', href: '/services/fleet-management' },
-            { name: 'Solusi Logistik', href: '/services/logistics' }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Proyek',
-      href: '/projects',
-      hasDropdown: false
-    },
-    {
-      name: 'Sumber Daya',
-      href: '/resources',
-      hasDropdown: true,
-      sections: [
-        {
-          title: 'Sumber Daya',
-          items: [
-            { name: 'Alat & Sumber Daya', href: '/resources' },
-            { name: 'Kode Etik', href: '/ethics' },
-            { name: 'Kebijakan Privasi', href: '/privacy' }
-          ]
-        },
-        {
-          title: 'Wawasan Industri',
-          items: [
-            { name: 'Blog', href: '/blog' },
-            { name: 'Studi Kasus', href: '/case-studies' },
-            { name: 'Makalah Putih', href: '/white-papers' }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Karir',
-      href: '/karir',
-      hasDropdown: false
-    },
-    {
-      name: 'Kontak',
-      href: '/contact',
-      hasDropdown: false
-    }
-  ], []);
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target as Node)) {
+        setLanguageOpen(false);
+      }
+    };
+    
+    // Close dropdown when pressing escape key
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveDropdown(null);
+        setLanguageOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscKey);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, []);
 
-  // Function to switch language
+  // Enhanced language switcher with local storage 
   const switchLanguage = (lang: string) => {
     setCurrentLanguage(lang);
     setLanguageOpen(false);
@@ -255,11 +115,228 @@ export default function Navbar() {
     }
   }, []);
 
-  // Determine which navigation items to use based on current language
-  const navItems = currentLanguage === 'id' ? navItemsId : navItemsEn;
+  // Enhanced smooth scroll handling
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    
+    // Close any open dropdown and mobile menu
+    setActiveDropdown(null);
+    setIsMobileMenuOpen(false);
+    
+    // If it's a hash link on the current page
+    if (href.includes('#') && pathname === href.split('#')[0]) {
+      const targetId = href.split('#')[1];
+      const element = document.getElementById(targetId);
+      
+      if (element) {
+        // Smooth scroll implementation that works across browsers
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start'
+        });
+        return;
+      }
+    }
 
-  // Rest of your component code remains the same...
-  // (Scroll handler, dropdown logic, etc.)
+    // Use Next.js routing with delayed execution for smoother transitions
+    setTimeout(() => {
+      router.push(href);
+    }, 300);
+    
+    // If the link is to another page, do a smooth transition
+    if (pathname !== href.split('#')[0]) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Navigation data
+  const navItems: NavLinkItem[] = useMemo(() => [
+    {
+      name: 'Home',
+      href: '/',
+      hasDropdown: false
+    },
+    {
+      name: 'Who We Are',
+      href: '/about',
+      hasDropdown: true,
+      sections: [
+        {
+          title: 'About Us',
+          items: [
+            { 
+              name: 'Company Profile', 
+              href: '/about/profile',
+              description: 'Vision, mission, and company values' 
+            },
+            { 
+              name: 'Our History', 
+              href: '/about/history',
+              description: 'Journey since establishment in 2005' 
+            },
+            { 
+              name: 'ISO Certifications', 
+              href: '/about/iso',
+              description: 'International quality certifications' 
+            },
+            { 
+              name: 'Our Team', 
+              href: '/about/team',
+              description: 'Professional and dedicated members' 
+            },
+            { 
+              name: 'Certifications', 
+              href: '/about/certifications',
+              description: 'Industry credentials and qualifications' 
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'Services',
+      href: '/services',
+      hasDropdown: true,
+      sections: [
+        {
+          title: 'Construction Services',
+          items: [
+            { 
+              name: 'Building Construction', 
+              href: '/services/building-construction',
+              description: 'Commercial and residential buildings' 
+            },
+            { 
+              name: 'Infrastructure Development', 
+              href: '/services/infrastructure',
+              description: 'Roads, bridges, and public works' 
+            },
+            { 
+              name: 'Project Management', 
+              href: '/services/project-management',
+              description: 'End-to-end project management' 
+            }
+          ]
+        },
+        {
+          title: 'Heavy Equipment',
+          items: [
+            { 
+              name: 'Equipment Rental', 
+              href: '/services/equipment-rental',
+              description: 'Excavators and machinery rental' 
+            },
+            { 
+              name: 'Operator Services', 
+              href: '/services/equipment-operators',
+              description: 'Skilled equipment operators' 
+            },
+            { 
+              name: 'Maintenance', 
+              href: '/services/equipment-maintenance',
+              description: 'Regular maintenance services' 
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'Projects',
+      href: '/projects',
+      hasDropdown: false
+    },
+    {
+      name: 'Resources',
+      href: '/resources',
+      hasDropdown: true,
+      sections: [
+        {
+          title: 'Resources',
+          items: [
+            { 
+              name: 'Tools & Resources', 
+              href: '/resources',
+              description: 'Industry guides and calculators' 
+            },
+            { 
+              name: 'Code of Ethics', 
+              href: '/ethics',
+              description: 'Ethical business practices' 
+            },
+            { 
+              name: 'Privacy Policy', 
+              href: '/privacy',
+              description: 'Data protection policy' 
+            }
+          ]
+        },
+        {
+          title: 'Industry Insights',
+          items: [
+            { 
+              name: 'Blog', 
+              href: '/blog',
+              description: 'Construction trends and updates' 
+            },
+            { 
+              name: 'Case Studies', 
+              href: '/case-studies',
+              description: 'Analysis of successful projects' 
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'Karir',
+      href: '/karir',
+      hasDropdown: false
+    },
+    {
+      name: 'Contact',
+      href: '/contact',
+      hasDropdown: false
+    }
+  ], []);
+
+  const toggleDropdown = (index: number) => {
+    setActiveDropdown(activeDropdown === index ? null : index);
+    
+    // Close mobile menu when opening a dropdown
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  };
+
+  // Check if link is active
+  const isLinkActive = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(href);
+  };
+
+  // Improved animation variants for a smoother experience
+  const dropdownVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: -8, 
+      height: 0,
+      transition: { duration: 0.2, ease: "easeInOut" }
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      height: 'auto',
+      transition: { duration: 0.4, ease: "easeOut" }
+    },
+    exit: { 
+      opacity: 0, 
+      y: -8, 
+      height: 0,
+      transition: { duration: 0.2, ease: "easeInOut" }
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -268,10 +345,10 @@ export default function Navbar() {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
           className={`fixed w-full z-50 transition-all duration-500 ${
             isScrolled 
-              ? 'bg-white/90 backdrop-blur-md shadow-lg'
+              ? 'bg-white/95 backdrop-blur-md shadow-lg'
               : 'bg-transparent'
           }`}
           aria-label="Main navigation"
@@ -283,7 +360,8 @@ export default function Navbar() {
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <Link href="/" className="flex items-center space-x-3" aria-label="KBS homepage">
+                <Link href="/" className="flex items-center space-x-3" aria-label="KBS homepage"
+                  onClick={(e) => handleNavigation(e, '/')}>
                   <Image
                     src="/images/logo-kbs.png"
                     alt="KBS Logo"
@@ -337,7 +415,7 @@ export default function Navbar() {
                           )}
                         </motion.button>
                       
-                        {/* Enhanced dropdown menu */}
+                        {/* Redesigned dropdown menu */}
                         <AnimatePresence>
                           {activeDropdown === index && (
                             <motion.div
@@ -346,43 +424,55 @@ export default function Navbar() {
                               animate="visible"
                               exit="exit"
                               variants={dropdownVariants}
-                              transition={{ duration: 0.2 }}
-                              className="absolute left-0 w-full min-w-[400px] mt-1 p-4 bg-white shadow-lg rounded-md z-50"
+                              className="absolute left-0 mt-2 w-64 py-2 bg-white rounded-lg shadow-xl z-50 overflow-hidden border border-gray-100"
                               style={{ 
-                                transform: 'translateX(-50%)',
+                                transform: 'translateX(-30%)',
                                 left: '50%'
                               }}
                             >
-                              <div className="border-b-2 border-[#153969] pb-1 mb-3 flex justify-between items-center">
-                                <h3 className="text-lg font-bold text-[#153969]">{item.name}</h3>
-                                <Link 
-                                  href={item.href} 
-                                  className="text-sm text-[#153969] hover:underline flex items-center"
-                                >
-                                  View All <ExternalLink className="ml-1 h-3 w-3" />
-                                </Link>
+                              <div className="px-3 py-2 border-b border-gray-100">
+                                <h3 className="text-base font-semibold text-[#153969]">{item.name}</h3>
                               </div>
                               
-                              <div className="flex justify-between gap-10">
+                              <div className="px-2 py-2 max-h-[70vh] overflow-y-auto">
                                 {item.sections && item.sections.map((section, sectionIndex) => (
-                                  <div key={sectionIndex} className="flex-1">
-                                    <h4 className="text-sm font-semibold text-[#153969] mb-2 pb-1 border-b border-gray-200">
+                                  <div key={sectionIndex} className="mb-2">
+                                    <h4 className="px-2 py-1 text-xs font-bold uppercase tracking-wider text-gray-500">
                                       {section.title}
                                     </h4>
-                                    <ul className="space-y-2">
-                                      {section.items.map((subItem, subIndex) => (
-                                        <li key={subIndex}>
-                                          <Link
-                                            href={subItem.href}
-                                            className={`text-gray-700 hover:text-[#153969] text-sm block py-1 transition-colors ${isLinkActive(subItem.href) ? 'font-medium text-[#153969]' : ''}`}
-                                          >
-                                            {subItem.name}
-                                          </Link>
-                                        </li>
-                                      ))}
-                                    </ul>
+                                    
+                                    {section.items.map((subItem, subIndex) => (
+                                      <Link
+                                        key={subIndex}
+                                        href={subItem.href}
+                                        onClick={(e) => handleNavigation(e, subItem.href)}
+                                        className="flex flex-col px-2 py-2 hover:bg-gray-50 rounded-md transition-colors group"
+                                      >
+                                        <span className={`text-sm font-medium ${isLinkActive(subItem.href) ? 'text-[#153969]' : 'text-gray-700 group-hover:text-[#153969]'}`}>
+                                          {subItem.name}
+                                        </span>
+                                        {subItem.description && (
+                                          <span className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                                            {subItem.description}
+                                          </span>
+                                        )}
+                                      </Link>
+                                    ))}
                                   </div>
                                 ))}
+                              </div>
+                              
+                              <div className="px-3 py-2 mt-1 border-t border-gray-100">
+                                <Link 
+                                  href={item.href}
+                                  onClick={(e) => handleNavigation(e, item.href)}
+                                  className="flex items-center text-sm font-medium text-[#153969] hover:underline"
+                                >
+                                  Lihat semua
+                                  <svg className="ml-1 w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                </Link>
                               </div>
                             </motion.div>
                           )}
@@ -395,6 +485,7 @@ export default function Navbar() {
                       >
                         <Link
                           href={item.href}
+                          onClick={(e) => handleNavigation(e, item.href)}
                           className={`relative font-medium transition-colors text-sm tracking-wider
                             ${isScrolled
                               ? isLinkActive(item.href)
@@ -444,15 +535,14 @@ export default function Navbar() {
                         animate="visible"
                         exit="exit"
                         variants={dropdownVariants}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20"
+                        className="absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 overflow-hidden"
                       >
                         <div className="py-1">
                           <button
                             onClick={() => switchLanguage('id')}
                             className={`flex items-center w-full text-left px-4 py-2 text-sm ${
                               currentLanguage === 'id'
-                                ? 'bg-gray-100 text-[#153969] font-medium'
+                                ? 'bg-[#153969]/10 text-[#153969] font-medium'
                                 : 'text-gray-700 hover:bg-gray-50'
                             }`}
                             aria-label="Switch to Indonesian"
@@ -463,7 +553,7 @@ export default function Navbar() {
                             onClick={() => switchLanguage('en')}
                             className={`flex items-center w-full text-left px-4 py-2 text-sm ${
                               currentLanguage === 'en'
-                                ? 'bg-gray-100 text-[#153969] font-medium'
+                                ? 'bg-[#153969]/10 text-[#153969] font-medium'
                                 : 'text-gray-700 hover:bg-gray-50'
                             }`}
                             aria-label="Switch to English"
@@ -477,19 +567,22 @@ export default function Navbar() {
                 </div>
 
                 {/* Get Quote Button */}
-                <motion.button
+                <motion.a
+                  href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className={`relative overflow-hidden px-6 py-2 rounded-md font-medium
                     transition-all duration-300 ${
                       isScrolled
-                        ? 'bg-gradient-to-r from-[#153969] to-[#718bab] text-white shadow-lg hover:shadow-[#153969]/50'
+                        ? 'bg-gradient-to-r from-[#153969] to-[#718bab] text-white shadow-md hover:shadow-xl'
                         : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/50'
                     }`}
                 >
                   <span className="relative z-10">Get Quote</span>
-                  <div className="absolute inset-0 -z-0 bg-gradient-to-r from-[#153969] to-[#718bab] opacity-0 transition-opacity duration-300 hover:opacity-100" />
-                </motion.button>
+                  <div className="absolute inset-0 -z-0 bg-gradient-to-r from-[#1c4b8c] to-[#5677a3] opacity-0 transition-opacity duration-300 hover:opacity-100" />
+                </motion.a>
               </div>
 
               {/* Mobile Menu Button */}
@@ -515,15 +608,14 @@ export default function Navbar() {
                         animate="visible"
                         exit="exit"
                         variants={dropdownVariants}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20"
+                        className="absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 overflow-hidden"
                       >
                         <div className="py-1">
                           <button
                             onClick={() => switchLanguage('id')}
                             className={`flex items-center w-full text-left px-4 py-2 text-sm ${
                               currentLanguage === 'id'
-                                ? 'bg-gray-100 text-[#153969] font-medium'
+                                ? 'bg-[#153969]/10 text-[#153969] font-medium'
                                 : 'text-gray-700 hover:bg-gray-50'
                             }`}
                           >
@@ -533,7 +625,7 @@ export default function Navbar() {
                             onClick={() => switchLanguage('en')}
                             className={`flex items-center w-full text-left px-4 py-2 text-sm ${
                               currentLanguage === 'en'
-                                ? 'bg-gray-100 text-[#153969] font-medium'
+                                ? 'bg-[#153969]/10 text-[#153969] font-medium'
                                 : 'text-gray-700 hover:bg-gray-50'
                             }`}
                           >
@@ -573,14 +665,13 @@ export default function Navbar() {
           <AnimatePresence>
             {isMobileMenuOpen && (
               <motion.div
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                variants={dropdownVariants}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="md:hidden bg-white shadow-lg overflow-hidden"
               >
-                <div className="px-4 py-4 space-y-1 max-h-[70vh] overflow-y-auto">
+                <div className="p-4 space-y-2 max-h-[70vh] overflow-y-auto">
                   {navItems.map((item, index) => (
                     <div key={index} className="py-1">
                       {item.hasDropdown ? (
@@ -605,28 +696,35 @@ export default function Navbar() {
                           <AnimatePresence>
                             {activeDropdown === index && (
                               <motion.div
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                                variants={dropdownVariants}
-                                transition={{ duration: 0.2 }}
-                                className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 pl-3"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="ml-2 mt-1 border-l-2 border-gray-200 pl-2 space-y-1"
                               >
                                 {item.sections && item.sections.map((section, sectionIndex) => (
-                                  <div key={sectionIndex} className="mb-2">
-                                    <div className="text-sm font-semibold text-[#153969] py-1">{section.title}</div>
+                                  <div key={sectionIndex} className="py-1">
+                                    <div className="px-2 text-xs font-bold uppercase tracking-wider text-gray-500">
+                                      {section.title}
+                                    </div>
+                                    
                                     {section.items.map((subItem, subItemIndex) => (
                                       <Link
                                         key={subItemIndex}
                                         href={subItem.href}
-                                        className={`block px-3 py-2 rounded-md text-sm ${
-                                          isLinkActive(subItem.href)
-                                            ? 'bg-[#153969]/10 text-[#153969] font-medium'
-                                            : 'text-gray-600 hover:bg-gray-50'
-                                        }`}
-                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        onClick={(e) => handleNavigation(e, subItem.href)}
+                                        className="block px-2 py-2 hover:bg-gray-50 rounded-md"
                                       >
-                                        {subItem.name}
+                                        <div className={`text-sm font-medium ${
+                                          isLinkActive(subItem.href) ? 'text-[#153969]' : 'text-gray-700'
+                                        }`}>
+                                          {subItem.name}
+                                        </div>
+                                        {subItem.description && (
+                                          <div className="text-xs text-gray-500 line-clamp-1">
+                                            {subItem.description}
+                                          </div>
+                                        )}
                                       </Link>
                                     ))}
                                   </div>
@@ -638,12 +736,12 @@ export default function Navbar() {
                       ) : (
                         <Link
                           href={item.href}
+                          onClick={(e) => handleNavigation(e, item.href)}
                           className={`block px-3 py-2 rounded-md ${
                             isLinkActive(item.href)
                               ? 'bg-[#153969]/10 text-[#153969] font-medium'
                               : 'text-gray-700 hover:bg-gray-50'
                           }`}
-                          onClick={() => setIsMobileMenuOpen(false)}
                         >
                           {item.name}
                         </Link>
@@ -652,9 +750,14 @@ export default function Navbar() {
                   ))}
                   
                   <div className="pt-4">
-                    <button className="w-full py-3 bg-gradient-to-r from-[#153969] to-[#718bab] text-white rounded-md font-medium">
+                    <a 
+                      href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="block w-full py-3 bg-gradient-to-r from-[#153969] to-[#718bab] text-white rounded-md font-medium text-center hover:shadow-lg transition-shadow duration-300"
+                    >
                       Get Quote
-                    </button>
+                    </a>
                   </div>
                 </div>
               </motion.div>
@@ -665,3 +768,31 @@ export default function Navbar() {
     </AnimatePresence>
   )
 }
+
+// Utility function for smooth scrolling in older browsers
+const smoothScrollPolyfill = (element: Element, options: ScrollIntoViewOptions) => {
+  const { top } = element.getBoundingClientRect();
+  const startPosition = window.pageYOffset;
+  const targetPosition = startPosition + top;
+  
+  const duration = 1000; // ms
+  const startTime = performance.now();
+  
+  const easingFunction = (t: number) => {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+  };
+  
+  const animateScroll = (currentTime: number) => {
+    const elapsedTime = currentTime - startTime;
+    const progress = Math.min(elapsedTime / duration, 1);
+    const easeProgress = easingFunction(progress);
+    
+    window.scrollTo(0, startPosition + (targetPosition - startPosition) * easeProgress);
+    
+    if (progress < 1) {
+      window.requestAnimationFrame(animateScroll);
+    }
+  };
+  
+  window.requestAnimationFrame(animateScroll);
+};

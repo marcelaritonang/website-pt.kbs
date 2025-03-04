@@ -172,16 +172,25 @@ const LocationSection = () => {
               </div>
             </motion.div>
 
-            {/* CTA */}
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              viewport={{ once: true }}
-              className="w-full bg-gradient-to-r from-[#153969] to-[#718bab] text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105"
-            >
-              Hubungi Kami
-            </motion.button>
+            {/* CTA - WhatsApp Link */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <a 
+                  href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="group block w-full bg-gradient-to-r from-[#153969] to-[#718bab] text-white font-semibold px-8 py-4 rounded-xl text-center transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 relative overflow-hidden"
+                >
+                  <span className="relative z-10 group-hover:scale-110 inline-block transition-transform duration-300">
+                    Hubungi Kami
+                  </span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#1c4b8c] to-[#5677a3] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                </a>
+              </motion.div>
           </div>
         </div>
       </div>
