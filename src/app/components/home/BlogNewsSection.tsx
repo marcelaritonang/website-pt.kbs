@@ -10,10 +10,10 @@ import { ArrowRight, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-r
 const insightPosts = [
   {
     id: 1,
-    title: "Proyek Infrastruktur Prioritas di Jakarta Timur 2024",
-    excerpt: "Tinjauan proyek-proyek strategis di kawasan Jakarta Timur yang mendukung perkembangan ekonomi lokal.",
+    title: "PUPR Fokuskan Anggaran 2024 untuk Penyelesaian Infrastruktur Prioritas",
+    excerpt: "PUPR Fokuskan Anggaran 2024 untuk Penyelesaian Infrastruktur Prioritas.",
     category: "Proyek",
-    image: "/images/jakarta-infrastructure.jpg",
+    image: "/images/blog/rapat-pupr.jpg",
     date: "12 Maret 2024",
     readTime: "5 menit",
     slug: "proyek-infrastruktur-jakarta-timur-2024"
