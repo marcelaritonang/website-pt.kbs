@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowLeft, Share2, Bookmark, Facebook, Twitter, Linkedin, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// Define proper TypeScript interfaces for your data
+// Interface untuk konten artikel
 interface ContentBlock {
   type: 'paragraph' | 'subheading' | 'image' | 'list' | 'quote';
   content?: string;
@@ -17,157 +17,104 @@ interface ContentBlock {
   author?: string;
 }
 
-interface RelatedArticle {
-  id: number;
-  title: string;
-  excerpt: string;
-  category: string;
-  image: string;
-  date: string;
-  readTime: string;
-  slug: string;
-}
-
-interface ArticleData {
-  id: number;
-  title: string;
-  excerpt: string;
-  category: string;
-  image: string;
-  date: string;
-  readTime: string;
-  author: string;
-  authorRole: string;
-  authorImage: string;
-  slug: string;
-  content: ContentBlock[];
-  relatedArticles: RelatedArticle[];
-  tags: string[];
-}
-
-// Data untuk halaman detail artikel
-const article: ArticleData = {
-  id: 1,
-  title: "PUPR Fokuskan Anggaran 2024 untuk Penyelesaian Infrastruktur Prioritas",
-  excerpt: "Menteri PUPR menegaskan penyelesaian program strategis nasional dan kegiatan prioritas melalui kontrak tahun jamak menjadi fokus utama anggaran 2024.",
-  category: "Regulasi",
-  image: "/images/blog/rapat-pupr.jpg",
-  date: "12 Maret 2024",
-  readTime: "5 menit",
-  author: "Admin KBS",
-  authorRole: "Pengelola Konten",
+// Data artikel untuk kontraktor - versi revisi
+const contractorArticle = {
+  id: 2,
+  title: "5 Strategi Jitu Kontraktor Hadapi Kenaikan Biaya Operasional 2023-2024",
+  excerpt: "Panduan praktis bagi pelaku bisnis konstruksi untuk bertahan di tengah fluktuasi harga material dan tenaga kerja.",
+  category: "Manajemen",
+  image: "/images/berita2/gambar2.png",
+  date: "15 Desember 2023",
+  readTime: "4 menit",
+  author: "Andre Sukanto",
+  authorRole: "Komisaris KBS",
   authorImage: "/images/logo-kbs.png",
-  slug: "pupr-fokuskan-anggaran-2024-infrastruktur-prioritas",
+  slug: "strategi-kenaikan-harga-material-2024",
   content: [
     {
       type: "paragraph",
-      content: "Jakarta - Menteri Pekerjaan Umum dan Perumahan Rakyat (PUPR) Basuki Hadimuljono mengungkapkan anggaran pada tahun depan difokuskan untuk penyelesaian pembangunan infrastruktur prioritas."
-    },
-    {
-      type: "paragraph",
-      content: "\"Prioritas utama program tahun anggaran atau TA 2024 yaitu penyelesaian Program Strategis Nasional dan kegiatan prioritas melalui kontrak tahun jamak (multiyears contract atau MYC), pelaksanaan program OPOR (Operasi, Pemeliharaan, Optimalisasi, dan Rehabilitasi), serta pelaksanaan direktif Presiden, di antaranya pembangunan pasar, jalan daerah, air minum, dan sekolah,\" kata Basuki dalam rapat kerja (raker) bersama Komisi V DPR RI, di Jakarta, Rabu."
-    },
-    {
-      type: "paragraph",
-      content: "Dia mengatakan, sesuai arahan Presiden Joko Widodo (Jokowi), seluruh pekerjaan konstruksi program TA 2024 tuntas pada tahun 2024, sehingga infrastruktur tersebut dapat segera dirasakan manfaatnya oleh masyarakat."
-    },
-    {
-      type: "image",
-      url: "/images/blog/basuki-Hadimuljono.jpg",
-      caption: "Menteri PUPR Basuki Hadimuljono saat rapat kerja bersama Komisi V DPR RI di Jakarta"
+      content: "Sektor konstruksi Indonesia saat ini dihadapkan pada tantangan serius akibat ketidakstabilan ekonomi, lonjakan harga bahan baku, dan disrupsi rantai pasok global. Para kontraktor perlu merumuskan strategi yang tepat untuk menekan biaya operasional tanpa mengorbankan kualitas pekerjaan. Melalui artikel ini, kami sajikan berbagai pendekatan yang telah terbukti efektif membantu pelaku industri konstruksi bertahan bahkan berkembang di tengah tekanan biaya yang terus meningkat."
     },
     {
       type: "subheading",
-      content: "Rincian Anggaran dan Alokasi PUPR 2024"
+      content: "1. Pengelolaan Anggaran yang Presisi"
     },
     {
       type: "paragraph",
-      content: "Pagu anggaran Kementerian PUPR TA 2024 ditetapkan sebesar Rp146,98 triliun. Kegiatan prioritas bidang sumber daya air sebesar Rp47,64 triliun, antara lain pembangunan 23 unit bendungan, revitalisasi danau, pembangunan irigasi 4.000 hektare, rehabilitasi dan peningkatan irigasi 38.000 hektare, pembangunan pengendali banjir dan pengaman pantai 57,5 km, pembangunan prasarana air baku kapasitas 2,5 m3/detik, dan pembangunan 7 unit embung."
-    },
-    {
-      type: "paragraph",
-      content: "\"Kegiatan prioritas bidang jalan dan jembatan sebesar Rp55,40 triliun, antara lain peningkatan konektivitas jalan bebas hambatan 546,13 km, preservasi rutin jalan 47.603 km, peningkatan kapasitas dan preservasi peningkatan struktur jalan 2.117,75 km, preservasi dan penggantian jembatan 7,12 km, pembangunan jalan 318,41 km, pembangunan dan duplikasi jembatan 3,89 km, peningkatan aksesibilitas flyover/underpass/terowongan 918,75 meter, serta dukungan Inpres Jalan Daerah 26,25 km,\" kata Basuki."
+      content: "Fondasi dari manajemen biaya yang efektif adalah penganggaran yang detail dan akurat. Kontraktor perlu mengadopsi sistem penganggaran zero-based yang mengevaluasi setiap komponen biaya dari awal, bukan sekadar menyesuaikan angka dari proyek sebelumnya. Implementasikan software manajemen keuangan proyek yang terintegrasi untuk melacak pengeluaran secara real-time dan mengidentifikasi potensi penyimpangan anggaran sebelum terlambat. Lakukan analisis sensitivitas untuk mengantisipasi fluktuasi harga material dan siapkan rencana kontingensi yang realistis untuk setiap skenario perubahan biaya."
     },
     {
       type: "subheading",
-      content: "Fokus pada Permukiman dan Perumahan"
+      content: "2. Optimalisasi Penggunaan Material dan Tenaga Kerja"
     },
     {
       type: "paragraph",
-      content: "Pada bidang permukiman sebesar Rp32,70 triliun, antara lain pembangunan dan peningkatan Sistem Penyediaan Air Minum (SPAM) kapasitas 2.985 liter/detik, perluasan SPAM sebanyak 20.638 sambungan rumah (SR), sistem pengelolaan air limbah domestik dengan layanan 11.370 kepala keluarga (KK), sistem pengelolaan persampahan dengan layanan 231.012 KK, Tempat Pengolahan Sampah Reduce-Reuse-Recycle (TPS3R) di 173 lokasi, sanitasi di 1.279 lembaga pendidikan keagamaan, dan penataan Kawasan Strategis Pariwisata Nasional (KSPN)."
+      content: "Pendekatan Lean Construction menjadi kunci dalam mengoptimalkan pemanfaatan sumber daya. Kurangi waste material melalui perencanaan kuantitas yang akurat dan pengelolaan inventaris yang efisien. Analisis kebutuhan tenaga kerja secara cermat, tentukan kapan tepat menggunakan subkontraktor dan kapan lebih ekonomis untuk mempekerjakan tim tetap. Manfaatkan teknologi BIM (Building Information Modeling) untuk meminimalisir kesalahan desain yang berpotensi menyebabkan pemborosan material dan waktu pekerjaan ulang."
     },
     {
       type: "list",
       items: [
-        "Pengembangan penyelenggaraan bangunan gedung seluas 27.720 m²",
-        "Pengembangan penyelenggaraan penataan bangunan dan lingkungan di 5 kawasan",
-        "Rehabilitasi dan renovasi sarana prasarana sekolah/madrasah sebanyak 328 unit",
-        "Rehabilitasi dan renovasi 25 pasar",
-        "Pembangunan sarana prasarana olahraga sebanyak 25 unit",
-        "Renovasi 21 stadion"
+        "Terapkan metode Just-In-Time untuk pengadaan material proyek",
+        "Rotasi tenaga kerja untuk mengoptimalkan produktivitas",
+        "Gunakan prefabrikasi untuk komponen bangunan yang berulang",
+        "Audit penggunaan material secara berkala",
+        "Integrasikan teknologi pelacakan inventaris digital"
       ]
     },
     {
-      type: "quote",
-      content: "Seluruh pekerjaan konstruksi program TA 2024 harus tuntas pada tahun 2024, sehingga infrastruktur tersebut dapat segera dirasakan manfaatnya oleh masyarakat.",
-      author: "Basuki Hadimuljono, Menteri PUPR"
+      type: "image",
+      url: "/images/berita2/gambar1.png",
+      caption: "Implementasi teknologi modern dalam proyek konstruksi dapat signifikan meningkatkan efisiensi dan mengurangi biaya operasional"
     },
     {
       type: "subheading",
-      content: "Dukungan Manajemen dan Pengembangan Infrastruktur"
+      content: "3. Adopsi Teknologi dan Inovasi Konstruksi"
     },
     {
       type: "paragraph",
-      content: "Selanjutnya pada bidang perumahan sebesar Rp9,25 triliun, antara lain pembangunan rumah susun (lanjutan pembangunan rusun ASN dan Hankam di IKN 2.585 unit, rusun bersifat kontrak MYC 2023-2024 sebanyak 2.316 unit, dan pembangunan rusun baru direktif 578 unit). Lalu, pembangunan rumah khusus (rusus) terdampak bencana 553 unit, lanjutan pembangunan hunian tetap (huntap) di Sulawesi Tengah, dan pembangunan rumah tapak jabatan menteri di IKN (36 unit), pembangunan Prasarana, Sarana dan Utilitas (PSU) 26.686 unit untuk perumahan bagi masyarakat berpenghasilan rendah (MBR)."
+      content: "Digitalisasi proses konstruksi bukan lagi pilihan melainkan keharusan untuk tetap kompetitif. Investasi pada teknologi seperti drone untuk survei lokasi, IoT untuk pemantauan peralatan, dan software manajemen proyek berbasis cloud terbukti memberikan ROI signifikan melalui efisiensi operasional. Pertimbangkan metode konstruksi modular dan teknik fabrikasi off-site yang dapat mempercepat timeline proyek dan mengurangi biaya tenaga kerja di lapangan sampai 20-30%."
+    },
+    {
+      type: "subheading",
+      content: "4. Diversifikasi Pemasok dan Negosiasi Strategis"
     },
     {
       type: "paragraph",
-      content: "Sedangkan dukungan manajemen di Direktorat Jenderal (Ditjen) Bina Konstruksi, Ditjen Pembiayaan Infrastruktur PU dan Perumahan, dan Badan Pengembangan Infrastruktur Wilayah (BPIW) sebesar Rp1,99 triliun terdiri dari perencanaan, pembinaan konstruksi, pengawasan, pembiayaan infrastruktur, penguatan SDM, dan layanan manajemen."
+      content: "Mengandalkan pemasok tunggal untuk material kritis seperti kanal C, besi beton, atau semen meningkatkan risiko bisnis Anda. Kembangkan jaringan pemasok alternatif dan jalin kemitraan jangka panjang yang saling menguntungkan. Negosiasikan kontrak kerangka kerja (framework agreement) dengan pemasok utama yang menjamin stabilitas harga untuk periode tertentu. Gabungkan pembelian dengan kontraktor lain untuk meningkatkan daya tawar dan mendapatkan diskon volume yang lebih baik. Selalu pantau tren harga material sebelum mengajukan penawaran proyek baru."
+    },
+    {
+      type: "quote",
+      content: "Perusahaan konstruksi yang berinvestasi pada pengelolaan rantai pasok dan hubungan pemasok yang strategis rata-rata mengalami penghematan 12-15% pada biaya material dibandingkan kompetitor mereka.",
+      author: "Ahmad Faisal, Konsultan Manajemen Proyek"
+    },
+    {
+      type: "subheading",
+      content: "5. Manajemen Risiko dan Fleksibilitas Kontrak"
     },
     {
       type: "paragraph",
-      content: "Dengan alokasi anggaran ini, diharapkan bahwa seluruh proyek infrastruktur prioritas dapat diselesaikan tepat waktu dan memberikan manfaat maksimal bagi masyarakat. Kementerian PUPR terus berkomitmen untuk mendukung pembangunan infrastruktur yang berkesinambungan demi kemajuan ekonomi nasional."
+      content: "Sertakan klausul eskalasi harga (price escalation clause) dalam kontrak proyek jangka panjang untuk mengantisipasi kenaikan biaya material yang signifikan. Implementasikan strategi hedging untuk material utama yang harganya sangat fluktuatif. Adopsi pendekatan manajemen risiko yang komprehensif, identifikasi potensi risiko biaya sejak tahap awal, dan siapkan rencana mitigasi yang terukur. Pertimbangkan asuransi khusus untuk melindungi proyek dari eskalasi biaya ekstrem akibat faktor-faktor di luar kendali seperti bencana alam atau krisis geopolitik."
+    },
+    {
+      type: "subheading",
+      content: "Kesimpulan: Adaptasi Berkelanjutan"
+    },
+    {
+      type: "paragraph",
+      content: "Keberhasilan dalam menghadapi tekanan biaya operasional terletak pada kemampuan adaptasi berkelanjutan. Lakukan benchmarking rutin terhadap praktik terbaik industri, investasikan pada pengembangan kapabilitas tim dalam manajemen biaya, dan budayakan efisiensi di seluruh lini organisasi. Dengan menggabungkan pendekatan-pendekatan yang telah kami uraikan, kontraktor dapat tidak hanya bertahan menghadapi tantangan ekonomi saat ini, tetapi juga membangun fondasi yang lebih kuat untuk pertumbuhan jangka panjang."
+    },
+    {
+      type: "paragraph",
+      content: "Dengan memperhatikan fluktuasi harga bahan baku seperti kanal C dan besi beton, kontraktor dapat lebih akurat dalam membuat estimasi biaya dan mengoptimalkan penggunaan material. Kuncinya adalah keseimbangan antara efisiensi biaya dan kualitas pekerjaan yang tidak boleh dikompromikan, karena reputasi merupakan aset jangka panjang yang jauh lebih berharga dibandingkan penghematan jangka pendek."
     }
   ],
-  relatedArticles: [
-    {
-      id: 2,
-      title: "Strategi Menghadapi Kenaikan Harga Material Konstruksi",
-      excerpt: "Pendekatan praktis mengoptimalkan biaya proyek di tengah fluktuasi harga material bangunan.",
-      category: "Manajemen",
-      image: "/images/articles/construction-materials/hero.jpg",
-      date: "28 Feb 2024",
-      readTime: "4 menit",
-      slug: "strategi-kenaikan-harga-material-2024"
-    },
-    {
-      id: 4,
-      title: "Perubahan Regulasi IMB dan Dampaknya pada Konstruksi",
-      excerpt: "Analisis perubahan peraturan perizinan bangunan terbaru di Indonesia dan strategi adaptasinya.",
-      category: "Regulasi",
-      image: "/images/articles/building-permit/hero.jpg",
-      date: "5 Feb 2024",
-      readTime: "7 menit",
-      slug: "perubahan-regulasi-imb-2024"
-    },
-    {
-      id: 9,
-      title: "Penyesuaian Standar SNI untuk Bahan Bangunan 2024",
-      excerpt: "Perubahan regulasi standar nasional untuk material konstruksi dan implikasinya pada industri.",
-      category: "Regulasi",
-      image: "/images/articles/building-standards/hero.jpg",
-      date: "28 Des 2023",
-      readTime: "6 menit",
-      slug: "perubahan-standar-sni-bahan-bangunan"
-    }
-  ],
-  tags: ["infrastruktur", "pupr", "anggaran", "2024", "pembangunan", "regulasi"]
+  tags: ["kontraktor", "manajemen biaya", "konstruksi", "efisiensi operasional", "material bangunan"]
 };
 
 // Halaman detail artikel
-export default function ArticleDetail() {
+export default function ContractorArticleDetail() {
   const router = useRouter();
-  // State untuk progress bar yang menunjukkan seberapa jauh pembacaan artikel
+  // State untuk progress bar
   const [readingProgress, setReadingProgress] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
   
@@ -214,8 +161,8 @@ export default function ArticleDetail() {
       {/* Hero Section */}
       <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden bg-gray-900">
         <Image
-          src={article.image}
-          alt={article.title}
+          src={contractorArticle.image}
+          alt={contractorArticle.title}
           fill
           className="object-cover opacity-80"
           priority
@@ -240,7 +187,7 @@ export default function ArticleDetail() {
               transition={{ duration: 0.5 }}
               className="text-3xl md:text-4xl lg:text-5xl font-bold text-white max-w-4xl mb-4"
             >
-              {article.title}
+              {contractorArticle.title}
             </motion.h1>
             
             <motion.div 
@@ -250,17 +197,17 @@ export default function ArticleDetail() {
               className="flex flex-wrap items-center text-white/90 gap-4 md:gap-6"
             >
               <span className="bg-[#153969] text-white text-sm font-medium px-3 py-1 rounded-md">
-                {article.category}
+                {contractorArticle.category}
               </span>
               
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-2" />
-                <span>{article.date}</span>
+                <span>{contractorArticle.date}</span>
               </div>
               
               <div className="flex items-center">
                 <Clock className="h-4 w-4 mr-2" />
-                <span>Waktu baca: {article.readTime}</span>
+                <span>Waktu baca: {contractorArticle.readTime}</span>
               </div>
             </motion.div>
           </div>
@@ -278,15 +225,15 @@ export default function ArticleDetail() {
             className="flex items-center mb-8 p-4 bg-gray-50 rounded-lg"
           >
             <Image 
-              src={article.authorImage} 
-              alt={article.author} 
+              src={contractorArticle.authorImage} 
+              alt={contractorArticle.author} 
               width={60} 
               height={60} 
               className="rounded-full border-2 border-gray-200"
             />
             <div className="ml-4">
-              <h3 className="text-lg font-semibold text-gray-900">{article.author}</h3>
-              <p className="text-sm text-gray-600">{article.authorRole}</p>
+              <h3 className="text-lg font-semibold text-gray-900">{contractorArticle.author}</h3>
+              <p className="text-sm text-gray-600">{contractorArticle.authorRole}</p>
             </div>
           </motion.div>
           
@@ -307,7 +254,7 @@ export default function ArticleDetail() {
                 <Facebook className="h-4 w-4" />
               </button>
               <button 
-                onClick={() => typeof window !== 'undefined' && window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}`, '_blank')}
+                onClick={() => typeof window !== 'undefined' && window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(contractorArticle.title)}`, '_blank')}
                 className="p-2 rounded-full bg-blue-400 text-white hover:bg-blue-500 transition-colors"
                 aria-label="Share on Twitter"
               >
@@ -341,15 +288,8 @@ export default function ArticleDetail() {
           
           {/* Article content with motion animations */}
           <div className="prose prose-lg max-w-none">
-            {article.content.map((block, index) => {
+            {contractorArticle.content.map((block, index) => {
               const delay = 0.4 + (index * 0.05);
-              
-              // Filtering out certain images to make the article more focused
-              if (block.type === 'image' && 
-                  (block.url === "/images/articles/infrastructure-priority/water-system.jpg" || 
-                   block.url === "/images/articles/infrastructure-priority/dam-construction.jpg")) {
-                return null;
-              }
               
               switch (block.type) {
                 case 'paragraph':
@@ -457,7 +397,7 @@ export default function ArticleDetail() {
           >
             <div className="flex flex-wrap gap-2">
               <span className="text-sm text-gray-600">Tags:</span>
-              {article.tags.map((tag, index) => (
+              {contractorArticle.tags.map((tag, index) => (
                 <Link 
                   key={index}
                   href={`/insight?tag=${tag}`} 
@@ -469,75 +409,6 @@ export default function ArticleDetail() {
             </div>
           </motion.div>
         </div>
-        
-        {/* Related Articles */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.9 }}
-          className="max-w-6xl mx-auto mt-16 mb-20"
-        >
-          <h3 className="text-2xl font-bold text-gray-900 mb-8 relative">
-            Artikel Terkait
-            <span className="absolute bottom-0 left-0 w-20 h-1 bg-[#153969]"></span>
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {article.relatedArticles.map((relatedArticle, index) => (
-              <Link 
-                key={relatedArticle.id} 
-                href={`/insight/${relatedArticle.slug}`}
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 1 + (index * 0.1) }}
-                  className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full hover:-translate-y-1"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={relatedArticle.image}
-                      alt={relatedArticle.title}
-                      fill
-                      quality={90}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-3 left-3">
-                      <span className="bg-[#153969]/90 text-white text-xs font-medium px-2 py-0.5 rounded">
-                        {relatedArticle.category}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4">
-                    <div className="flex items-center text-gray-500 text-xs mb-2">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>{relatedArticle.date}</span>
-                      <span className="mx-2">•</span>
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>{relatedArticle.readTime}</span>
-                    </div>
-                    
-                    <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-[#153969] transition-colors line-clamp-2">
-                      {relatedArticle.title}
-                    </h4>
-                    
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                      {relatedArticle.excerpt}
-                    </p>
-                    
-                    <span className="inline-flex items-center text-[#153969] text-sm group-hover:underline">
-                      Baca Selengkapnya
-                      <ChevronRight className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
-        </motion.div>
       </div>
     </main>
   );

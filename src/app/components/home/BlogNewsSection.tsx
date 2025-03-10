@@ -20,23 +20,23 @@ const insightPosts = [
   },
   {
     id: 2,
-    title: "Strategi Menghadapi Kenaikan Harga Material Konstruksi",
-    excerpt: "Pendekatan praktis mengoptimalkan biaya proyek di tengah fluktuasi harga material bangunan.",
+    title: "5 Strategi Jitu Kontraktor Hadapi Kenaikan Biaya Operasional 2023-2024",
+    excerpt: "Panduan praktis bagi pelaku bisnis konstruksi untuk bertahan di tengah fluktuasi harga material dan tenaga kerja.",
     category: "Manajemen",
-    image: "/images/construction-materials.jpg",
-    date: "28 Feb 2024",
+    image: "/images/berita2/gambar2.png",
+    date: "15 Desember 2023",
     readTime: "4 menit",
     slug: "strategi-kenaikan-harga-material-2024"
   },
   {
     id: 3,
-    title: "Renovasi Bangunan Komersial dengan Tetap Beroperasi",
-    excerpt: "Teknik renovasi yang meminimalkan gangguan operasional pada gedung komersial yang aktif.",
-    category: "Layanan",
-    image: "/images/commercial-renovation.jpg",
-    date: "15 Feb 2024",
-    readTime: "6 menit",
-    slug: "renovasi-tanpa-ganggu-operasional"
+    title: "Ingin Renovasi Rumah? Ketahui Sejumlah Izin yang Wajib Dipenuhi",
+    excerpt: "Panduan lengkap tentang izin-izin yang perlu disiapkan sebelum memulai renovasi rumah untuk menghindari masalah hukum dan konflik dengan tetangga.",
+    category: "Regulasi",
+    image: "/images/berita3/b3-g2.jpg",
+    date: "20 Sep 2024",
+    readTime: "5 menit",
+    slug: "izin-wajib-renovasi-rumah-2024"
   },
   {
     id: 4,
