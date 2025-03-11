@@ -43,7 +43,7 @@ const insightPosts = [
     title: "Perubahan Regulasi IMB dan Dampaknya pada Konstruksi",
     excerpt: "Analisis perubahan peraturan perizinan bangunan terbaru di Indonesia dan strategi adaptasinya.",
     category: "Regulasi",
-    image: "/images/building-permit.jpg",
+    image: "/images/berita4/b4-g4.png",
     date: "5 Feb 2024",
     readTime: "7 menit",
     slug: "perubahan-regulasi-imb-2024"
@@ -53,7 +53,7 @@ const insightPosts = [
     title: "Teknologi Pemantauan Jarak Jauh untuk Pengelolaan Proyek",
     excerpt: "Solusi teknologi terkini untuk mengawasi dan mengelola beberapa proyek konstruksi secara bersamaan.",
     category: "Teknologi",
-    image: "/images/remote-monitoring.jpg",
+    image: "/images/berita5/gambar2-b5.png",
     date: "25 Jan 2024",
     readTime: "5 menit",
     slug: "teknologi-pemantauan-jarak-jauh-konstruksi"
@@ -63,7 +63,7 @@ const insightPosts = [
     title: "Pembangunan Gedung Ramah Lingkungan: Tren dan Standar",
     excerpt: "Perkembangan terkini dalam konstruksi berkelanjutan dan sertifikasi green building di Indonesia.",
     category: "Proyek",
-    image: "/images/green-building.jpg",
+    image: "/images/berita6/gambar1-b6.jpeg",
     date: "18 Jan 2024",
     readTime: "6 menit",
     slug: "pembangunan-gedung-ramah-lingkungan"
@@ -73,7 +73,7 @@ const insightPosts = [
     title: "Manajemen Risiko Proyek Konstruksi Skala Menengah",
     excerpt: "Pendekatan sistematis untuk mengidentifikasi dan memitigasi risiko dalam proyek konstruksi.",
     category: "Manajemen",
-    image: "/images/risk-management.jpg",
+    image: "/images/berita7/gambar1-b7.jpg",
     date: "10 Jan 2024",
     readTime: "5 menit",
     slug: "manajemen-risiko-proyek-konstruksi"
@@ -110,8 +110,12 @@ const insightPosts = [
   }
 ];
 
-// Kategori yang disederhanakan - hanya yang paling penting
+// Kategori yang disederhanakan
 const categories = ["Semua", "Proyek", "Layanan", "Manajemen", "Regulasi", "Teknologi"];
+
+// Konstanta untuk mengontrol tampilan
+const ITEMS_PER_SLIDE = 3; // 3 item per slide (3 kolom)
+const AUTO_SLIDE_INTERVAL = 2000; // 2 detik interval
 
 const BlogNewsSection = () => {
   const [activeCategory, setActiveCategory] = useState("Semua");
@@ -123,21 +127,27 @@ const BlogNewsSection = () => {
   
   // Filter berita berdasarkan kategori
   const filteredPosts = activeCategory === "Semua" 
-    ? insightPosts
+    ? [...insightPosts] 
     : insightPosts.filter(post => post.category === activeCategory);
 
-  // Jumlah slide berdasarkan konten yang terfilter (2 item per slide untuk tampilan lebih baik)
-  const totalSlides = Math.ceil(filteredPosts.length / 2);
+  // Jumlah slide berdasarkan konten yang terfilter
+  const totalSlides = Math.ceil(filteredPosts.length / ITEMS_PER_SLIDE);
 
-  // Fungsi untuk scroll manual tanpa menggunakan properti yang tidak didukung
+  // Fungsi untuk memastikan slide index valid
+  const getValidSlideIndex = (index: number) => {
+    if (totalSlides <= 0) return 0;
+    return Math.max(0, Math.min(index, totalSlides - 1));
+  };
+
+  // Fungsi untuk scroll ke slide tertentu
   const scrollToSlide = (slideIndex: number) => {
+    const validIndex = getValidSlideIndex(slideIndex);
+    
     if (carouselRef.current) {
-      // Gunakan pendekatan alternatif untuk scrolling
       const slideWidth = carouselRef.current.clientWidth;
-      const newPosition = slideWidth * slideIndex;
+      const newPosition = slideWidth * validIndex;
       
       try {
-        // Menggunakan scroll manual daripada scrollLeft dan scrollTo
         carouselRef.current.scrollTo({
           left: newPosition,
           behavior: 'smooth'
@@ -149,7 +159,7 @@ const BlogNewsSection = () => {
         }
       }
       
-      setCurrentSlide(slideIndex);
+      setCurrentSlide(validIndex);
     }
   };
 
@@ -165,21 +175,21 @@ const BlogNewsSection = () => {
     scrollToSlide(prevIndex);
   };
 
-  // Auto slide setiap 2 detik dengan validasi tipe
+  // Auto slide interval - sekarang setiap 2 detik
   useEffect(() => {
-    if (!isPaused) {
+    if (!isPaused && totalSlides > 1) {
       const timer = setTimeout(() => {
         nextSlide();
-      }, 2000) as NodeJS.Timeout;
+      }, AUTO_SLIDE_INTERVAL);
       
       autoPlayRef.current = timer;
+      
+      return () => {
+        if (autoPlayRef.current) {
+          clearTimeout(autoPlayRef.current);
+        }
+      };
     }
-
-    return () => {
-      if (autoPlayRef.current) {
-        clearTimeout(autoPlayRef.current);
-      }
-    };
   }, [currentSlide, isPaused, totalSlides]);
 
   // Reset current slide ketika category berubah
@@ -189,7 +199,7 @@ const BlogNewsSection = () => {
       try {
         carouselRef.current.scrollTo({
           left: 0,
-          behavior: 'smooth'
+          behavior: 'auto'
         });
       } catch (error) {
         if (carouselRef.current) {
@@ -203,28 +213,21 @@ const BlogNewsSection = () => {
   const pauseAutoPlay = () => setIsPaused(true);
   const resumeAutoPlay = () => setIsPaused(false);
 
-  // Handler untuk scroll manual dengan pengaman error
+  // Handler untuk scroll manual
   const handleScroll = () => {
-    if (carouselRef.current) {
-      const scrollLeft = carouselRef.current.scrollLeft;
-      const clientWidth = carouselRef.current.clientWidth;
-      
-      if (clientWidth > 0) {
-        const scrollPosition = Math.round(scrollLeft / clientWidth);
-        if (scrollPosition !== currentSlide) {
-          setCurrentSlide(scrollPosition);
-        }
+    if (carouselRef.current && carouselRef.current.clientWidth > 0) {
+      const scrollPosition = Math.round(carouselRef.current.scrollLeft / carouselRef.current.clientWidth);
+      if (scrollPosition !== currentSlide && scrollPosition < totalSlides) {
+        setCurrentSlide(scrollPosition);
       }
     }
   };
 
   return (
-    <section className="py-16 bg-gray-50 overflow-hidden">
+    <section className="py-12 bg-gray-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header dengan efek warna gradient */}
-        <div className="text-center mb-12 relative">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl -z-10" />
-          
+        <div className="text-center mb-10 relative">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -241,14 +244,14 @@ const BlogNewsSection = () => {
           </motion.div>
         </div>
 
-        {/* Category Filters dengan efek pill yang lebih menarik */}
-        <div className="flex justify-center mb-10">
-          <div className="bg-white p-1.5 rounded-full shadow-md flex space-x-1">
+        {/* Category Filters */}
+        <div className="flex justify-center mb-8 overflow-x-auto pb-2">
+          <div className="bg-white p-1.5 rounded-full shadow-md flex space-x-1 no-scrollbar">
             {categories.map((category, index) => (
               <button
                 key={index}
                 onClick={() => setActiveCategory(category)}
-                className={`px-4 py-1.5 rounded-full text-sm transition-all duration-300 ${
+                className={`px-4 py-1.5 rounded-full text-sm whitespace-nowrap transition-all duration-300 ${
                   activeCategory === category
                     ? 'bg-[#153969] text-white shadow-sm'
                     : 'bg-transparent text-gray-700 hover:bg-gray-100'
@@ -260,146 +263,191 @@ const BlogNewsSection = () => {
           </div>
         </div>
 
-        {/* Carousel Container with Navigation Buttons */}
-        <div 
-          className="relative"
-          onMouseEnter={pauseAutoPlay}
-          onMouseLeave={resumeAutoPlay}
-        >
-          {/* Left Navigation Button */}
-          <motion.button 
-            onClick={prevSlide}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 md:-ml-6 z-10 bg-white/90 rounded-full p-2 shadow-md text-[#153969] hover:bg-[#153969] hover:text-white transition-all duration-300 focus:outline-none"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </motion.button>
+        {/* Featured Content */}
+        <div className="mb-12">
+          {/* Section title */}
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-xl font-semibold text-gray-900">Featured Insights</h3>
+            
+            {/* Navigation arrows - desktop only */}
+            <div className="hidden md:flex items-center space-x-2">
+              {totalSlides > 1 && (
+                <>
+                  <button 
+                    onClick={prevSlide} 
+                    className="p-2 rounded-full bg-white shadow-sm text-gray-600 hover:bg-[#153969] hover:text-white transition-colors"
+                    aria-label="Previous slide"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button 
+                    onClick={nextSlide} 
+                    className="p-2 rounded-full bg-white shadow-sm text-gray-600 hover:bg-[#153969] hover:text-white transition-colors"
+                    aria-label="Next slide"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
           
-          {/* Carousel dengan efek parallax */}
+          {/* Carousel Container */}
           <div 
-            ref={carouselRef}
-            className="overflow-x-auto hide-scrollbar flex pb-4"
-            onScroll={handleScroll}
+            className="relative"
+            onMouseEnter={pauseAutoPlay}
+            onMouseLeave={resumeAutoPlay}
           >
-            {/* Render slides based on calculated total - 2 artikel per slide */}
-            {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-              <div 
-                key={slideIndex} 
-                className="min-w-full flex-shrink-0 px-2"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredPosts.slice(slideIndex * 2, slideIndex * 2 + 2).map((post) => (
-                    <Link 
-                      key={post.id}
-                      href={`/insight/${post.slug}`}
-                      className="block"
-                    >
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4 }}
-                        className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full transform hover:-translate-y-1"
-                        onMouseEnter={() => setHoverCard(post.id)}
-                        onMouseLeave={() => setHoverCard(null)}
-                      >
-                        <div className="relative h-52 overflow-hidden">
-                          <Image
-                            src={post.image}
-                            alt={post.title}
-                            fill
-                            className={`object-cover transition-all duration-700 ${hoverCard === post.id ? 'scale-110 brightness-110' : 'scale-100'}`}
-                          />
-                          {/* Overlay gradien yang lebih dramatis */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity duration-500" />
-                          
-                          {/* Informasi kategori yang lebih menonjol */}
-                          <div className="absolute bottom-0 left-0 w-full p-4 flex justify-between items-center">
-                            <span className="bg-[#153969]/90 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-md shadow-sm">
-                              {post.category}
-                            </span>
-                            <div className="flex items-center space-x-2 text-white text-xs">
-                              <div className="flex items-center">
-                                <Calendar className="h-3 w-3 mr-1" />
-                                <span>{post.date}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="p-5 flex flex-col flex-grow">
-                          <div className="flex items-center text-gray-500 text-xs mb-2">
-                            <Clock className="h-3 w-3 mr-1" />
-                            <span>Waktu baca: {post.readTime}</span>
-                          </div>
-                          
-                          <h3 className="font-bold text-lg text-gray-800 mb-3 line-clamp-2 group-hover:text-[#153969] transition-colors">
-                            {post.title}
-                          </h3>
-                          <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">
-                            {post.excerpt}
-                          </p>
-                          
-                          <div className="inline-flex items-center text-[#153969] font-medium text-sm group-hover:underline mt-auto">
-                            <span className="relative">
-                              Baca Selengkapnya
-                              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
-                            </span>
-                            <ArrowRight className="ml-1 h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
-                          </div>
-                        </div>
-                      </motion.div>
-                    </Link>
-                  ))}
-                </div>
+            {filteredPosts.length === 0 ? (
+              <div className="flex justify-center items-center h-64 bg-white rounded-xl shadow-sm">
+                <p className="text-gray-500">Tidak ada artikel dalam kategori ini</p>
               </div>
-            ))}
+            ) : (
+              <>
+                {/* Left Navigation Button - mobile only */}
+                {totalSlides > 1 && (
+                  <motion.button 
+                    onClick={prevSlide}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="md:hidden absolute left-0 top-1/2 -translate-y-1/2 -ml-2 z-10 bg-white/90 rounded-full p-2 shadow-md text-[#153969] hover:bg-[#153969] hover:text-white transition-all duration-300 focus:outline-none"
+                    aria-label="Previous slide"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </motion.button>
+                )}
+                
+                {/* Carousel */}
+                <div 
+                  ref={carouselRef}
+                  className="overflow-x-auto hide-scrollbar flex snap-x snap-mandatory pb-4"
+                  onScroll={handleScroll}
+                >
+                  {/* Render slides */}
+                  {Array.from({ length: totalSlides }).map((_, slideIndex) => {
+                    // Dapatkan subset post untuk slide ini
+                    const startIndex = slideIndex * ITEMS_PER_SLIDE;
+                    const endIndex = Math.min(startIndex + ITEMS_PER_SLIDE, filteredPosts.length);
+                    const postsInThisSlide = filteredPosts.slice(startIndex, endIndex);
+                    
+                    return (
+                      <div 
+                        key={slideIndex} 
+                        className="min-w-full flex-shrink-0 snap-center px-1"
+                      >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                          {postsInThisSlide.map((post) => (
+                            <Link 
+                              key={post.id}
+                              href={`/insight/${post.slug}`}
+                              className="block"
+                            >
+                              <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                className="group cursor-pointer bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full hover:-translate-y-1"
+                                onMouseEnter={() => setHoverCard(post.id)}
+                                onMouseLeave={() => setHoverCard(null)}
+                              >
+                                {/* Image container */}
+                                <div className="relative h-48 overflow-hidden">
+                                  <Image
+                                    src={post.image}
+                                    alt={post.title}
+                                    fill
+                                    className={`object-cover transition-all duration-500 ${hoverCard === post.id ? 'scale-105' : 'scale-100'}`}
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                                  
+                                  {/* Category badge */}
+                                  <div className="absolute bottom-3 left-3">
+                                    <span className="bg-[#153969]/90 text-white text-xs px-2.5 py-1 rounded-md">
+                                      {post.category}
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                {/* Content */}
+                                <div className="p-4">
+                                  <div className="flex items-center justify-between text-gray-500 text-xs mb-2">
+                                    <span>{post.date}</span>
+                                    <div className="flex items-center">
+                                      <Clock className="h-3 w-3 mr-1" />
+                                      <span>{post.readTime}</span>
+                                    </div>
+                                  </div>
+                                  
+                                  <h3 className="font-bold text-base text-gray-800 mb-2 line-clamp-2 group-hover:text-[#153969] transition-colors">
+                                    {post.title}
+                                  </h3>
+                                  
+                                  <div className="inline-flex items-center text-[#153969] font-medium text-sm mt-1">
+                                    <span>Baca Selengkapnya</span>
+                                    <ArrowRight className="ml-1 h-3 w-3 transform group-hover:translate-x-1 transition-transform duration-300" />
+                                  </div>
+                                </div>
+                              </motion.div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Right Navigation Button - mobile only */}
+                {totalSlides > 1 && (
+                  <motion.button 
+                    onClick={nextSlide}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 -mr-2 z-10 bg-white/90 rounded-full p-2 shadow-md text-[#153969] hover:bg-[#153969] hover:text-white transition-all duration-300 focus:outline-none"
+                    aria-label="Next slide"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </motion.button>
+                )}
+              </>
+            )}
           </div>
 
-          {/* Right Navigation Button */}
-          <motion.button 
-            onClick={nextSlide}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 md:-mr-6 z-10 bg-white/90 rounded-full p-2 shadow-md text-[#153969] hover:bg-[#153969] hover:text-white transition-all duration-300 focus:outline-none"
-            aria-label="Next slide"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </motion.button>
-        </div>
-
-        {/* Pagination Indicators dengan efek yang lebih baik */}
-        <div className="flex justify-center space-x-3 mt-6 mb-2">
-          {Array.from({ length: totalSlides }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => scrollToSlide(index)}
-              className={`transition-all duration-300 rounded-full ${
-                currentSlide === index 
-                  ? 'w-6 h-2 bg-[#153969]' 
-                  : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+          {/* Pagination Indicators */}
+          {totalSlides > 1 && (
+            <div className="flex justify-center space-x-2 mt-4">
+              {Array.from({ length: totalSlides }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => scrollToSlide(index)}
+                  className={`transition-all duration-300 rounded-full ${
+                    currentSlide === index 
+                      ? 'w-6 h-2 bg-[#153969]' 
+                      : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
+          
+          {/* Slide auto-change information */}
+          {totalSlides > 1 && (
+            <div className="text-center text-xs text-gray-400 mt-2">
+              Slide bergeser otomatis setiap 2 detik
+            </div>
+          )}
         </div>
         
-        {/* Waktu auto-slide info */}
-        <div className="text-center text-xs text-gray-400 mb-6">
-          Slide bergeser otomatis setiap 2 detik
-        </div>
-        
-        {/* View All Button dengan efek yang lebih menarik */}
-        <div className="text-center mt-4">
+        {/* View All Button */}
+        <div className="text-center">
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
           >
             <Link
               href="/insight"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#153969] to-[#2e5694] text-white text-sm font-medium rounded-lg shadow-md hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
+              className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-[#153969] to-[#2e5694] text-white text-sm font-medium rounded-lg shadow-md hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
             >
               <span className="relative z-10">
                 Lihat Semua Insight
@@ -411,14 +459,22 @@ const BlogNewsSection = () => {
         </div>
       </div>
 
-      {/* CSS untuk menyembunyikan scrollbar tapi tetap memungkinkan scrolling */}
+      {/* CSS untuk menyembunyikan scrollbar */}
       <style jsx global>{`
-        .hide-scrollbar {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
+        .hide-scrollbar, .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;  /* Chrome, Safari and Opera */
+        .hide-scrollbar::-webkit-scrollbar, 
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        
+        .snap-x {
+          scroll-snap-type: x mandatory;
+        }
+        .snap-center {
+          scroll-snap-align: center;
         }
       `}</style>
     </section>

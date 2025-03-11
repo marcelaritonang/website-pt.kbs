@@ -135,7 +135,7 @@ const article: ArticleData = {
       title: "Strategi Menghadapi Kenaikan Harga Material Konstruksi",
       excerpt: "Pendekatan praktis mengoptimalkan biaya proyek di tengah fluktuasi harga material bangunan.",
       category: "Manajemen",
-      image: "/images/articles/construction-materials/hero.jpg",
+      image: "/images/berita2/gambar2.png",
       date: "28 Feb 2024",
       readTime: "4 menit",
       slug: "strategi-kenaikan-harga-material-2024"
@@ -145,7 +145,7 @@ const article: ArticleData = {
       title: "Perubahan Regulasi IMB dan Dampaknya pada Konstruksi",
       excerpt: "Analisis perubahan peraturan perizinan bangunan terbaru di Indonesia dan strategi adaptasinya.",
       category: "Regulasi",
-      image: "/images/articles/building-permit/hero.jpg",
+      image: "/images/berita4/b4-g2.png",
       date: "5 Feb 2024",
       readTime: "7 menit",
       slug: "perubahan-regulasi-imb-2024"
