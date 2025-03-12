@@ -83,7 +83,7 @@ const insightPosts = [
     title: "Jasa Konsultasi Pra-Konstruksi untuk Optimalisasi Anggaran",
     excerpt: "Bagaimana perencanaan matang sejak awal dapat menghemat biaya dan waktu pelaksanaan proyek.",
     category: "Layanan",
-    image: "/images/pre-construction.jpg",
+    image: "/images/berita8/gambar1-b8.jpeg",
     date: "5 Jan 2024",
     readTime: "4 menit",
     slug: "jasa-konsultasi-pra-konstruksi"
@@ -93,7 +93,7 @@ const insightPosts = [
     title: "Penyesuaian Standar SNI untuk Bahan Bangunan 2024",
     excerpt: "Perubahan regulasi standar nasional untuk material konstruksi dan implikasinya pada industri.",
     category: "Regulasi",
-    image: "/images/building-standards.jpg",
+    image: "/images/berita9/gambar1-b9.jpg",
     date: "28 Des 2023",
     readTime: "6 menit",
     slug: "perubahan-standar-sni-bahan-bangunan"
@@ -103,7 +103,7 @@ const insightPosts = [
     title: "Implementasi BIM dalam Proyek Renovasi dan Retrofit",
     excerpt: "Penggunaan Building Information Modeling untuk meningkatkan akurasi dan efisiensi proyek renovasi.",
     category: "Teknologi",
-    image: "/images/bim-technology.jpg",
+    image: "/images/berita10/gambar1-b10.jpg",
     date: "15 Des 2023",
     readTime: "7 menit",
     slug: "implementasi-bim-proyek-renovasi"

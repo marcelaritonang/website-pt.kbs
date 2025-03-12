@@ -155,7 +155,7 @@ const article: ArticleData = {
       title: "Penyesuaian Standar SNI untuk Bahan Bangunan 2024",
       excerpt: "Perubahan regulasi standar nasional untuk material konstruksi dan implikasinya pada industri.",
       category: "Regulasi",
-      image: "/images/articles/building-standards/hero.jpg",
+      image: "/images/berita9/gambar1-b9.jpg",
       date: "28 Des 2023",
       readTime: "6 menit",
       slug: "perubahan-standar-sni-bahan-bangunan"
@@ -458,13 +458,13 @@ export default function ArticleDetail() {
             <div className="flex flex-wrap gap-2">
               <span className="text-sm text-gray-600">Tags:</span>
               {article.tags.map((tag, index) => (
-                <Link 
+                <span 
                   key={index}
-                  href={`/insight?tag=${tag}`} 
+                  
                   className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-700 transition-colors"
                 >
                   {tag}
-                </Link>
+                </span>
               ))}
             </div>
           </motion.div>

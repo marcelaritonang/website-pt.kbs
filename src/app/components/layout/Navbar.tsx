@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname, useRouter } from 'next/navigation'
-import { ChevronDown, Globe } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 
 // Define types
 interface NavItem {
@@ -35,10 +35,7 @@ export default function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0)
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [languageOpen, setLanguageOpen] = useState(false)
-  const [currentLanguage, setCurrentLanguage] = useState('id') // 'id' for Indonesian, 'en' for English
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const langDropdownRef = useRef<HTMLDivElement>(null)
 
   // Improved scroll handler
   useEffect(() => {
@@ -68,16 +65,12 @@ export default function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setActiveDropdown(null);
       }
-      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target as Node)) {
-        setLanguageOpen(false);
-      }
     };
     
     // Close dropdown when pressing escape key
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setActiveDropdown(null);
-        setLanguageOpen(false);
       }
     };
     
@@ -88,31 +81,6 @@ export default function Navbar() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscKey);
     };
-  }, []);
-
-  // Enhanced language switcher with local storage 
-  const switchLanguage = (lang: string) => {
-    setCurrentLanguage(lang);
-    setLanguageOpen(false);
-    
-    // Save language preference in localStorage
-    try {
-      localStorage.setItem('preferredLanguage', lang);
-    } catch (error) {
-      console.error('Could not save language preference:', error);
-    }
-  };
-
-  // Load saved language preference on mount
-  useEffect(() => {
-    try {
-      const savedLanguage = localStorage.getItem('preferredLanguage');
-      if (savedLanguage && (savedLanguage === 'id' || savedLanguage === 'en')) {
-        setCurrentLanguage(savedLanguage);
-      }
-    } catch (error) {
-      // Silent fail if localStorage is unavailable
-    }
   }, []);
 
   // Enhanced smooth scroll handling
@@ -415,7 +383,7 @@ export default function Navbar() {
                           )}
                         </motion.button>
                       
-                        {/* Redesigned dropdown menu */}
+                        {/* Redesigned dropdown menu - removed "Lihat semua" section */}
                         <AnimatePresence>
                           {activeDropdown === index && (
                             <motion.div
@@ -461,19 +429,6 @@ export default function Navbar() {
                                   </div>
                                 ))}
                               </div>
-                              
-                              <div className="px-3 py-2 mt-1 border-t border-gray-100">
-                                <Link 
-                                  href={item.href}
-                                  onClick={(e) => handleNavigation(e, item.href)}
-                                  className="flex items-center text-sm font-medium text-[#153969] hover:underline"
-                                >
-                                  Lihat semua
-                                  <svg className="ml-1 w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                </Link>
-                              </div>
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -512,60 +467,6 @@ export default function Navbar() {
                   </div>
                 ))}
 
-                {/* Language Switcher */}
-                <div className="relative" ref={langDropdownRef}>
-                  <motion.button
-                    onClick={() => setLanguageOpen(!languageOpen)}
-                    whileHover={{ y: -2 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    className={`flex items-center relative font-medium transition-colors text-sm tracking-wider
-                      ${isScrolled ? 'text-gray-600 hover:text-[#153969]' : 'text-gray-200 hover:text-white'}`}
-                    aria-expanded={languageOpen}
-                    aria-label="Change language"
-                  >
-                    <Globe className="h-4 w-4 mr-1" />
-                    <span className="uppercase">{currentLanguage}</span>
-                    <ChevronDown className={`ml-1 h-3 w-3 transition-transform duration-300 ${languageOpen ? 'rotate-180' : ''}`} />
-                  </motion.button>
-                  
-                  <AnimatePresence>
-                    {languageOpen && (
-                      <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        variants={dropdownVariants}
-                        className="absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 overflow-hidden"
-                      >
-                        <div className="py-1">
-                          <button
-                            onClick={() => switchLanguage('id')}
-                            className={`flex items-center w-full text-left px-4 py-2 text-sm ${
-                              currentLanguage === 'id'
-                                ? 'bg-[#153969]/10 text-[#153969] font-medium'
-                                : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                            aria-label="Switch to Indonesian"
-                          >
-                            <span className="mr-2">🇮🇩</span> Indonesia
-                          </button>
-                          <button
-                            onClick={() => switchLanguage('en')}
-                            className={`flex items-center w-full text-left px-4 py-2 text-sm ${
-                              currentLanguage === 'en'
-                                ? 'bg-[#153969]/10 text-[#153969] font-medium'
-                                : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                            aria-label="Switch to English"
-                          >
-                            <span className="mr-2">🇬🇧</span> English
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
                 {/* Get Quote Button */}
                 <motion.a
                   href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
@@ -586,57 +487,7 @@ export default function Navbar() {
               </div>
 
               {/* Mobile Menu Button */}
-              <div className="md:hidden flex items-center space-x-2">
-                {/* Mobile Language Switcher */}
-                <div className="relative" ref={langDropdownRef}>
-                  <motion.button
-                    onClick={() => setLanguageOpen(!languageOpen)}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`p-2 rounded-md ${
-                      isScrolled ? 'text-[#153969]' : 'text-white'
-                    }`}
-                    aria-label="Change language"
-                  >
-                    <Globe className="h-5 w-5" />
-                  </motion.button>
-                  
-                  <AnimatePresence>
-                    {languageOpen && (
-                      <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        variants={dropdownVariants}
-                        className="absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 overflow-hidden"
-                      >
-                        <div className="py-1">
-                          <button
-                            onClick={() => switchLanguage('id')}
-                            className={`flex items-center w-full text-left px-4 py-2 text-sm ${
-                              currentLanguage === 'id'
-                                ? 'bg-[#153969]/10 text-[#153969] font-medium'
-                                : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            <span className="mr-2">🇮🇩</span> Indonesia
-                          </button>
-                          <button
-                            onClick={() => switchLanguage('en')}
-                            className={`flex items-center w-full text-left px-4 py-2 text-sm ${
-                              currentLanguage === 'en'
-                                ? 'bg-[#153969]/10 text-[#153969] font-medium'
-                                : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            <span className="mr-2">🇬🇧</span> English
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
+              <div className="md:hidden flex items-center">
                 {/* Mobile Menu Toggle */}
                 <motion.button
                   whileHover={{ scale: 1.1 }}

@@ -17,6 +17,17 @@ interface ContentBlock {
   author?: string;
 }
 
+interface RelatedArticle {
+  id: number;
+  title: string;
+  excerpt: string;
+  category: string;
+  image: string;
+  date: string;
+  readTime: string;
+  slug: string;
+}
+
 // Data artikel untuk kontraktor - versi revisi
 const contractorArticle = {
   id: 2,
@@ -106,6 +117,38 @@ const contractorArticle = {
     {
       type: "paragraph",
       content: "Dengan memperhatikan fluktuasi harga bahan baku seperti kanal C dan besi beton, kontraktor dapat lebih akurat dalam membuat estimasi biaya dan mengoptimalkan penggunaan material. Kuncinya adalah keseimbangan antara efisiensi biaya dan kualitas pekerjaan yang tidak boleh dikompromikan, karena reputasi merupakan aset jangka panjang yang jauh lebih berharga dibandingkan penghematan jangka pendek."
+    }
+  ],
+  relatedArticles: [
+    {
+      id: 7,
+      title: "Manajemen Risiko Proyek Konstruksi: Strategi Efektif untuk Keberhasilan Proyek",
+      excerpt: "Pendekatan sistematis untuk mengidentifikasi dan memitigasi risiko dalam proyek konstruksi skala menengah.",
+      category: "Manajemen",
+      image: "/images/berita7/gambar1-b7.jpg",
+      date: "10 Januari 2024",
+      readTime: "5 menit",
+      slug: "manajemen-risiko-proyek-konstruksi"
+    },
+    {
+      id: 8,
+      title: "Jasa Konsultasi Pra-Konstruksi untuk Optimalisasi Anggaran",
+      excerpt: "Bagaimana perencanaan matang sejak awal dapat menghemat biaya dan waktu pelaksanaan proyek.",
+      category: "Layanan",
+      image: "/images/berita8/gambar1-b8.jpeg",
+      date: "5 Jan 2024",
+      readTime: "4 menit",
+      slug: "jasa-konsultasi-pra-konstruksi"
+    },
+    {
+      id: 10,
+      title: "Implementasi BIM untuk Efisiensi Proyek Renovasi Modern",
+      excerpt: "Bagaimana Building Information Modeling meningkatkan akurasi, efisiensi biaya, dan kualitas dalam proyek renovasi.",
+      category: "Teknologi",
+      image: "/images/berita10/gambar1-b10.jpg",
+      date: "15 Februari 2024",
+      readTime: "7 menit",
+      slug: "implementasi-bim-proyek-renovasi"
     }
   ],
   tags: ["kontraktor", "manajemen biaya", "konstruksi", "efisiensi operasional", "material bangunan"]
@@ -398,17 +441,86 @@ export default function ContractorArticleDetail() {
             <div className="flex flex-wrap gap-2">
               <span className="text-sm text-gray-600">Tags:</span>
               {contractorArticle.tags.map((tag, index) => (
-                <Link 
+                <span 
                   key={index}
-                  href={`/insight?tag=${tag}`} 
                   className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-700 transition-colors"
                 >
                   {tag}
-                </Link>
+                </span>
               ))}
             </div>
           </motion.div>
         </div>
+        
+        {/* Related Articles - ADDED SECTION */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.9 }}
+          className="max-w-6xl mx-auto mt-16 mb-20"
+        >
+          <h3 className="text-2xl font-bold text-gray-900 mb-8 relative">
+            Artikel Terkait
+            <span className="absolute bottom-0 left-0 w-20 h-1 bg-[#153969]"></span>
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {contractorArticle.relatedArticles.map((relatedArticle, index) => (
+              <Link 
+                key={relatedArticle.id} 
+                href={`/insight/${relatedArticle.slug}`}
+                className="block"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 1 + (index * 0.1) }}
+                  className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full hover:-translate-y-1"
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={relatedArticle.image}
+                      alt={relatedArticle.title}
+                      fill
+                      quality={90}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-3 left-3">
+                      <span className="bg-[#153969]/90 text-white text-xs font-medium px-2 py-0.5 rounded">
+                        {relatedArticle.category}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4">
+                    <div className="flex items-center text-gray-500 text-xs mb-2">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>{relatedArticle.date}</span>
+                      <span className="mx-2">•</span>
+                      <Clock className="h-3 w-3 mr-1" />
+                      <span>{relatedArticle.readTime}</span>
+                    </div>
+                    
+                    <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-[#153969] transition-colors line-clamp-2 h-12">
+                      {relatedArticle.title}
+                    </h4>
+                    
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-2 h-10">
+                      {relatedArticle.excerpt}
+                    </p>
+                    
+                    <span className="inline-flex items-center text-[#153969] text-sm group-hover:underline">
+                      Baca Selengkapnya
+                      <ChevronRight className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </main>
   );

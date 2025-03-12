@@ -638,13 +638,13 @@ export default function RemoteMonitoringArticleDetail() {
             <div className="flex flex-wrap gap-2">
               <span className="text-sm text-gray-600">Tags:</span>
               {remoteMonitoringArticle.tags.map((tag, index) => (
-                <Link 
+                <span 
                   key={index}
-                  href={`/insight?tag=${tag}`} 
+                  
                   className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-700 transition-colors"
                 >
                   {tag}
-                </Link>
+                </span>
               ))}
             </div>
           </motion.div>
