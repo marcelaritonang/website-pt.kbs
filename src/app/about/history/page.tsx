@@ -39,7 +39,7 @@ export default function CompanyHistoryPage() {
       year: 2011,
       title: "Pendirian Perusahaan",
       description: "PT Karya Bangun Semesta didirikan sebagai perusahaan konstruksi dengan fokus pada pembangunan infrastruktur dan proyek konstruksi.",
-      image: "/images/history/founding.jpg",
+      image: "/images/blog/perjalanankami1.jpg",
       achievements: [
         "Memulai bisnis di sektor konstruksi",
         "Fokus awal pada proyek-proyek kecil hingga menengah",
@@ -51,7 +51,7 @@ export default function CompanyHistoryPage() {
       year: 2015,
       title: "Sertifikasi ISO",
       description: "Perusahaan berhasil mendapatkan sertifikasi ISO sebagai bukti komitmen kami terhadap standar kualitas internasional.",
-      image: "/images/history/iso-certification.jpg",
+      image: "/images/blog/isocertification.jpg",
       achievements: [
         "Perolehan ISO 9001:2015 untuk sistem manajemen mutu",
         "Perolehan ISO 14001:2015 untuk sistem manajemen lingkungan",
@@ -63,7 +63,7 @@ export default function CompanyHistoryPage() {
       year: 2019,
       title: "Perluasan Layanan",
       description: "Memperluas cakupan layanan untuk mencakup berbagai jenis proyek konstruksi dan infrastruktur.",
-      image: "/images/history/service-expansion.jpg",
+      image: "/images/blog/perluaslayanan.jpg",
       achievements: [
         "Pengembangan ke proyek perumahan dan bangunan komersial",
         "Penambahan layanan pekerjaan infrastruktur",
@@ -75,7 +75,7 @@ export default function CompanyHistoryPage() {
       year: 2021,
       title: "Proyek-Proyek Besar",
       description: "Menangani berbagai proyek besar di berbagai lokasi di Indonesia, menunjukkan kemampuan dan kepercayaan dari klien-klien besar.",
-      image: "/images/history/major-projects.jpg",
+      image: "/images/servicesection-1.jpg",
       achievements: [
         "Proyek Interior & Furniture Club House Zora BSD City bersama PT. Multi Bangun Persada",
         "Pembangunan Sekolah dan Mushola di Parung, Bogor untuk World Assembly Moslem Youth (WAMY)",
@@ -87,7 +87,7 @@ export default function CompanyHistoryPage() {
       year: 2022,
       title: "Ekspansi Proyek Infrastruktur",
       description: "Fokus pada pengembangan proyek infrastruktur dan konstruksi bangunan yang lebih kompleks.",
-      image: "/images/history/infrastructure.jpg",
+      image: "/images/blog/ekspansi.jpg",
       achievements: [
         "Proyek Cut & Fill, Land Clearing di Kawasan Industri Subang dengan PT. Nusa Raya Cipta",
         "Pembangunan Condotel HAPPER Ciawi Tower A, B, C dengan PT. Lingga Dewata Agung",
@@ -99,7 +99,7 @@ export default function CompanyHistoryPage() {
       year: 2023,
       title: "Inovasi dan Keberlanjutan",
       description: "Menerapkan teknologi terbaru dan praktik konstruksi berkelanjutan dalam proyek-proyek kami.",
-      image: "/images/history/innovation.jpg",
+      image: "/images/blog/inovasi.jpg",
       achievements: [
         "Implementasi teknologi modern dalam manajemen proyek",
         "Fokus pada praktik konstruksi ramah lingkungan",
@@ -113,7 +113,7 @@ export default function CompanyHistoryPage() {
       {/* Hero Section */}
       <div className="relative h-[40vh] md:h-[50vh] overflow-hidden">
         <Image
-          src="/images/history-hero.jpg" // Gambar untuk halaman sejarah
+          src="/images/blog/perjalanankami2.jpg" // Gambar untuk halaman sejarah
           alt="Sejarah Perusahaan"
           fill
           className="object-cover"
@@ -123,11 +123,11 @@ export default function CompanyHistoryPage() {
           <div className="container mx-auto px-4 md:px-8">
             <div className="max-w-2xl">
               <button 
-                onClick={() => router.push('/about')} 
+                onClick={() => router.push('/')} 
                 className="inline-flex items-center text-white bg-[#153969]/70 backdrop-blur-sm px-4 py-2 rounded-full mb-6 hover:bg-[#153969] transition-colors"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Kembali ke Tentang Kami
+                Kembali ke Beranda
               </button>
               <motion.h1 
                 initial={{ opacity: 0, y: 30 }}
@@ -313,7 +313,7 @@ export default function CompanyHistoryPage() {
             <motion.div variants={fadeInUp} className="bg-white p-6 rounded-lg shadow-md text-center">
               <div className="h-64 relative mb-4 overflow-hidden rounded-md">
                 <Image 
-                  src="/images/certifications/iso9001.jpg" 
+                  src="/images/iso/iso9001.png" 
                   alt="ISO 9001:2015"
                   fill
                   className="object-contain" 
@@ -326,7 +326,7 @@ export default function CompanyHistoryPage() {
             <motion.div variants={fadeInUp} className="bg-white p-6 rounded-lg shadow-md text-center">
               <div className="h-64 relative mb-4 overflow-hidden rounded-md">
                 <Image 
-                  src="/images/certifications/iso14001.jpg" 
+                  src="/images/iso/iso14001.png" 
                   alt="ISO 14001:2015"
                   fill
                   className="object-contain" 
@@ -339,7 +339,7 @@ export default function CompanyHistoryPage() {
             <motion.div variants={fadeInUp} className="bg-white p-6 rounded-lg shadow-md text-center">
               <div className="h-64 relative mb-4 overflow-hidden rounded-md">
                 <Image 
-                  src="/images/certifications/ohsas18001.jpg" 
+                  src="/images/iso/ohsas18001.png" 
                   alt="OHSAS 18001:2007"
                   fill
                   className="object-contain" 
@@ -352,7 +352,7 @@ export default function CompanyHistoryPage() {
             <motion.div variants={fadeInUp} className="bg-white p-6 rounded-lg shadow-md text-center md:col-span-2 lg:col-span-3">
               <div className="h-64 relative mb-4 overflow-hidden rounded-md">
                 <Image 
-                  src="/images/certifications/kadin.jpg" 
+                  src="/images/iso/kadin.png" 
                   alt="KADIN Perusahaan"
                   fill
                   className="object-contain" 

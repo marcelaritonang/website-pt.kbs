@@ -38,7 +38,7 @@ export default function CompanyProfile() {
       {/* Hero Section */}
       <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
         <Image
-          src="/images/company-profile-hero.jpg" // Replace with your actual hero image
+          src="/images/blog/comprof.jpg" // Replace with your actual hero image
           alt="KBS Company Profile"
           fill
           className="object-cover"
