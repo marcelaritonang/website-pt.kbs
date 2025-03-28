@@ -39,6 +39,9 @@ export default function ProjectsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  
+  // Client-side rendering state
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   // Project categories
   const categories: Category[] = [
@@ -58,7 +61,7 @@ export default function ProjectsPage() {
       title: "Proyek Pekerjaan Cut & Fill, Jalan dan Saluran, Bangunan Rumah bertipe Type",
       category: "building",
       subCategory: "Konstruksi Sipil & ME",
-      image: "/images/projects/project1.jpg",
+      image: "/images/proyek/1.jpg",
       location: "Semarang",
       client: "PT. Anugerah Griya Lestari",
       date: "9 Agustus 2014",
@@ -69,108 +72,10 @@ export default function ProjectsPage() {
     },
     {
       id: 2,
-      title: "Rehabilitasi Jalan dan Jembatan Ruas Cipanas - Warung Banten",
-      category: "rehabilitation",
-      subCategory: "Pekerjaan Rehabilitasi Jalan",
-      image: "/images/projects/project2.jpg",
-      location: "Banten",
-      client: "PT. Jaya Konstruksi MP, TBK",
-      date: "30 Agustus 2021",
-      contractNumber: "JKN/SPK/2021/011",
-      value: "Rp 5.146.000.000",
-      description: "Proyek rehabilitasi jalan dan jembatan pada ruas Cipanas-Warung Banten untuk meningkatkan kualitas infrastruktur jalan.",
-      scope: "Timbunan"
-    },
-    {
-      id: 3,
-      title: "Pekerjaan Reflected Pond Lobby Grand Hyatt",
-      category: "interior",
-      subCategory: "Interior",
-      image: "/images/projects/project3.jpg",
-      location: "Jakarta",
-      client: "PT. Plaza Indonesia Realty TBK",
-      date: "11 April 2021",
-      contractNumber: "GH/PE/G/04",
-      value: "Rp 2.867.000.000",
-      description: "Pekerjaan reflected pond untuk area lobby hotel Grand Hyatt Jakarta dengan konsep desain modern.",
-      scope: "Interior Lobby"
-    },
-    {
-      id: 4,
-      title: "Interior & Furniture Club House Zora BSD City",
-      category: "interior",
-      subCategory: "Interior",
-      image: "/images/projects/project4.jpg",
-      location: "Tangerang",
-      client: "PT. Multi Bangun Persada",
-      date: "22 Februari 2021",
-      contractNumber: "79/MBP-KBS/CH/2/2021",
-      value: "Rp 58.325.785.000",
-      description: "Pekerjaan interior dan furniture untuk club house di kawasan perumahan Zora BSD City.",
-      scope: "Interior"
-    },
-    {
-      id: 5,
-      title: "Pembangunan Sekolah dan Mushola",
-      category: "building",
-      subCategory: "Konstruksi Bangunan Gedung",
-      image: "/images/projects/project5.jpg",
-      location: "Parung - Bogor",
-      client: "World Assembly Muslim Youth (WAMY)",
-      date: "25 Januari 2021",
-      contractNumber: "WAM/Y36/KBS/PSM/1/2021",
-      value: "Rp 385.244.276.000",
-      description: "Proyek pembangunan fasilitas sekolah dan mushola di kawasan Parung, Bogor untuk organisasi WAMY.",
-      scope: "Bangunan Gedung"
-    },
-    {
-      id: 6,
-      title: "Pekerjaan Timbunan (Urugan) Perumahan Alam Sutera I",
-      category: "landDevelopment",
-      subCategory: "Pekerjaan Perumahan",
-      image: "/images/projects/project6.jpg",
-      location: "Tangerang",
-      client: "PT. Aneka Jaring Indonesia",
-      date: "16 Maret 2021",
-      contractNumber: "AJI/SPK/2021/09",
-      value: "Rp 127.873.000.000",
-      description: "Pekerjaan timbunan dan urugan untuk pengembangan perumahan Alam Sutera I.",
-      scope: "Pematangan Lahan"
-    },
-    {
-      id: 7,
-      title: "Pekerjaan Timbunan (Urugan) Perumahan Alam Sutera II Cikupa",
-      category: "landDevelopment",
-      subCategory: "Pekerjaan Perumahan",
-      image: "/images/projects/project7.jpg",
-      location: "Cikupa - Tangerang",
-      client: "PT. Pratama Widya",
-      date: "21 April 2021",
-      contractNumber: "PW/SPK-KBS/2021",
-      value: "Rp 82.658.685.000",
-      description: "Pekerjaan timbunan dan urugan untuk pengembangan perumahan Alam Sutera II di kawasan Cikupa.",
-      scope: "Pematangan Lahan"
-    },
-    {
-      id: 8,
-      title: "Pembangunan Condotel HAPPER Ciawi Tower A, B, C",
-      category: "building",
-      subCategory: "Konstruksi Bangunan Gedung",
-      image: "/images/projects/project8.jpg",
-      location: "Ciawi - Bogor",
-      client: "PT. Lingga Dewata Agung",
-      date: "20 Juli 2022",
-      contractNumber: "0501-KONTRAK-CH-CLDA-JAP-2022",
-      value: "Rp 465.245.478.000",
-      description: "Proyek pembangunan condotel yang terdiri dari 3 tower di kawasan Ciawi, Bogor.",
-      scope: "Bangunan Gedung"
-    },
-    {
-      id: 9,
       title: "Proyek Banjir Kanal Timur Paket 30",
       category: "infrastructure",
       subCategory: "Pekerjaan Batu",
-      image: "/images/projects/project9.jpg",
+      image: "/images/proyek/2.jpg",
       location: "Bekasi",
       client: "PT. Jaya Konstruksi MP, TBK",
       date: "15 Mei 2001",
@@ -180,11 +85,11 @@ export default function ProjectsPage() {
       scope: "Pekerjaan Batu"
     },
     {
-      id: 10,
+      id: 3,
       title: "Proyek Normalisasi Kali Pesanggrahan Paket 3",
       category: "infrastructure",
       subCategory: "Pekerjaan Tanah",
-      image: "/images/projects/project10.jpg",
+      image: "/images/proyek/3.jpg",
       location: "Jakarta",
       client: "PT. Pembangunan Perumahan (Persero)",
       date: "25 Januari 2012",
@@ -194,39 +99,25 @@ export default function ProjectsPage() {
       scope: "Pengerukan Lumpur"
     },
     {
-      id: 11,
-      title: "Proyek Pekerjaan Cut & Fill, Land Clearing, Saluran Drainase dan Pekerjaan Jalan Utama Kawasan Industri Subang",
-      category: "infrastructure",
-      subCategory: "Pekerjaan Infrastruktur dan Pematangan Lahan",
-      image: "/images/projects/project11.jpg",
-      location: "Kalijati - Subang",
-      client: "PT. Nusa Raya Cipta",
-      date: "13 Mei 2022",
-      contractNumber: "063-KONTRAK-KIS-NRC-KBS 2022",
-      value: "Rp 332.280.000.000",
-      description: "Proyek pengembangan infrastruktur kawasan industri di Subang yang mencakup pekerjaan cut & fill, land clearing, pembangunan saluran drainase, dan pembangunan jalan utama.",
-      scope: "Pengerjaan Lahan"
-    },
-    {
-      id: 12,
-      title: "Proyek Dredging and Embankment Cilegon/Anyer Floodway",
+      id: 4,
+      title: "Proyek Dredging and Embankment cengkareng Floodway",
       category: "infrastructure",
       subCategory: "Pekerjaan Dredging and Dispose",
-      image: "/images/projects/project12.jpg",
+      image: "/images/proyek/4.jpg",
       location: "Jakarta",
       client: "ADHI-WASKITA JV",
       date: "21 Februari 2014",
       contractNumber: "02/SPP/JUFMP-2/A/ADHI-WASKON JV/2014",
       value: "Rp 31.663.220.000",
-      description: "Proyek pengerukan dan pembuatan tanggul di area Cilegon/Anyer untuk mengendalikan banjir.",
+      description: "Proyek pengerukan dan pembuatan tanggul di area cengkareng untuk mengendalikan banjir.",
       scope: "Saluran"
     },
     {
-      id: 13,
+      id: 5,
       title: "Pembangunan Pengamanan Pantai di Jakarta",
       category: "waterStructure",
       subCategory: "Pekerjaan Bangunan Air",
-      image: "/images/projects/project13.jpg",
+      image: "/images/proyek/5.jpg",
       location: "Jakarta",
       client: "BBWS Ciliwung – Cisadane",
       date: "30 Juni 2014",
@@ -236,11 +127,11 @@ export default function ProjectsPage() {
       scope: "Pemancangan"
     },
     {
-      id: 14,
+      id: 6,
       title: "Normalisasi Kali Krukut",
       category: "waterStructure",
       subCategory: "Pekerjaan Bangunan Air",
-      image: "/images/projects/project14.jpg",
+      image: "/images/proyek/6.jpg",
       location: "Jakarta",
       client: "BBWS Ciliwung – Cisadane",
       date: "18 Mei 2015",
@@ -250,25 +141,123 @@ export default function ProjectsPage() {
       scope: "Pemancangan"
     },
     {
-      id: 15,
-      title: "Pemeliharaan Situ Tangerang",
+      id: 7,
+      title: "Pemeliharaan Situ tarogong",
       category: "waterStructure",
       subCategory: "Pemeliharaan Bangunan Air",
-      image: "/images/projects/project15.jpg",
+      image: "/images/proyek/7.jpeg",
       location: "Bogor",
       client: "Pekerjaan Umum Perumahan Rakyat",
       date: "23 Maret 2016",
       contractNumber: "HK.02.03/PPK-OPSDA II/SATKER PSDA/C/JN/2016/717",
       value: "Rp 2.239.137.000",
-      description: "Proyek pemeliharaan Situ Tangerang untuk menjaga fungsi resapan air dan mencegah banjir di area sekitar.",
+      description: "Proyek pemeliharaan Situ tarogong untuk menjaga fungsi resapan air dan mencegah banjir di area sekitar.",
       scope: "Galian"
     },
     {
-      id: 16,
-      title: "Pekerjaan Struktur, Sipil, MEP dan Interior Restoran Seuara JB Mansion",
+      id: 8,
+      title: "Rehabilitasi Jalan dan Jembatan Ruas Cipanas - Warung Banten",
+      category: "rehabilitation",
+      subCategory: "Pekerjaan Rehabilitasi Jalan",
+      image: "/images/proyek/8.jpg",
+      location: "Banten",
+      client: "PT. Jaya Konstruksi MP, TBK",
+      date: "30 Agustus 2021",
+      contractNumber: "JKN/SPK/2021/011",
+      value: "Rp 5.146.000.000",
+      description: "Proyek rehabilitasi jalan dan jembatan pada ruas Cipanas-Warung Banten untuk meningkatkan kualitas infrastruktur jalan.",
+      scope: "Timbunan"
+    },
+    {
+      id: 9,
+      title: "Pekerjaan Reflected Pond Lobby Grand Hyatt",
+      category: "interior",
+      subCategory: "Interior",
+      image: "/images/proyek/grandhyatt-rev.jpeg",
+      location: "Jakarta",
+      client: "PT. Plaza Indonesia Realty TBK",
+      date: "11 April 2021",
+      contractNumber: "GH/PE/G/04",
+      value: "Rp 2.867.000.000",
+      description: "Pekerjaan reflected pond untuk area lobby hotel Grand Hyatt Jakarta dengan konsep desain modern.",
+      scope: "Interior Lobby"
+    },
+    {
+      id: 10,
+      title: "Interior & Furniture Club House Zora BSD City",
+      category: "interior",
+      subCategory: "Interior",
+      image: "/images/proyek/10.jpg",
+      location: "Tangerang",
+      client: "PT. Multi Bangun Persada",
+      date: "22 Februari 2021",
+      contractNumber: "79/MBP-KBS/CH/2/2021",
+      value: "Rp 58.325.785.000",
+      description: "Pekerjaan interior dan furniture untuk club house di kawasan perumahan Zora BSD City.",
+      scope: "Interior"
+    },
+    {
+      id: 11,
+      title: "Pembangunan Sekolah dan Mushola",
       category: "building",
       subCategory: "Konstruksi Bangunan Gedung",
-      image: "/images/projects/project16.jpg",
+      image: "/images/proyek/11.jpg",
+      location: "Parung - Bogor",
+      client: "World Assembly Muslim Youth (WAMY)",
+      date: "25 Januari 2021",
+      contractNumber: "WAM/Y36/KBS/PSM/1/2021",
+      value: "Rp 385.244.276.000",
+      description: "Proyek pembangunan fasilitas sekolah dan mushola di kawasan Parung, Bogor untuk organisasi WAMY.",
+      scope: "Bangunan Gedung"
+    },
+    {
+      id: 12,
+      title: "Pekerjaan Timbunan (Urugan) Perumahan Alam Sutera I",
+      category: "landDevelopment",
+      subCategory: "Pekerjaan Perumahan",
+      image: "/images/proyek/12.jpg",
+      location: "Tangerang",
+      client: "PT. Aneka Jaring Indonesia",
+      date: "16 Maret 2021",
+      contractNumber: "AJI/SPK/2021/09",
+      value: "Rp 127.873.000.000",
+      description: "Pekerjaan timbunan dan urugan untuk pengembangan perumahan Alam Sutera I.",
+      scope: "Pematangan Lahan"
+    },
+    {
+      id: 13,
+      title: "Pekerjaan Timbunan (Urugan) Perumahan Alam Sutera II Cikupa",
+      category: "landDevelopment",
+      subCategory: "Pekerjaan Perumahan",
+      image: "/images/proyek/13.jpg",
+      location: "Cikupa - Tangerang",
+      client: "PT. Pratama Widya",
+      date: "21 April 2021",
+      contractNumber: "PW/SPK-KBS/2021",
+      value: "Rp 82.658.685.000",
+      description: "Pekerjaan timbunan dan urugan untuk pengembangan perumahan Alam Sutera II di kawasan Cikupa.",
+      scope: "Pematangan Lahan"
+    },
+    {
+      id: 14,
+      title: "Pembangunan Condotel HAPPER Ciawi Tower A, B, C",
+      category: "building",
+      subCategory: "Konstruksi Bangunan Gedung",
+      image: "/images/proyek/14.jpg",
+      location: "Ciawi - Bogor",
+      client: "PT. Lingga Dewata Agung",
+      date: "20 Juli 2022",
+      contractNumber: "0501-KONTRAK-CH-CLDA-JAP-2022",
+      value: "Rp 465.245.478.000",
+      description: "Proyek pembangunan condotel yang terdiri dari 3 tower di kawasan Ciawi, Bogor.",
+      scope: "Bangunan Gedung"
+    },
+    {
+      id: 15,
+      title: "Pekerjaan Struktur, Sipil, MEP dan Interior Restoran sevara iki ramen",
+      category: "building",
+      subCategory: "Konstruksi Bangunan Gedung",
+      image: "/images/proyek/15.jpg",
       location: "Jakarta",
       client: "PT. Multi Bangun Persada",
       date: "17 Februari 2020",
@@ -278,11 +267,11 @@ export default function ProjectsPage() {
       scope: "Struktur"
     },
     {
-      id: 17,
-      title: "Pekerjaan Struktur Sipil, MEP dan Interior Showroom Bergler Krisshaku",
+      id: 16,
+      title: "Pekerjaan Struktur Sipil, MEP dan Interior Showroom bengkel mitshubishi",
       category: "building",
       subCategory: "Konstruksi Bangunan Gedung",
-      image: "/images/projects/project17.jpg",
+      image: "/images/proyek/16.jpg",
       location: "Tangerang",
       client: "PT. Multi Bangun Persada",
       date: "23 Juni 2020",
@@ -292,11 +281,11 @@ export default function ProjectsPage() {
       scope: "Struktur"
     },
     {
-      id: 18,
+      id: 17,
       title: "Infrastruktur Kawasan Proyek OPD Kabupaten Karawang",
       category: "infrastructure",
       subCategory: "Konstruksi Bangunan Umum",
-      image: "/images/projects/project18.jpg",
+      image: "/images/proyek/17.jpg",
       location: "Karawang",
       client: "PT. Trincanala Sakti Utama",
       date: "06 April 2020",
@@ -304,6 +293,20 @@ export default function ProjectsPage() {
       value: "Rp 258.112.576.000",
       description: "Proyek pembangunan infrastruktur kawasan OPD di Kabupaten Karawang untuk mendukung aktivitas pemerintahan.",
       scope: "Infrastruktur"
+    },
+    {
+      id: 18,
+      title: "Proyek Pekerjaan Cut & Fill, Land Clearing, Saluran Drainase dan Pekerjaan Jalan Utama Kawasan Industri Subang",
+      category: "infrastructure",
+      subCategory: "Pekerjaan Infrastruktur dan Pematangan Lahan",
+      image: "/images/proyek/18.jpg",
+      location: "Kalijati - Subang",
+      client: "PT. Nusa Raya Cipta",
+      date: "13 Mei 2022",
+      contractNumber: "063-KONTRAK-KIS-NRC-KBS 2022",
+      value: "Rp 332.280.000.000",
+      description: "Proyek pengembangan infrastruktur kawasan industri di Subang yang mencakup pekerjaan cut & fill, land clearing, pembangunan saluran drainase, dan pembangunan jalan utama.",
+      scope: "Pengerjaan Lahan"
     }
   ];
 
@@ -333,22 +336,36 @@ export default function ProjectsPage() {
     exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
   };
   
+  // Set isMounted to true when component mounts
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
   // Handle view detail
   const handleViewDetail = (project: Project) => {
     setSelectedProject(project);
     setIsModalOpen(true);
+    
     // Prevent scrolling when modal is open
-    document.body.style.overflow = 'hidden';
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden';
+    }
   };
   
   // Close modal
   const closeModal = () => {
     setIsModalOpen(false);
-    document.body.style.overflow = 'auto';
+    
+    // Restore scrolling
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'auto';
+    }
   };
 
-  // Scroll to projects when filter is applied
+  // Scroll to projects when filter is applied - safely handle window access
   const scrollToProjects = () => {
+    if (!isMounted) return;
+    
     if (projectsRef.current) {
       const yOffset = -100; // Offset to account for sticky header
       const y = projectsRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
@@ -358,6 +375,8 @@ export default function ProjectsPage() {
 
   // Filter projects based on category and search term
   useEffect(() => {
+    if (!isMounted) return;
+    
     let filtered = projectsData;
     
     if (activeCategory !== 'all') {
@@ -381,7 +400,12 @@ export default function ProjectsPage() {
     if ((activeCategory !== 'all' || searchTerm) && projectsRef.current) {
       scrollToProjects();
     }
-  }, [activeCategory, searchTerm]);
+  }, [activeCategory, searchTerm, isMounted]);
+
+  // Initialize filteredProjects when component mounts
+  useEffect(() => {
+    setFilteredProjects(projectsData);
+  }, []);
 
   // Load more projects function
   const loadMoreProjects = () => {
@@ -404,7 +428,7 @@ export default function ProjectsPage() {
       {/* Hero Section */}
       <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
         <Image
-          src="/images/projects-hero.jpg"
+          src="/images/proyek/utama.jpg"
           alt="Proyek Kami"
           fill
           className="object-cover"
@@ -696,105 +720,107 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* Project Detail Modal */}
-      <AnimatePresence>
-        {isModalOpen && selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={closeModal}
-            />
-            
-            <motion.div
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden relative z-10"
-            >
-              <div className="relative h-64 md:h-80">
-                <Image
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
-                  fill
-                  className="object-cover"
-                />
-                <button 
-                  onClick={closeModal}
-                  className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 transition-colors z-10"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 w-full p-6 text-white">
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    <span className="bg-[#153969] text-white text-xs px-2.5 py-1 rounded-full">
-                      {categories.find(c => c.id === selectedProject.category)?.name}
-                    </span>
-                    <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full">
-                      {selectedProject.subCategory}
-                    </span>
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold">{selectedProject.title}</h2>
-                </div>
-              </div>
+      {/* Project Detail Modal - Conditional rendering with isMounted check */}
+      {isMounted && (
+        <AnimatePresence>
+          {isModalOpen && selectedProject && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                onClick={closeModal}
+              />
               
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="md:col-span-2">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">Informasi Proyek</h3>
-                    <p className="text-gray-700 mb-6">{selectedProject.description}</p>
-                    
-                    {selectedProject.scope && (
-                      <div className="mb-6">
-                        <h4 className="font-bold text-gray-800 mb-2">Ruang Lingkup Pekerjaan</h4>
-                        <p className="text-gray-700">
-                          {selectedProject.scope}
-                        </p>
-                      </div>
-                    )}
+              <motion.div
+                variants={modalVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden relative z-10"
+              >
+                <div className="relative h-64 md:h-80">
+                  <Image
+                    src={selectedProject.image}
+                    alt={selectedProject.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <button 
+                    onClick={closeModal}
+                    className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 transition-colors z-10"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      <span className="bg-[#153969] text-white text-xs px-2.5 py-1 rounded-full">
+                        {categories.find(c => c.id === selectedProject.category)?.name}
+                      </span>
+                      <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full">
+                        {selectedProject.subCategory}
+                      </span>
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold">{selectedProject.title}</h2>
                   </div>
-                  
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-bold text-gray-900 mb-4 border-b pb-2">Detail Proyek</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-xs text-gray-500">Klien</p>
-                        <p className="font-medium text-gray-800">{selectedProject.client}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Lokasi</p>
-                        <p className="font-medium text-gray-800">{selectedProject.location}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Tanggal</p>
-                        <p className="font-medium text-gray-800">{selectedProject.date}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Nomor Kontrak</p>
-                        <p className="font-medium text-gray-800">{selectedProject.contractNumber || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Nilai Proyek</p>
-                        <p className="font-medium text-gray-800">{selectedProject.value}</p>
-                      </div>
+                </div>
+                
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2">
+                      <h3 className="text-lg font-bold text-gray-900 mb-3">Informasi Proyek</h3>
+                      <p className="text-gray-700 mb-6">{selectedProject.description}</p>
+                      
+                      {selectedProject.scope && (
+                        <div className="mb-6">
+                          <h4 className="font-bold text-gray-800 mb-2">Ruang Lingkup Pekerjaan</h4>
+                          <p className="text-gray-700">
+                            {selectedProject.scope}
+                          </p>
+                        </div>
+                      )}
                     </div>
                     
-                    <div className="mt-6">
-                      <Link href="/contact" className="block w-full py-2.5 bg-[#153969] text-white text-center rounded-lg font-medium hover:bg-[#0f2a4d] transition-colors">
-                        Hubungi Kami
-                      </Link>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="font-bold text-gray-900 mb-4 border-b pb-2">Detail Proyek</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-xs text-gray-500">Klien</p>
+                          <p className="font-medium text-gray-800">{selectedProject.client}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Lokasi</p>
+                          <p className="font-medium text-gray-800">{selectedProject.location}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Tanggal</p>
+                          <p className="font-medium text-gray-800">{selectedProject.date}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Nomor Kontrak</p>
+                          <p className="font-medium text-gray-800">{selectedProject.contractNumber || '-'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Nilai Proyek</p>
+                          <p className="font-medium text-gray-800">{selectedProject.value}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-6">
+                        <Link href="/contact" className="block w-full py-2.5 bg-[#153969] text-white text-center rounded-lg font-medium hover:bg-[#0f2a4d] transition-colors">
+                          Hubungi Kami
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      )}
 
       {/* Portfolio Stats */}
       <section className="py-16 bg-gray-50">

@@ -105,8 +105,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="text-gray-900 font-medium">Telepon</h3>
-                      <p className="text-gray-600 mt-1">+62 21 1234 5678</p>
-                      <p className="text-gray-600">+62 812 3456 7890 (WhatsApp)</p>
+                      <p className="text-gray-600 mt-1">+6281218127503</p>
                     </div>
                   </div>
                   
@@ -116,10 +115,10 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="text-gray-900 font-medium">Email</h3>
-                      <p className="text-gray-600 mt-1">info@kbs.co.id</p>
+                      <p className="text-gray-600 mt-1">karyabangunsemestas@gmail.com</p>
                     </div>
                   </div>
-                  
+                                    
                   <div className="flex items-start gap-4">
                     <div className="p-3 bg-[#153969]/10 rounded-lg text-[#153969]">
                       <Clock className="w-6 h-6" />

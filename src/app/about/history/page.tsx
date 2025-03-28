@@ -3,14 +3,45 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Clock, ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Clock, ArrowLeft, X, ZoomIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
+// Interface for data structures
+interface Achievement {
+  id: number;
+  year: number;
+  title: string;
+  description: string;
+  image: string;
+  achievements: string[];
+}
+
+interface Certificate {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+}
+
+interface ProjectItem {
+  id: number;
+  title: string;
+  subBidang: string;
+  lokasi: string;
+  pemberiTugas: string;
+  noTanggal: string;
+  image: string;
+}
 
 export default function CompanyHistoryPage() {
   const router = useRouter();
   const [activeEvent, setActiveEvent] = useState<number | null>(null);
-
+  
+  // State for modal/lightbox
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
+  
   // Animation variants
   const fadeIn = {
     hidden: { opacity: 0 },
@@ -32,8 +63,15 @@ export default function CompanyHistoryPage() {
     }
   };
 
+  // Modal animation variants
+  const modalVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
+    exit: { opacity: 0, scale: 0.8, transition: { duration: 0.2 } }
+  };
+
   // Company history milestones
-  const historyMilestones = [
+  const historyMilestones: Achievement[] = [
     {
       id: 1,
       year: 2011,
@@ -107,6 +145,103 @@ export default function CompanyHistoryPage() {
       ]
     }
   ];
+
+  // Certifications
+  const certifications: Certificate[] = [
+    {
+      id: 1,
+      title: "ISO 9001:2015",
+      description: "Sistem Manajemen Mutu",
+      image: "/images/iso/iso9001.png"
+    },
+    {
+      id: 2,
+      title: "ISO 14001:2015",
+      description: "Sistem Manajemen Lingkungan",
+      image: "/images/iso/iso14001.png"
+    },
+    {
+      id: 3,
+      title: "OHSAS 18001:2007",
+      description: "Sistem Manajemen Kesehatan dan Keselamatan Kerja",
+      image: "/images/iso/ohsas18001.png"
+    },
+    {
+      id: 4,
+      title: "KADIN Perusahaan",
+      description: "Keanggotaan Kamar Dagang dan Industri Indonesia",
+      image: "/images/iso/kadin.png"
+    }
+  ];
+
+  // Portfolio projects
+  const portfolioProjects: ProjectItem[] = [
+    {
+      id: 1,
+      title: "Pembangunan Condotel HAPPER Ciawi Tower A, B, C",
+      subBidang: "Konstruksi Bangunan Gedung",
+      lokasi: "Ciawi - Bogor",
+      pemberiTugas: "PT. Lingga Dewata Agung",
+      noTanggal: "0501-KONTRAK-CH-CLDA-JAP-2022, 20 Juli 2022",
+      image: "/images/bangunan/harperciawi.jpg"
+    },
+    {
+      id: 2,
+      title: "Proyek Pekerjaan Cut & Fill, Land Clearing, Saluran Drainase, dan Pematangan Lahan",
+      subBidang: "Pekerjaan Infrastruktur dan Pematangan Lahan",
+      lokasi: "Kawasan Industri Subang",
+      pemberiTugas: "PT. Nusa Raya Cipta",
+      noTanggal: "053-KONTRAK-KIS-NRC-KBS/2022, 13 Mei 2022",
+      image: "/images/servicesection-3.jpg"
+    },
+    {
+      id: 3,
+      title: "Interior & Furniture Club House Zora BSD City",
+      subBidang: "Interior",
+      lokasi: "Tangerang",
+      pemberiTugas: "PT. Multi Bangun Persada",
+      noTanggal: "79/MBP-KBS/CH-2/2021, 22 Februari 2021",
+      image: "/images/bangunan/bsdinterior.jpg"
+    },
+    {
+      id: 4,
+      title: "Rehabilitasi Jalan dan Jembatan Ruas Cipanas - Warung Banten",
+      subBidang: "Pekerjaan Rehabilitasi Jalan",
+      lokasi: "Banten",
+      pemberiTugas: "PT. Jaya Konstruksi MF, Tbk",
+      noTanggal: "JK/VSPK/02/1001, 30 Agustus 2021",
+      image: "/images/bangunan/jembatan.jpg"
+    }
+  ];
+
+  // Functions to handle modal
+  const openModal = (certificate: Certificate) => {
+    setSelectedCert(certificate);
+    setIsModalOpen(true);
+    // Prevent scrolling
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    // Restore scrolling
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'auto';
+    }
+  };
+
+  // Open modal for any image (project or history)
+  const openImageModal = (image: string, title: string, description: string = "") => {
+    const imageCert: Certificate = {
+      id: 999, // Temporary ID
+      title,
+      description,
+      image
+    };
+    openModal(imageCert);
+  };
 
   return (
     <div className="bg-white min-h-screen">
@@ -207,7 +342,7 @@ export default function CompanyHistoryPage() {
             </motion.h2>
 
             <div className="flex flex-col space-y-8">
-              {historyMilestones.map((milestone, index) => (
+              {historyMilestones.map((milestone) => (
                 <motion.div 
                   key={milestone.id}
                   initial="hidden"
@@ -222,17 +357,28 @@ export default function CompanyHistoryPage() {
                   onClick={() => setActiveEvent(activeEvent === milestone.id ? null : milestone.id)}
                 >
                   <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/3 relative h-64 md:h-auto">
+                    <div className="md:w-1/3 relative h-64 md:h-auto group">
                       <Image
                         src={milestone.image}
                         alt={milestone.title}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <div 
+                        className="absolute inset-0 bg-black/30 flex items-center justify-center"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent triggering parent onClick
+                          openImageModal(milestone.image, milestone.title, milestone.description);
+                        }}
+                      >
                         <h3 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                           {milestone.year}
                         </h3>
+                        
+                        {/* Zoom icon on hover */}
+                        <div className="absolute top-3 right-3 bg-white/70 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ZoomIn className="h-5 w-5 text-[#153969]" />
+                        </div>
                       </div>
                     </div>
                     <div className="md:w-2/3 p-6 md:p-8">
@@ -310,53 +456,48 @@ export default function CompanyHistoryPage() {
             variants={staggerChildren}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto"
           >
-            <motion.div variants={fadeInUp} className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="h-64 relative mb-4 overflow-hidden rounded-md">
-                <Image 
-                  src="/images/iso/iso9001.png" 
-                  alt="ISO 9001:2015"
-                  fill
-                  className="object-contain" 
-                />
-              </div>
-              <h3 className="text-xl font-bold text-[#153969]">ISO 9001:2015</h3>
-              <p className="text-gray-700 mt-2">Sistem Manajemen Mutu</p>
-            </motion.div>
+            {certifications.slice(0, 3).map((cert) => (
+              <motion.div 
+                key={cert.id} 
+                variants={fadeInUp} 
+                className="bg-white p-6 rounded-lg shadow-md text-center group cursor-pointer"
+                onClick={() => openModal(cert)}
+              >
+                <div className="h-64 relative mb-4 overflow-hidden rounded-md bg-white border border-gray-200">
+                  <Image 
+                    src={cert.image} 
+                    alt={cert.title}
+                    fill
+                    className="object-contain p-4 transition-all duration-300 group-hover:scale-105" 
+                  />
+                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="bg-white/70 p-2 rounded-full">
+                      <ZoomIn className="h-6 w-6 text-[#153969]" />
+                    </div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-[#153969]">{cert.title}</h3>
+                <p className="text-gray-700 mt-2">{cert.description}</p>
+              </motion.div>
+            ))}
             
-            <motion.div variants={fadeInUp} className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="h-64 relative mb-4 overflow-hidden rounded-md">
-                <Image 
-                  src="/images/iso/iso14001.png" 
-                  alt="ISO 14001:2015"
-                  fill
-                  className="object-contain" 
-                />
-              </div>
-              <h3 className="text-xl font-bold text-[#153969]">ISO 14001:2015</h3>
-              <p className="text-gray-700 mt-2">Sistem Manajemen Lingkungan</p>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp} className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="h-64 relative mb-4 overflow-hidden rounded-md">
-                <Image 
-                  src="/images/iso/ohsas18001.png" 
-                  alt="OHSAS 18001:2007"
-                  fill
-                  className="object-contain" 
-                />
-              </div>
-              <h3 className="text-xl font-bold text-[#153969]">OHSAS 18001:2007</h3>
-              <p className="text-gray-700 mt-2">Sistem Manajemen Kesehatan dan Keselamatan Kerja</p>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp} className="bg-white p-6 rounded-lg shadow-md text-center md:col-span-2 lg:col-span-3">
-              <div className="h-64 relative mb-4 overflow-hidden rounded-md">
+            <motion.div 
+              variants={fadeInUp} 
+              className="bg-white p-6 rounded-lg shadow-md text-center md:col-span-2 lg:col-span-3 group cursor-pointer"
+              onClick={() => openModal(certifications[3])}
+            >
+              <div className="h-64 relative mb-4 overflow-hidden rounded-md bg-white border border-gray-200">
                 <Image 
                   src="/images/iso/kadin.png" 
                   alt="KADIN Perusahaan"
                   fill
-                  className="object-contain" 
+                  className="object-contain p-4 transition-all duration-300 group-hover:scale-105" 
                 />
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="bg-white/70 p-2 rounded-full">
+                    <ZoomIn className="h-6 w-6 text-[#153969]" />
+                  </div>
+                </div>
               </div>
               <h3 className="text-xl font-bold text-[#153969]">KADIN Perusahaan</h3>
               <p className="text-gray-700 mt-2">Keanggotaan Kamar Dagang dan Industri Indonesia</p>
@@ -403,93 +544,46 @@ export default function CompanyHistoryPage() {
             variants={staggerChildren}
             className="grid grid-cols-1 md:grid-cols-2 gap-8"
           >
-            {/* Project 1 */}
-            <motion.div variants={fadeInUp} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative h-60">
-                <Image 
-                  src="/images/projects/construction1.jpg" 
-                  alt="Proyek Konstruksi"
-                  fill
-                  className="object-cover" 
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#153969] mb-3">Pembangunan Condotel HAPPER Ciawi Tower A, B, C</h3>
-                <div className="mb-4">
-                  <p className="text-gray-700"><span className="font-semibold">Sub Bidang Pekerjaan:</span> Konstruksi Bangunan Gedung</p>
-                  <p className="text-gray-700"><span className="font-semibold">Lokasi:</span> Ciawi - Bogor</p>
-                  <p className="text-gray-700"><span className="font-semibold">Pemberi Tugas:</span> PT. Lingga Dewata Agung</p>
-                  <p className="text-gray-700"><span className="font-semibold">No/Tanggal:</span> 0501-KONTRAK-CH-CLDA-JAP-2022, 20 Juli 2022</p>
+            {portfolioProjects.map((project) => (
+              <motion.div 
+                key={project.id} 
+                variants={fadeInUp} 
+                className="bg-white rounded-lg shadow-md overflow-hidden group"
+              >
+                <div 
+                  className="relative h-60 overflow-hidden cursor-pointer"
+                  onClick={() => openImageModal(project.image, project.title, project.subBidang)}
+                >
+                  <Image 
+                    src={project.image} 
+                    alt={project.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110" 
+                  />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="bg-white/70 p-3 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                      <ZoomIn className="h-6 w-6 text-[#153969]" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-            
-            {/* Project 2 */}
-            <motion.div variants={fadeInUp} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative h-60">
-                <Image 
-                  src="/images/projects/infrastructure1.jpg" 
-                  alt="Proyek Infrastruktur"
-                  fill
-                  className="object-cover" 
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#153969] mb-3">Proyek Pekerjaan Cut & Fill, Land Clearing, Saluran Drainase, dan Pematangan Lahan</h3>
-                <div className="mb-4">
-                  <p className="text-gray-700"><span className="font-semibold">Sub Bidang Pekerjaan:</span> Pekerjaan Infrastruktur dan Pematangan Lahan</p>
-                  <p className="text-gray-700"><span className="font-semibold">Lokasi:</span> Kawasan Industri Subang</p>
-                  <p className="text-gray-700"><span className="font-semibold">Pemberi Tugas:</span> PT. Nusa Raya Cipta</p>
-                  <p className="text-gray-700"><span className="font-semibold">No/Tanggal:</span> 053-KONTRAK-KIS-NRC-KBS/2022, 13 Mei 2022</p>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-[#153969] mb-3">{project.title}</h3>
+                  <div className="mb-4">
+                    <p className="text-gray-700"><span className="font-semibold">Sub Bidang Pekerjaan:</span> {project.subBidang}</p>
+                    <p className="text-gray-700"><span className="font-semibold">Lokasi:</span> {project.lokasi}</p>
+                    <p className="text-gray-700"><span className="font-semibold">Pemberi Tugas:</span> {project.pemberiTugas}</p>
+                    <p className="text-gray-700"><span className="font-semibold">No/Tanggal:</span> {project.noTanggal}</p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-            
-            {/* Project 3 */}
-            <motion.div variants={fadeInUp} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative h-60">
-                <Image 
-                  src="/images/projects/interior1.jpg" 
-                  alt="Proyek Interior"
-                  fill
-                  className="object-cover" 
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#153969] mb-3">Interior & Furniture Club House Zora BSD City</h3>
-                <div className="mb-4">
-                  <p className="text-gray-700"><span className="font-semibold">Sub Bidang Pekerjaan:</span> Interior</p>
-                  <p className="text-gray-700"><span className="font-semibold">Lokasi:</span> Tangerang</p>
-                  <p className="text-gray-700"><span className="font-semibold">Pemberi Tugas:</span> PT. Multi Bangun Persada</p>
-                  <p className="text-gray-700"><span className="font-semibold">No/Tanggal:</span> 79/MBP-KBS/CH-2/2021, 22 Februari 2021</p>
-                </div>
-              </div>
-            </motion.div>
-            
-            {/* Project 4 */}
-            <motion.div variants={fadeInUp} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative h-60">
-                <Image 
-                  src="/images/projects/rehabilitation1.jpg" 
-                  alt="Proyek Rehabilitasi"
-                  fill
-                  className="object-cover" 
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#153969] mb-3">Rehabilitasi Jalan dan Jembatan Ruas Cipanas - Warung Banten</h3>
-                <div className="mb-4">
-                  <p className="text-gray-700"><span className="font-semibold">Sub Bidang Pekerjaan:</span> Pekerjaan Rehabilitasi Jalan</p>
-                  <p className="text-gray-700"><span className="font-semibold">Lokasi:</span> Banten</p>
-                  <p className="text-gray-700"><span className="font-semibold">Pemberi Tugas:</span> PT. Jaya Konstruksi MF, Tbk</p>
-                  <p className="text-gray-700"><span className="font-semibold">No/Tanggal:</span> JK/VSPK/02/1001, 30 Agustus 2021</p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            ))}
           </motion.div>
           
           <div className="text-center mt-12">
-            <Link href="/projects" className="inline-flex items-center px-6 py-3 bg-[#153969] hover:bg-[#0f2a4d] text-white rounded-md font-medium transition-colors shadow-lg">
+            <Link 
+              href="/projects" 
+              className="inline-flex items-center px-6 py-3 bg-[#153969] hover:bg-[#0f2a4d] text-white rounded-md font-medium transition-colors shadow-lg"
+            >
               Lihat Semua Proyek
               <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -530,7 +624,7 @@ export default function CompanyHistoryPage() {
               <motion.div variants={fadeInUp} className="p-6">
                 <div className="bg-white/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Kualitas</h3>
@@ -592,13 +686,22 @@ export default function CompanyHistoryPage() {
                 </p>
               </motion.div>
               
-              <motion.div variants={fadeInUp} className="relative h-[400px] md:h-[500px] rounded-lg overflow-hidden shadow-xl">
+              <motion.div 
+                variants={fadeInUp} 
+                className="relative h-[400px] md:h-[500px] rounded-lg overflow-hidden shadow-xl group cursor-pointer"
+                onClick={() => openImageModal("/images/berita7/gambar1-b7.jpg", "Visi Masa Depan Perusahaan", "Tim profesional kami siap memberikan solusi terbaik untuk proyek Anda")}
+              >
                 <Image
-                  src="/images/future-vision.jpg" // Gambar untuk visi masa depan
+                  src="/images/berita7/gambar1-b7.jpg" // Gambar untuk visi masa depan
                   alt="Visi Masa Depan Perusahaan"
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="bg-white/70 p-3 rounded-full">
+                    <ZoomIn className="h-6 w-6 text-[#153969]" />
+                  </div>
+                </div>
               </motion.div>
             </motion.div>
           </div>
@@ -644,6 +747,56 @@ export default function CompanyHistoryPage() {
           </div>
         </div>
       </section>
+
+      {/* Modal for Certificate Preview */}
+      <AnimatePresence>
+        {isModalOpen && selectedCert && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={closeModal}>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            />
+            
+            <motion.div
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden relative z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-white/90 backdrop-blur-sm border-b">
+                <h2 className="text-xl font-bold text-[#153969]">{selectedCert.title}</h2>
+                <motion.button 
+                  onClick={closeModal}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <X className="h-6 w-6 text-gray-600" />
+                </motion.button>
+              </div>
+              
+              <div className="overflow-y-auto p-6 pt-2 flex flex-col items-center justify-center bg-gray-50 h-[calc(90vh-80px)]">
+                <div className="relative w-full h-[70vh] mb-4">
+                  <Image
+                    src={selectedCert.image}
+                    alt={selectedCert.title}
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+                <p className="text-gray-700 text-center max-w-lg mt-4">
+                  {selectedCert.description}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

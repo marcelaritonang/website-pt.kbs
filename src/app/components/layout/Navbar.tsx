@@ -143,7 +143,7 @@ export default function Navbar() {
               description: 'Journey since establishment in 2005' 
             },
             { 
-              name: 'ISO Certifications', 
+              name: 'Certifications', 
               href: '/about/iso',
               description: 'International quality certifications' 
             },
@@ -151,11 +151,6 @@ export default function Navbar() {
               name: 'Our Team', 
               href: '/about/team',
               description: 'Professional and dedicated members' 
-            },
-            { 
-              name: 'Certifications', 
-              href: '/about/certifications',
-              description: 'Industry credentials and qualifications' 
             }
           ]
         }
