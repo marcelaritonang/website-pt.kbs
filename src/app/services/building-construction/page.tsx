@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Building, CheckCircle, ArrowRight, Clock, Shield, Award, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, ArrowRight, Clock, Shield, Award, Users, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function ConstructionBuilding() {
   const [activeSection, setActiveSection] = useState<string | null>(null);

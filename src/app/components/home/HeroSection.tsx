@@ -3,16 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import Link from 'next/link'
 
-interface HeroSectionProps {
-  slides: {
-    image: string;
-    title: string;
-    category: string;
-    description: string;
-  }[];
-}
 
 const slides = [
   {

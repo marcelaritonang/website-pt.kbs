@@ -5,11 +5,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Building2, Users, Clock, MapPin } from 'lucide-react';
 
-const brandColors = {
-  primary: '#153969',    // Navy Blue
-  secondary: '#1E4D2B',  // Dark Green
-  accent: '#4A90E2',     // Light Blue
-};
+
 
 const officeLocation = {
   top: "58%",

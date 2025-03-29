@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Building2, Hammer, Factory, Settings } from 'lucide-react';
-import Link from 'next/link';
+
 
 
 

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ClipboardList, CheckCircle, ArrowRight, Clock, Shield, Award, Users, ChevronDown, ChevronUp, BarChart3, Briefcase } from 'lucide-react';
+import { ClipboardList, CheckCircle, ArrowRight, Clock, Shield, Award, Users, ChevronDown, BarChart3, Briefcase } from 'lucide-react';
 import CountUp from 'react-countup';
 
 export default function ProjectManagement() {

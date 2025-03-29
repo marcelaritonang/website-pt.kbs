@@ -42,11 +42,7 @@ export default function CompanyHistoryPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
   
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.8 } }
-  };
+
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },

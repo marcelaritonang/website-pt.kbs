@@ -3,7 +3,7 @@
 
 import React, { useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
-import { Shield, Lock, FileText, Eye, UserCheck, Scale, AlertCircle, Mail, Phone } from 'lucide-react';
+import { Shield, Lock, Eye, UserCheck, Scale, AlertCircle, Mail, Phone } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   // Animation variants

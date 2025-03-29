@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ArrowRight, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Data berita yang relevan dengan konstruksi di Indonesia
 const insightPosts = [
@@ -153,6 +153,7 @@ const BlogNewsSection = () => {
           behavior: 'smooth'
         });
       } catch (error) {
+        console.error("ScrollTo not supported:", error);
         // Fallback jika scrollTo tidak didukung
         if (carouselRef.current) {
           carouselRef.current.scrollLeft = newPosition;
@@ -190,7 +191,7 @@ const BlogNewsSection = () => {
         }
       };
     }
-  }, [currentSlide, isPaused, totalSlides]);
+  }, [currentSlide, isPaused, totalSlides, nextSlide]);
 
   // Reset current slide ketika category berubah
   useEffect(() => {
@@ -202,6 +203,7 @@ const BlogNewsSection = () => {
           behavior: 'auto'
         });
       } catch (error) {
+        console.error("ScrollTo not supported:", error);
         if (carouselRef.current) {
           carouselRef.current.scrollLeft = 0;
         }

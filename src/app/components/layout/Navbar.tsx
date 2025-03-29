@@ -615,8 +615,8 @@ export default function Navbar() {
   )
 }
 
-// Utility function for smooth scrolling in older browsers
-const smoothScrollPolyfill = (element: Element, options: ScrollIntoViewOptions) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const smoothScrollPolyfill = (element: Element, _options: ScrollIntoViewOptions) => {
   const { top } = element.getBoundingClientRect();
   const startPosition = window.pageYOffset;
   const targetPosition = startPosition + top;

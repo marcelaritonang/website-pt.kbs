@@ -7,26 +7,6 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowLeft, Share2, Bookmark, Facebook, Twitter, Linkedin, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// Interface untuk konten artikel
-interface ContentBlock {
-  type: 'paragraph' | 'subheading' | 'image' | 'list' | 'quote';
-  content?: string;
-  url?: string;
-  caption?: string;
-  items?: string[];
-  author?: string;
-}
-
-interface RelatedArticle {
-  id: number;
-  title: string;
-  excerpt: string;
-  category: string;
-  image: string;
-  date: string;
-  readTime: string;
-  slug: string;
-}
 
 // Data artikel untuk kontraktor - versi revisi
 const contractorArticle = {

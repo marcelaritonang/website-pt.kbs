@@ -1,17 +1,10 @@
 'use client';
-
-import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Building2, HardHat, Hammer, Watch, Users, TrendingUp, Scale, Shield, Check } from 'lucide-react';
 
 export default function ServicesPage() {
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.8 } }
-  };
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -332,7 +325,7 @@ export default function ServicesPage() {
             variants={staggerChildren}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {allServices.map((service, index) => (
+            {allServices.map((service) => (
               <motion.div
                 key={service.id}
                 variants={fadeInUp}

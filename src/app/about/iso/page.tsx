@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ZoomIn, Calendar, Award, BookOpen, FileText, Check, ChevronUp, ChevronDown, ExternalLink, Users } from 'lucide-react';
+import { X, ZoomIn,Award, BookOpen, FileText, Check, ChevronUp, ChevronDown, ExternalLink, Users } from 'lucide-react';
 
 const CertificationsPage = () => {
   // State for selected category and modal
@@ -178,29 +178,6 @@ const CertificationsPage = () => {
     }
   ];
 
-  // Key Partners for Certification
-  const certificationPartners = [
-    {
-      name: 'TUV Rheinland',
-      logo: '/images/partners/tuv-rheinland.png',
-      description: 'Badan sertifikasi internasional untuk standar ISO'
-    },
-    {
-      name: 'LPJK Nasional',
-      logo: '/images/partners/lpjk.png',
-      description: 'Lembaga pengembangan jasa konstruksi'
-    },
-    {
-      name: 'KADIN Indonesia',
-      logo: '/images/partners/kadin.png',
-      description: 'Kamar Dagang dan Industri Indonesia'
-    },
-    {
-      name: 'GAPENSI',
-      logo: '/images/partners/gapensi.png',
-      description: 'Gabungan Pelaksana Konstruksi Indonesia'
-    }
-  ];
 
   // Benefits of having certifications
   const certificationBenefits = [

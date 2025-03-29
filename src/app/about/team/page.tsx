@@ -1,16 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, ChevronDown, ChevronUp, Building2, Users, Clock } from 'lucide-react';
 
-// Colors
-const brandColors = {
-  primary: '#153969',    // Navy Blue
-  accent: '#718bab',     // Light Blue
-};
 
 // Office location
 const officeLocation = {

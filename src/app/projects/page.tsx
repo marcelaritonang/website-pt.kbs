@@ -400,12 +400,12 @@ export default function ProjectsPage() {
     if ((activeCategory !== 'all' || searchTerm) && projectsRef.current) {
       scrollToProjects();
     }
-  }, [activeCategory, searchTerm, isMounted]);
+  }, [activeCategory, searchTerm, isMounted, projectsData, scrollToProjects]);
 
   // Initialize filteredProjects when component mounts
   useEffect(() => {
     setFilteredProjects(projectsData);
-  }, []);
+  }, [projectsData]);
 
   // Load more projects function
   const loadMoreProjects = () => {
@@ -576,8 +576,8 @@ export default function ProjectsPage() {
                 )}
                 {searchTerm && (
                   <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full mr-2 mb-1 inline-flex items-center">
-                    "{searchTerm}"
-                  </span>
+                  &quot;{searchTerm}&quot;
+                </span>
                 )}
                 <span className="text-gray-400">
                   {filteredProjects.length} proyek ditemukan
