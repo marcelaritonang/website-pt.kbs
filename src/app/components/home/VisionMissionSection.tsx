@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import { motion } from 'framer-motion';
-import { EyeIcon, BookmarkIcon, CheckIcon, MenuIcon, XIcon } from 'lucide-react';
+import { EyeIcon, BookmarkIcon, CheckIcon, } from 'lucide-react';
 
 const AnimatedIsometric = () => {
   // Animation variants for isometric shapes
