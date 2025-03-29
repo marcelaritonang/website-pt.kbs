@@ -1,14 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { Building2, Hammer, Factory, Settings } from 'lucide-react';
+import { Building2, Hammer, Factory, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
+// Definisikan tipe untuk project
+interface Project {
+  title: string;
+  description: string;
+}
 
+// Definisikan tipe untuk service
+interface Service {
+  id: string;
+  title: string;
+  icon: React.ElementType;
+  image: string;
+  description: string;
+  projects: Project[];
+}
 
-
-const services = [
+const services: Service[] = [
   {
     id: 'buildings',
     title: 'Gedung & Properti',
@@ -79,19 +92,56 @@ const services = [
   }
 ];
 
-const ServicesSection = () => {
-  const [activeService, setActiveService] = useState(services[0]);
+const ServicesSection: React.FC = () => {
+  const [activeService, setActiveService] = useState<Service>(services[0]);
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const handleNextService = () => {
+    const newIndex = (activeIndex + 1) % services.length;
+    setActiveIndex(newIndex);
+    setActiveService(services[newIndex]);
+  };
+
+  const handlePrevService = () => {
+    const newIndex = (activeIndex - 1 + services.length) % services.length;
+    setActiveIndex(newIndex);
+    setActiveService(services[newIndex]);
+  };
+
+  // Function to handle scrolling tabs into view on mobile
+  const scrollTabIntoView = (index: number) => {
+    if (scrollRef.current) {
+      const tabElements = scrollRef.current.children[0].children;
+      if (tabElements && tabElements.length > index) {
+        const tabElement = tabElements[index] as HTMLElement;
+        if (tabElement) {
+          tabElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+          });
+        }
+      }
+    }
+  };
+
+  const selectService = (service: Service, index: number) => {
+    setActiveService(service);
+    setActiveIndex(index);
+    scrollTabIntoView(index);
+  };
 
   return (
-    <section className="min-h-screen bg-[#f8fafc] py-20">
+    <section className="min-h-screen bg-[#f8fafc] py-10 md:py-20">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-8 md:mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-sm font-semibold text-[#153969] tracking-wider uppercase mb-3"
+            className="text-xs md:text-sm font-semibold text-[#153969] tracking-wider uppercase mb-2 md:mb-3"
           >
             LAYANAN KAMI
           </motion.h2>
@@ -99,19 +149,38 @@ const ServicesSection = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl md:text-5xl font-bold text-gray-900 mb-6"
+            className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6"
           >
             Membangun dengan Visi dan Kualitas
           </motion.h3>
         </div>
 
-        {/* Service Navigation */}
-        <div className="flex justify-center mb-12 overflow-x-auto">
+        {/* Mobile Navigation Controls */}
+        <div className="flex items-center justify-between mb-4 md:hidden">
+          <button 
+            onClick={handlePrevService}
+            className="p-2 rounded-full bg-white shadow-md border border-gray-100"
+          >
+            <ChevronLeft className="w-5 h-5 text-[#153969]" />
+          </button>
+          <span className="text-sm font-medium text-gray-600">
+            {activeService.title}
+          </span>
+          <button 
+            onClick={handleNextService}
+            className="p-2 rounded-full bg-white shadow-md border border-gray-100"
+          >
+            <ChevronRight className="w-5 h-5 text-[#153969]" />
+          </button>
+        </div>
+
+        {/* Service Navigation - Desktop */}
+        <div className="hidden md:flex justify-center mb-12 overflow-x-auto">
           <div className="flex space-x-8">
-            {services.map((service) => (
+            {services.map((service, index) => (
               <button
                 key={service.id}
-                onClick={() => setActiveService(service)}
+                onClick={() => selectService(service, index)}
                 className="group relative px-4 py-2"
               >
                 <span className={`text-lg font-medium transition-colors whitespace-nowrap ${
@@ -132,6 +201,33 @@ const ServicesSection = () => {
           </div>
         </div>
 
+        {/* Service Navigation - Mobile Tabs */}
+        <div className="flex md:hidden mb-6 overflow-x-auto hide-scrollbar" ref={scrollRef}>
+          <div className="flex space-x-3 w-full">
+            {services.map((service, index) => {
+              const ServiceIcon = service.icon;
+              return (
+                <button
+                  key={service.id}
+                  onClick={() => selectService(service, index)}
+                  className={`flex-shrink-0 px-3 py-2 rounded-full ${
+                    activeService.id === service.id 
+                      ? 'bg-[#153969] text-white shadow-md' 
+                      : 'bg-white border border-gray-200 text-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    <ServiceIcon className="w-4 h-4" />
+                    <span className="text-xs font-medium whitespace-nowrap">
+                      {service.title}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Content Area */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -140,10 +236,10 @@ const ServicesSection = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
-            className="grid lg:grid-cols-12 gap-12 items-start"
+            className="grid lg:grid-cols-12 gap-6 md:gap-12 items-start"
           >
             {/* Image Section */}
-            <div className="lg:col-span-7 relative h-[600px] rounded-2xl overflow-hidden">
+            <div className="lg:col-span-7 relative h-[300px] md:h-[450px] lg:h-[600px] rounded-xl md:rounded-2xl overflow-hidden">
               <motion.div
                 initial={{ scale: 1.5 }}
                 animate={{ scale: 1 }}
@@ -163,25 +259,25 @@ const ServicesSection = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
-                className="absolute bottom-0 left-0 right-0 p-8"
+                className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8"
               >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 rounded-xl bg-white/10 backdrop-blur">
-                    <activeService.icon className="w-6 h-6 text-white" />
+                <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-4">
+                  <div className="p-2 md:p-3 rounded-lg md:rounded-xl bg-white/10 backdrop-blur">
+                    {React.createElement(activeService.icon, { className: "w-4 h-4 md:w-6 md:h-6 text-white" })}
                   </div>
-                  <h4 className="text-3xl font-bold text-white">
+                  <h4 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
                     {activeService.title}
                   </h4>
                 </div>
-                <p className="text-lg text-white/90 max-w-2xl">
+                <p className="text-sm md:text-base lg:text-lg text-white/90 max-w-2xl line-clamp-2 md:line-clamp-none">
                   {activeService.description}
                 </p>
               </motion.div>
             </div>
 
             {/* Projects List */}
-            <div className="lg:col-span-5 space-y-6">
-              <h5 className="text-xl font-semibold text-gray-900 mb-8">
+            <div className="lg:col-span-5 space-y-4 md:space-y-6">
+              <h5 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-8">
                 Proyek Unggulan
               </h5>
               {activeService.projects.map((project, index) => (
@@ -190,14 +286,12 @@ const ServicesSection = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.2 }}
-                  className="group p-6 rounded-xl bg-white border border-gray-200 hover:border-[#153969] 
-                           transition-all duration-300 hover:shadow-lg"
+                  className="group p-4 md:p-6 rounded-lg md:rounded-xl bg-white border border-gray-200 hover:border-[#153969] transition-all duration-300 hover:shadow-lg"
                 >
-                  <h6 className="text-lg font-semibold text-gray-900 mb-2 
-                               group-hover:text-[#153969] transition-colors">
+                  <h6 className="text-base md:text-lg font-semibold text-gray-900 mb-1 md:mb-2 group-hover:text-[#153969] transition-colors">
                     {project.title}
                   </h6>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-sm md:text-base text-gray-600 leading-relaxed">
                     {project.description}
                   </p>
                 </motion.div>
@@ -206,9 +300,7 @@ const ServicesSection = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="mt-8 w-full bg-[#153969] text-white px-8 py-4 rounded-xl 
-                         hover:bg-[#1e4d8d] transition-all duration-300 shadow-lg
-                         hover:shadow-[#153969]/20"
+                className="mt-6 md:mt-8 w-full bg-[#153969] text-white px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl hover:bg-[#1e4d8d] transition-all duration-300 shadow-md md:shadow-lg hover:shadow-[#153969]/20 text-sm md:text-base"
               >
                 Konsultasikan Proyek Anda
               </motion.button>
@@ -216,6 +308,16 @@ const ServicesSection = () => {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <style jsx global>{`
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </section>
   );
 };

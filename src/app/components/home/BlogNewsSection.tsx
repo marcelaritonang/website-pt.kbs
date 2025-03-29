@@ -4,10 +4,22 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ArrowRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Clock, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+
+// Definisikan tipe untuk post
+interface Post {
+  id: number;
+  title: string;
+  excerpt: string;
+  category: string;
+  image: string;
+  date: string;
+  readTime: string;
+  slug: string;
+}
 
 // Data berita yang relevan dengan konstruksi di Indonesia
-const insightPosts = [
+const insightPosts: Post[] = [
   {
     id: 1,
     title: "PUPR Fokuskan Anggaran 2024 untuk Penyelesaian Infrastruktur Prioritas",
@@ -114,16 +126,46 @@ const insightPosts = [
 const categories = ["Semua", "Proyek", "Layanan", "Manajemen", "Regulasi", "Teknologi"];
 
 // Konstanta untuk mengontrol tampilan
-const ITEMS_PER_SLIDE = 3; // 3 item per slide (3 kolom)
-const AUTO_SLIDE_INTERVAL = 2000; // 2 detik interval
+const ITEMS_PER_SLIDE_DESKTOP = 3; // 3 item per slide untuk desktop (3 kolom)
+const ITEMS_PER_SLIDE_TABLET = 2; // 2 item per slide untuk tablet (2 kolom)
+const ITEMS_PER_SLIDE_MOBILE = 1; // 1 item per slide untuk mobile (1 kolom)
+const AUTO_SLIDE_INTERVAL = 5000; // 5 detik interval
 
-const BlogNewsSection = () => {
+const BlogNewsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [hoverCard, setHoverCard] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
+  
+  // Update window width on mount and resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    
+    // Initial width
+    if (typeof window !== 'undefined') {
+      setWindowWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize);
+      }
+    };
+  }, []);
+  
+  // Determine items per slide based on screen width
+  const getItemsPerSlide = () => {
+    if (windowWidth >= 1024) return ITEMS_PER_SLIDE_DESKTOP;
+    if (windowWidth >= 640) return ITEMS_PER_SLIDE_TABLET;
+    return ITEMS_PER_SLIDE_MOBILE;
+  };
   
   // Filter berita berdasarkan kategori
   const filteredPosts = activeCategory === "Semua" 
@@ -131,7 +173,7 @@ const BlogNewsSection = () => {
     : insightPosts.filter(post => post.category === activeCategory);
 
   // Jumlah slide berdasarkan konten yang terfilter
-  const totalSlides = Math.ceil(filteredPosts.length / ITEMS_PER_SLIDE);
+  const totalSlides = Math.ceil(filteredPosts.length / getItemsPerSlide());
 
   // Fungsi untuk memastikan slide index valid
   const getValidSlideIndex = (index: number) => {
@@ -176,7 +218,7 @@ const BlogNewsSection = () => {
     scrollToSlide(prevIndex);
   };
 
-  // Auto slide interval - sekarang setiap 2 detik
+  // Auto slide interval
   useEffect(() => {
     if (!isPaused && totalSlides > 1) {
       const timer = setTimeout(() => {
@@ -191,7 +233,7 @@ const BlogNewsSection = () => {
         }
       };
     }
-  }, [currentSlide, isPaused, totalSlides, nextSlide]);
+  }, [currentSlide, isPaused, totalSlides]);
 
   // Reset current slide ketika category berubah
   useEffect(() => {
@@ -225,29 +267,69 @@ const BlogNewsSection = () => {
     }
   };
 
+  // Pilih kategori dan tutup menu dropdown (mobile)
+  const selectCategory = (category: string) => {
+    setActiveCategory(category);
+    setShowCategoryMenu(false);
+  };
+
   return (
-    <section className="py-12 bg-gray-50 overflow-hidden">
+    <section className="py-8 md:py-12 bg-gray-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header dengan efek warna gradient */}
-        <div className="text-center mb-10 relative">
+        <div className="text-center mb-6 md:mb-10 relative">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-[#153969] mb-3 relative inline-block">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#153969] mb-2 md:mb-3 relative inline-block">
               Insight & Informasi Industri
               <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-blue-500/80 to-blue-300/0"></div>
             </h2>
-            <p className="text-base text-gray-600 max-w-2xl mx-auto">
+            <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
               Perkembangan terbaru di dunia konstruksi dan properti Indonesia
             </p>
           </motion.div>
         </div>
 
-        {/* Category Filters */}
-        <div className="flex justify-center mb-8 overflow-x-auto pb-2">
+        {/* Mobile Category Dropdown */}
+        <div className="md:hidden mb-4 relative">
+          <button 
+            onClick={() => setShowCategoryMenu(!showCategoryMenu)}
+            className="w-full flex items-center justify-between bg-white p-3 rounded-lg shadow-sm border border-gray-100"
+          >
+            <span className="text-sm font-medium text-gray-800">{activeCategory}</span>
+            <Filter className="h-4 w-4 text-gray-500" />
+          </button>
+          
+          {showCategoryMenu && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-100 z-20 overflow-hidden"
+            >
+              {categories.map((category, index) => (
+                <button
+                  key={index}
+                  onClick={() => selectCategory(category)}
+                  className={`w-full text-left p-3 text-sm transition-colors ${
+                    activeCategory === category
+                      ? 'bg-[#153969]/10 text-[#153969] font-medium'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </div>
+
+        {/* Desktop Category Filters */}
+        <div className="hidden md:flex justify-center mb-8 overflow-x-auto pb-2">
           <div className="bg-white p-1.5 rounded-full shadow-md flex space-x-1 no-scrollbar">
             {categories.map((category, index) => (
               <button
@@ -266,10 +348,10 @@ const BlogNewsSection = () => {
         </div>
 
         {/* Featured Content */}
-        <div className="mb-12">
+        <div className="mb-8 md:mb-12">
           {/* Section title */}
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-xl font-semibold text-gray-900">Featured Insights</h3>
+          <div className="flex items-center justify-between mb-4 md:mb-5">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900">Featured Insights</h3>
             
             {/* Navigation arrows - desktop only */}
             <div className="hidden md:flex items-center space-x-2">
@@ -299,23 +381,25 @@ const BlogNewsSection = () => {
             className="relative"
             onMouseEnter={pauseAutoPlay}
             onMouseLeave={resumeAutoPlay}
+            onTouchStart={pauseAutoPlay}
+            onTouchEnd={resumeAutoPlay}
           >
             {filteredPosts.length === 0 ? (
-              <div className="flex justify-center items-center h-64 bg-white rounded-xl shadow-sm">
-                <p className="text-gray-500">Tidak ada artikel dalam kategori ini</p>
+              <div className="flex justify-center items-center h-48 md:h-64 bg-white rounded-xl shadow-sm">
+                <p className="text-gray-500 text-sm md:text-base">Tidak ada artikel dalam kategori ini</p>
               </div>
             ) : (
               <>
-                {/* Left Navigation Button - mobile only */}
+                {/* Left Navigation Button - mobile & tablet */}
                 {totalSlides > 1 && (
                   <motion.button 
                     onClick={prevSlide}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="md:hidden absolute left-0 top-1/2 -translate-y-1/2 -ml-2 z-10 bg-white/90 rounded-full p-2 shadow-md text-[#153969] hover:bg-[#153969] hover:text-white transition-all duration-300 focus:outline-none"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 z-10 bg-white/90 rounded-full p-1.5 md:p-2 shadow-md text-[#153969] hover:bg-[#153969] hover:text-white transition-all duration-300 focus:outline-none"
                     aria-label="Previous slide"
                   >
-                    <ChevronLeft className="h-5 w-5" />
+                    <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
                   </motion.button>
                 )}
                 
@@ -328,8 +412,9 @@ const BlogNewsSection = () => {
                   {/* Render slides */}
                   {Array.from({ length: totalSlides }).map((_, slideIndex) => {
                     // Dapatkan subset post untuk slide ini
-                    const startIndex = slideIndex * ITEMS_PER_SLIDE;
-                    const endIndex = Math.min(startIndex + ITEMS_PER_SLIDE, filteredPosts.length);
+                    const itemsPerSlide = getItemsPerSlide();
+                    const startIndex = slideIndex * itemsPerSlide;
+                    const endIndex = Math.min(startIndex + itemsPerSlide, filteredPosts.length);
                     const postsInThisSlide = filteredPosts.slice(startIndex, endIndex);
                     
                     return (
@@ -337,7 +422,7 @@ const BlogNewsSection = () => {
                         key={slideIndex} 
                         className="min-w-full flex-shrink-0 snap-center px-1"
                       >
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
                           {postsInThisSlide.map((post) => (
                             <Link 
                               key={post.id}
@@ -354,7 +439,7 @@ const BlogNewsSection = () => {
                                 onMouseLeave={() => setHoverCard(null)}
                               >
                                 {/* Image container */}
-                                <div className="relative h-48 overflow-hidden">
+                                <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
                                   <Image
                                     src={post.image}
                                     alt={post.title}
@@ -372,8 +457,8 @@ const BlogNewsSection = () => {
                                 </div>
                                 
                                 {/* Content */}
-                                <div className="p-4">
-                                  <div className="flex items-center justify-between text-gray-500 text-xs mb-2">
+                                <div className="p-3 md:p-4">
+                                  <div className="flex items-center justify-between text-gray-500 text-xs mb-1 md:mb-2">
                                     <span>{post.date}</span>
                                     <div className="flex items-center">
                                       <Clock className="h-3 w-3 mr-1" />
@@ -381,11 +466,11 @@ const BlogNewsSection = () => {
                                     </div>
                                   </div>
                                   
-                                  <h3 className="font-bold text-base text-gray-800 mb-2 line-clamp-2 group-hover:text-[#153969] transition-colors">
+                                  <h3 className="font-bold text-sm md:text-base text-gray-800 mb-2 line-clamp-2 group-hover:text-[#153969] transition-colors">
                                     {post.title}
                                   </h3>
                                   
-                                  <div className="inline-flex items-center text-[#153969] font-medium text-sm mt-1">
+                                  <div className="inline-flex items-center text-[#153969] font-medium text-xs md:text-sm mt-1">
                                     <span>Baca Selengkapnya</span>
                                     <ArrowRight className="ml-1 h-3 w-3 transform group-hover:translate-x-1 transition-transform duration-300" />
                                   </div>
@@ -399,16 +484,16 @@ const BlogNewsSection = () => {
                   })}
                 </div>
 
-                {/* Right Navigation Button - mobile only */}
+                {/* Right Navigation Button */}
                 {totalSlides > 1 && (
                   <motion.button 
                     onClick={nextSlide}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 -mr-2 z-10 bg-white/90 rounded-full p-2 shadow-md text-[#153969] hover:bg-[#153969] hover:text-white transition-all duration-300 focus:outline-none"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 -mr-2 z-10 bg-white/90 rounded-full p-1.5 md:p-2 shadow-md text-[#153969] hover:bg-[#153969] hover:text-white transition-all duration-300 focus:outline-none"
                     aria-label="Next slide"
                   >
-                    <ChevronRight className="h-5 w-5" />
+                    <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
                   </motion.button>
                 )}
               </>
@@ -424,8 +509,8 @@ const BlogNewsSection = () => {
                   onClick={() => scrollToSlide(index)}
                   className={`transition-all duration-300 rounded-full ${
                     currentSlide === index 
-                      ? 'w-6 h-2 bg-[#153969]' 
-                      : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+                      ? 'w-5 md:w-6 h-1.5 md:h-2 bg-[#153969]' 
+                      : 'w-1.5 md:w-2 h-1.5 md:h-2 bg-gray-300 hover:bg-gray-400'
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
@@ -433,10 +518,10 @@ const BlogNewsSection = () => {
             </div>
           )}
           
-          {/* Slide auto-change information */}
+          {/* Slide auto-change information - only on desktop */}
           {totalSlides > 1 && (
-            <div className="text-center text-xs text-gray-400 mt-2">
-              Slide bergeser otomatis setiap 2 detik
+            <div className="text-center text-xs text-gray-400 mt-2 hidden md:block">
+              Slide bergeser otomatis setiap 5 detik
             </div>
           )}
         </div>
@@ -444,16 +529,16 @@ const BlogNewsSection = () => {
         {/* View All Button */}
         <div className="text-center">
           <motion.div
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
             <Link
               href="/insight"
-              className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-[#153969] to-[#2e5694] text-white text-sm font-medium rounded-lg shadow-md hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
+              className="inline-flex items-center px-4 md:px-5 py-2 md:py-2.5 bg-gradient-to-r from-[#153969] to-[#2e5694] text-white text-xs md:text-sm font-medium rounded-lg shadow-md hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
             >
               <span className="relative z-10">
                 Lihat Semua Insight
-                <ArrowRight className="inline-block ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                <ArrowRight className="inline-block ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 group-hover:translate-x-1 transition-transform duration-300" />
               </span>
               <span className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-[#1c4d8c] to-[#3a68ad] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             </Link>

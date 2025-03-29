@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { motion } from 'framer-motion';
-import { EyeIcon, BookmarkIcon, CheckIcon } from 'lucide-react';
+import { EyeIcon, BookmarkIcon, CheckIcon, MenuIcon, XIcon } from 'lucide-react';
 
 const AnimatedIsometric = () => {
   // Animation variants for isometric shapes
@@ -32,21 +32,22 @@ const AnimatedIsometric = () => {
     }
   };
 
+  // Adjust position and size for mobile responsiveness
   return (
     <motion.div 
-      className="absolute -right-24 top-1/2 -translate-y-1/2 w-[400px] h-[400px]"
+      className="absolute -right-8 md:-right-24 top-1/2 -translate-y-1/2 w-[200px] h-[200px] md:w-[400px] md:h-[400px] opacity-50 md:opacity-100"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
     >
-      {/* Building 1 */}
+      {/* Building 1 - Reduced size on mobile */}
       <motion.div
         variants={shapeVariants}
-        className="absolute top-0 right-96 w-64 h-64"
+        className="absolute top-0 right-40 md:right-96 w-32 h-32 md:w-64 md:h-64"
         animate={{
-          y: [-10, 10, -10],
-          rotate: [-2, 2, -2]
+          y: [-5, 5, -5],
+          rotate: [-1, 1, -1]
         }}
         transition={{
           duration: 6,
@@ -85,13 +86,13 @@ const AnimatedIsometric = () => {
         </svg>
       </motion.div>
 
-      {/* Crane Structure */}
+      {/* Crane Structure - Hidden on small screens, visible on larger */}
       <motion.div
         variants={shapeVariants}
-        className="absolute top-32 right-64 w-64 h-64"
+        className="absolute top-16 md:top-32 right-32 md:right-64 w-32 h-32 md:w-64 md:h-64 hidden sm:block"
         animate={{
-          y: [0, 15, 0],
-          rotate: [0, -3, 0]
+          y: [0, 8, 0],
+          rotate: [0, -2, 0]
         }}
         transition={{
           duration: 8,
@@ -122,10 +123,10 @@ const AnimatedIsometric = () => {
       {/* Construction Platform */}
       <motion.div
         variants={shapeVariants}
-        className="absolute top-64 right-32 w-64 h-64"
+        className="absolute top-32 md:top-64 right-16 md:right-32 w-32 h-32 md:w-64 md:h-64"
         animate={{
-          y: [5, -5, 5],
-          x: [-5, 5, -5]
+          y: [3, -3, 3],
+          x: [-3, 3, -3]
         }}
         transition={{
           duration: 7,
@@ -158,6 +159,8 @@ const AnimatedIsometric = () => {
 };
 
 const VisionMissionSection = () => {
+  const [activeTab, setActiveTab] = useState('vision'); // 'vision' or 'mission'
+  
   // Text animation variants
   const textContainerVariants = {
     hidden: { opacity: 0 },
@@ -196,7 +199,7 @@ const VisionMissionSection = () => {
   };
 
   return (
-    <section className="relative bg-white py-8 overflow-hidden h-screen flex items-center">
+    <section className="relative bg-white py-6 md:py-8 overflow-hidden min-h-screen flex items-center">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-blue-50" />
       
@@ -204,63 +207,93 @@ const VisionMissionSection = () => {
       <AnimatedIsometric />
       
       {/* Content Container */}
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div 
           variants={textContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-6"
+          className="text-center mb-4 md:mb-6"
         >
           <motion.h2 
-            className="text-3xl font-bold text-gray-900 mb-4"
+            className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4"
             variants={textContainerVariants}
           >
             {splitText("Visi & Misi Perusahaan")}
           </motion.h2>
           <motion.div 
-            className="w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto rounded-full"
+            className="w-20 md:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto rounded-full"
             variants={textVariants}
           />
         </motion.div>
 
+        {/* Tab navigation for mobile */}
+        <div className="flex justify-center mb-4 md:hidden">
+          <div className="flex rounded-lg bg-gray-100 p-1">
+            <button
+              onClick={() => setActiveTab('vision')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition ${
+                activeTab === 'vision' 
+                  ? 'bg-white shadow text-blue-600' 
+                  : 'text-gray-600'
+              }`}
+            >
+              Visi
+            </button>
+            <button
+              onClick={() => setActiveTab('mission')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition ${
+                activeTab === 'mission' 
+                  ? 'bg-white shadow text-blue-600' 
+                  : 'text-gray-600'
+              }`}
+            >
+              Misi
+            </button>
+          </div>
+        </div>
+
         {/* Vision & Mission Content */}
         <div className="space-y-4">
-          {/* Vision Card */}
+          {/* Vision Card - Always visible on desktop, conditionally on mobile */}
           <motion.div
             variants={textContainerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="relative group bg-white/80 backdrop-blur-xl p-4 rounded-2xl border border-blue-100 shadow-xl"
+            className={`relative group bg-white/80 backdrop-blur-xl p-4 rounded-2xl border border-blue-100 shadow-xl ${
+              activeTab !== 'vision' ? 'hidden md:block' : ''
+            }`}
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 rounded-xl bg-blue-50 border border-blue-100">
                 <EyeIcon className="w-5 h-5 text-blue-500" />
               </div>
-              <motion.h3 variants={textVariants} className="text-2xl font-bold text-gray-900">
+              <motion.h3 variants={textVariants} className="text-xl md:text-2xl font-bold text-gray-900">
                 Visi
               </motion.h3>
             </div>
-            <motion.p className="text-gray-600 leading-relaxed text-base">
+            <motion.p className="text-gray-600 leading-relaxed text-sm md:text-base">
               {splitText("Menjadi perusahaan terpercaya dan terdepan dalam layanan General Contractor, Dump Truck, dan Heavy Equipment, dengan menghadirkan solusi pembangunan yang inovatif, berkualitas tinggi, dan berkelanjutan.")}
             </motion.p>
           </motion.div>
 
-          {/* Mission Card */}
+          {/* Mission Card - Always visible on desktop, conditionally on mobile */}
           <motion.div
             variants={textContainerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="relative group bg-white/80 backdrop-blur-xl p-4 rounded-2xl border border-blue-100 shadow-xl"
+            className={`relative group bg-white/80 backdrop-blur-xl p-4 rounded-2xl border border-blue-100 shadow-xl ${
+              activeTab !== 'mission' ? 'hidden md:block' : ''
+            }`}
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 rounded-xl bg-blue-50 border border-blue-100">
                 <BookmarkIcon className="w-5 h-5 text-blue-500" />
               </div>
-              <motion.h3 variants={textVariants} className="text-2xl font-bold text-gray-900">
+              <motion.h3 variants={textVariants} className="text-xl md:text-2xl font-bold text-gray-900">
                 Misi
               </motion.h3>
             </div>
@@ -272,12 +305,12 @@ const VisionMissionSection = () => {
                 <motion.li
                   key={index}
                   variants={textVariants}
-                  className="flex gap-3"
+                  className="flex gap-2 md:gap-3"
                 >
                   <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mt-1">
                     <CheckIcon className="w-3 h-3 text-blue-500" />
                   </div>
-                  <p className="text-gray-600 leading-relaxed text-base">
+                  <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                     {splitText(mission)}
                   </p>
                 </motion.li>
