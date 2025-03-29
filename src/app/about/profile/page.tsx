@@ -119,7 +119,7 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="text-lg text-gray-700"
             >
-              With our commitment to quality, innovation, and sustainability, we strive to deliver excellence in every project we undertake, ensuring client satisfaction and contributing to Indonesia's development.
+              {`With our commitment to quality, innovation, and sustainability, we strive to deliver excellence in every project we undertake, ensuring client satisfaction and contributing to Indonesia's development.`}
             </motion.p>
           </div>
         </div>
@@ -418,11 +418,11 @@ export default function CompanyProfile() {
                 variants={fadeInUp}
                 className="w-20 h-1 bg-[#153969] mx-auto mb-6"
               />
-              <motion.p 
+              <motion.p
                 variants={fadeInUp}
                 className="text-lg text-gray-700"
               >
-                Key milestones in our company's growth and development
+                Key milestones in our company&apos;s growth and development
               </motion.p>
             </motion.div>
 
