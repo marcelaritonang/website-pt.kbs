@@ -670,7 +670,7 @@ export default function ProjectsPage() {
                 )}
                 {searchTerm && (
                   <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full mr-2 mb-1 inline-flex items-center">
-                    "{searchTerm}"
+                    &quot;{searchTerm}&quot;
                   </span>
                 )}
                 <span className="text-gray-400">
