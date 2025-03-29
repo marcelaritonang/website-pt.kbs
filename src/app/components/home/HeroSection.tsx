@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 
-
 const slides = [
   {
     image: "/images/company.jpg",
@@ -46,6 +45,7 @@ export default function HeroSection() {
   const [direction, setDirection] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
   // Refs untuk menyimpan interval timer
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -58,6 +58,22 @@ export default function HeroSection() {
     accent: '#4A90E2',     // Light Blue
     neutral: '#E5E5E5'     // Light Gray
   };
+
+  // Deteksi ukuran layar
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Check on initial render
+    checkMobile();
+    
+    // Set up listener for window resize
+    window.addEventListener('resize', checkMobile);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Client-side mounting check
   useEffect(() => {
@@ -164,162 +180,19 @@ export default function HeroSection() {
     })
   };
 
-  // Updated shape variants for paired shapes
-  const shapeContainerVariants = {
-    initial: { 
-      opacity: 0,
-      x: 100
-    },
-    animate: { 
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.2
-      }
-    },
-    exit: { 
-      opacity: 0,
-      x: 100,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.1
-      }
-    }
-  };
-
   // Icons
   const PauseIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
       <rect x="6" y="4" width="4" height="16" />
       <rect x="14" y="4" width="4" height="16" />
     </svg>
   );
 
   const PlayIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
       <path d="M8 5v14l11-7z" />
     </svg>
   );
-
-  // Update getIsometricShape to include all slides with paired shapes
-  const getIsometricShape = (slideIndex: number) => {
-    const shapes = {
-      0: [ // Company intro shapes
-        {
-          clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
-          background: `linear-gradient(135deg, ${brandColors.primary}CC, ${brandColors.primary}66)`,
-          rotate: 0,
-          delay: 0
-        },
-        {
-          clipPath: 'polygon(0 0, 100% 0, 50% 100%)',
-          background: `linear-gradient(135deg, ${brandColors.secondary}CC, ${brandColors.secondary}66)`,
-          rotate: 180,
-          delay: 0.2
-        }
-      ],
-      1: [ // Modern Building shapes
-        {
-          clipPath: 'polygon(0 0, 100% 0, 100% 100%)',
-          background: `linear-gradient(135deg, ${brandColors.primary}BB, ${brandColors.accent}66)`,
-          rotate: 45,
-          delay: 0
-        },
-        {
-          clipPath: 'polygon(0 0, 100% 0, 0 100%)',
-          background: `linear-gradient(135deg, ${brandColors.secondary}BB, ${brandColors.primary}66)`,
-          rotate: -45,
-          delay: 0.2
-        }
-      ],
-      2: [ // Infrastructure shapes
-        {
-          clipPath: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
-          background: `linear-gradient(135deg, ${brandColors.accent}CC, ${brandColors.primary}66)`,
-          rotate: 0,
-          delay: 0
-        },
-        {
-          clipPath: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
-          background: `linear-gradient(135deg, ${brandColors.primary}CC, ${brandColors.secondary}66)`,
-          rotate: 45,
-          delay: 0.2
-        }
-      ],
-      3: [ // Residential shapes
-        {
-          clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
-          background: `linear-gradient(135deg, ${brandColors.secondary}CC, ${brandColors.primary}66)`,
-          rotate: 0,
-          delay: 0
-        },
-        {
-          clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
-          background: `linear-gradient(135deg, ${brandColors.primary}CC, ${brandColors.accent}66)`,
-          rotate: 30,
-          delay: 0.2
-        }
-      ]
-    };
-
-    return (
-      <motion.div
-        variants={shapeContainerVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="relative w-[700px] h-[600px]"
-      >
-        {shapes[slideIndex as keyof typeof shapes].map((shape, i) => (
-          <motion.div
-            key={i}
-            variants={{
-              initial: { 
-                opacity: 0,
-                scale: 0.5,
-                x: 100,
-                rotate: shape.rotate - 30
-              },
-              animate: { 
-                opacity: 0.4,
-                scale: 1,
-                x: 0,
-                rotate: shape.rotate,
-                transition: {
-                  duration: 0.8,
-                  delay: shape.delay,
-                  ease: [0.43, 0.13, 0.23, 0.96]
-                }
-              },
-              exit: { 
-                opacity: 0,
-                scale: 0.5,
-                x: 100,
-                rotate: shape.rotate + 30,
-                transition: {
-                  duration: 0.4,
-                  ease: [0.43, 0.13, 0.23, 0.96]
-                }
-              }
-            }}
-            className="absolute"
-            style={{
-              top: `${20 + (i * 15)}%`,
-              right: `${10 + (i * 10)}%`,
-              width: '300px',
-              height: '300px',
-              clipPath: shape.clipPath,
-              background: shape.background,
-              mixBlendMode: 'screen',
-              filter: 'blur(1px)',
-              zIndex: 2 - i
-            }}
-          />
-        ))}
-      </motion.div>
-    );
-  };
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
@@ -348,7 +221,7 @@ export default function HeroSection() {
           }}
           className="absolute inset-0"
         >
-          {/* Background Image dengan Zoom Effect */}
+          {/* Background Image */}
           <motion.div 
             className="relative h-full w-full overflow-hidden"
             initial={{ scale: 1.2 }}
@@ -359,11 +232,11 @@ export default function HeroSection() {
               src={slides[currentSlide].image}
               alt={slides[currentSlide].title}
               fill
-              className="object-cover transform transition-transform scale-110"
+              className="object-cover"
               priority
             />
             {/* Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30" />
             <motion.div 
               className="absolute inset-0"
               initial={{ opacity: 0 }}
@@ -371,154 +244,223 @@ export default function HeroSection() {
               exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
               style={{
-                backgroundImage: 'linear-gradient(45deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%)'
+                backgroundImage: 'linear-gradient(45deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 100%)'
               }}
             />
           </motion.div>
 
-          {/* Content */}
-          <div className="absolute inset-0 flex flex-col justify-center px-20">
-            {/* Category Tag */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <span className="inline-block bg-gradient-to-r from-blue-500/20 to-blue-400/20 backdrop-blur-sm 
-                              text-blue-400 px-6 py-2 rounded-full text-sm font-semibold tracking-wider 
-                              border border-blue-500/20 shadow-lg">
-                {slides[currentSlide].category}
-              </span>
-            </motion.div>
-
-            {/* Title with Enhanced Styling */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="my-6"
-            >
-              <h1 className="text-7xl font-bold leading-tight">
-                {slides[currentSlide].title.split(' ').map((word, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.8 + (i * 0.1) }}
-                    className="inline-block mr-4"
-                  >
-                    <span className="inline-block bg-gradient-to-r from-white via-gray-100 to-gray-300 
-                                    text-transparent bg-clip-text transform hover:scale-105 
-                                    transition-transform duration-300"
-                    >
-                      {word}
-                    </span>
-                  </motion.span>
-                ))}
-              </h1>
-            </motion.div>
-
-            {/* Description with Enhanced Styling */}
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-              className="text-xl text-gray-300 max-w-2xl leading-relaxed
-                          backdrop-blur-sm rounded-lg border border-white/10 
-                          p-6 bg-black/20"
-            >
-              {slides[currentSlide].description}
-            </motion.p>
-
-            {/* Explore More Button improved with scroll to section */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1 }}
-              className="mt-8"
-            >
-              <button 
-                onClick={handleExploreClick}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 
-                          text-white px-8 py-3 rounded-lg
-                          hover:from-blue-600 hover:to-blue-700
-                          transform hover:scale-105 transition-all duration-300
-                          shadow-lg hover:shadow-blue-500/50"
+          {/* Content Container - Mobile Optimized */}
+          <div className="absolute inset-0 flex flex-col justify-center items-start px-6 md:px-20">
+            <div className="w-full max-w-md md:max-w-lg">
+              {/* Category Tag */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="mb-3 md:mb-4"
               >
-                Explore More
-              </button>
-            </motion.div>
+                <span className="inline-block bg-gradient-to-r from-blue-500/20 to-blue-400/20 backdrop-blur-sm 
+                                text-blue-100 px-4 py-1.5 rounded-full text-xs font-medium tracking-wider 
+                                border border-blue-500/20 shadow-lg">
+                  {isMobile && currentSlide === 0 ? "PT KBS" : slides[currentSlide].category}
+                </span>
+              </motion.div>
+
+              {/* Title - Simplified for Mobile */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="mb-4 md:mb-6"
+              >
+                {isMobile ? (
+                  <h1 className="text-4xl font-bold text-white leading-tight">
+                    {currentSlide === 1 ? "Konstruksi Gedung Perkantoran" : slides[currentSlide].title}
+                  </h1>
+                ) : (
+                  <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+                    {slides[currentSlide].title.split(' ').map((word, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.8 + (i * 0.1) }}
+                        className="inline-block mr-4"
+                      >
+                        <span className="inline-block bg-gradient-to-r from-white via-gray-100 to-gray-300 
+                                        text-transparent bg-clip-text transform hover:scale-105 
+                                        transition-transform duration-300"
+                        >
+                          {word}
+                        </span>
+                      </motion.span>
+                    ))}
+                  </h1>
+                )}
+              </motion.div>
+
+              {/* Description - Shortened & Simplified for Mobile */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="mb-5 md:mb-8"
+              >
+                <p className="text-white/90 text-sm md:text-xl leading-relaxed
+                            backdrop-blur-sm rounded-lg border border-white/10 
+                            p-4 bg-black/30">
+                  {isMobile 
+                    ? slides[currentSlide].description.split('.')[0] + '.' 
+                    : slides[currentSlide].description}
+                </p>
+              </motion.div>
+
+              {/* Explore Button - Simplified */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.1 }}
+              >
+                <button 
+                  onClick={handleExploreClick}
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 
+                            text-white px-6 py-2.5 rounded-md text-sm font-medium
+                            hover:from-blue-700 hover:to-blue-800 
+                            shadow-md hover:shadow-blue-500/30"
+                >
+                  Jelajahi Lebih Lanjut
+                </button>
+              </motion.div>
+            </div>
           </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Updated Isometric Shapes positioning */}
-      <div className="absolute -right-48 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-        <AnimatePresence mode="wait">
-          {getIsometricShape(currentSlide)}
-        </AnimatePresence>
-      </div>
-
-      {/* Navigation - Improved with direct section links */}
-      <div className="absolute bottom-8 left-20 right-20 flex justify-between items-center z-20">
-        <div className="flex gap-6">
-          {slides.map((slide, index) => (
-            <button
-              key={index}
-              onClick={() => handleUserInteraction(index)}
-              className="relative py-2 focus:outline-none"
-              aria-label={`Tampilkan slide ${slide.category}`}
-            >
-              <span className={`text-sm transition-colors duration-300 ${
-                currentSlide === index ? 'text-white' : 'text-gray-400'
-              }`}>
-                {slide.category}
-              </span>
-              {currentSlide === index && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+      {/* Navigation Controls - Redesigned for Mobile */}
+      <div className={`absolute ${isMobile ? 'bottom-6 inset-x-0 px-6' : 'bottom-8 left-20 right-20'} z-20`}>
+        <div className="flex flex-col gap-4">
+          {/* Indicator Dots for Mobile */}
+          {isMobile && (
+            <div className="flex justify-center gap-2 mb-2">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleUserInteraction(index)}
+                  className={`w-2 h-2 rounded-full ${index === currentSlide ? 'bg-white' : 'bg-white/30'}`}
+                  aria-label={`Go to slide ${index + 1}`}
                 />
-              )}
-            </button>
-          ))}
-        </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Navigation Tabs and Controls */}
+          <div className="flex justify-between items-center w-full">
+            {!isMobile && (
+              <div className="flex gap-6">
+                {slides.map((slide, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleUserInteraction(index)}
+                    className="relative py-2 focus:outline-none"
+                    aria-label={`Tampilkan slide ${slide.category}`}
+                  >
+                    <span className={`text-sm transition-colors duration-300 ${
+                      currentSlide === index ? 'text-white' : 'text-gray-400'
+                    }`}>
+                      {slide.category}
+                    </span>
+                    {currentSlide === index && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
 
-        {/* Play/Pause Control */}
-        <div className="relative">
-          <svg className="w-12 h-12 transform -rotate-90">
-            <circle
-              className="text-gray-600"
-              strokeWidth="2"
-              stroke="currentColor"
-              fill="transparent"
-              r="20"
-              cx="24"
-              cy="24"
-            />
-            <circle
-              className="text-white"
-              strokeWidth="2"
-              strokeDasharray={125.6}
-              strokeDashoffset={125.6 * (1 - progress / 100)}
-              strokeLinecap="round"
-              stroke="currentColor"
-              fill="transparent"
-              r="20"
-              cx="24"
-              cy="24"
-            />
-          </svg>
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="absolute inset-0 flex items-center justify-center text-white hover:text-yellow-500 transition-colors focus:outline-none"
-            aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"}
-          >
-            {isPlaying ? <PauseIcon /> : <PlayIcon />}
-          </button>
+            {/* Navigation Controls for Mobile */}
+            {isMobile && (
+              <div className="w-full flex justify-between items-center">
+                <button 
+                  onClick={() => handleUserInteraction((currentSlide - 1 + slides.length) % slides.length)}
+                  className="h-8 w-8 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm"
+                  aria-label="Slide sebelumnya"
+                >
+                  <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </button>
+                
+                <div className="text-xs text-white/70 font-medium">
+                  {currentSlide === 0 ? 'PT KBS' : 
+                   currentSlide === 1 ? 'Gedung' : 
+                   currentSlide === 2 ? 'Infrastruktur' : 'Residensial'}
+                </div>
+                
+                <button 
+                  onClick={() => handleUserInteraction((currentSlide + 1) % slides.length)}
+                  className="h-8 w-8 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm"
+                  aria-label="Slide berikutnya"
+                >
+                  <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {/* Play/Pause Control */}
+            {!isMobile && (
+              <div className="relative">
+                <svg className="w-12 h-12 transform -rotate-90">
+                  <circle
+                    className="text-gray-600"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="20"
+                    cx="24"
+                    cy="24"
+                  />
+                  <circle
+                    className="text-white"
+                    strokeWidth="2"
+                    strokeDasharray={125.6}
+                    strokeDashoffset={125.6 * (1 - progress / 100)}
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="20"
+                    cx="24"
+                    cy="24"
+                  />
+                </svg>
+                <button
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="absolute inset-0 flex items-center justify-center text-white hover:text-yellow-500 transition-colors focus:outline-none"
+                  aria-label={isPlaying ? "Jeda slideshow" : "Putar slideshow"}
+                >
+                  {isPlaying ? <PauseIcon /> : <PlayIcon />}
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {/* Play/Pause for Mobile - Simplified */}
+          {isMobile && (
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="absolute top-4 right-4 h-8 w-8 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-sm"
+              aria-label={isPlaying ? "Jeda slideshow" : "Putar slideshow"}
+            >
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            </button>
+          )}
         </div>
       </div>
     </div>
