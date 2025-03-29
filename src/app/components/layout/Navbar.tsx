@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname, useRouter } from 'next/navigation'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, X, Menu, Phone } from 'lucide-react'
 
 // Define types
 interface NavItem {
@@ -36,6 +36,7 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
 
   // Improved scroll handler
   useEffect(() => {
@@ -71,6 +72,7 @@ export default function Navbar() {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setActiveDropdown(null);
+        setIsMobileMenuOpen(false);
       }
     };
     
@@ -82,6 +84,19 @@ export default function Navbar() {
       document.removeEventListener('keydown', handleEscKey);
     };
   }, []);
+
+  // Disable body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   // Enhanced smooth scroll handling
   const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -264,11 +279,6 @@ export default function Navbar() {
 
   const toggleDropdown = (index: number) => {
     setActiveDropdown(activeDropdown === index ? null : index);
-    
-    // Close mobile menu when opening a dropdown
-    if (isMobileMenuOpen) {
-      setIsMobileMenuOpen(false);
-    }
   };
 
   // Check if link is active
@@ -301,6 +311,25 @@ export default function Navbar() {
     }
   };
 
+  // Mobile menu animation variants
+  const mobileMenuVariants = {
+    hidden: {
+      opacity: 0,
+      x: '100%',
+      transition: { duration: 0.3, ease: "easeInOut" }
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.4, ease: "easeOut" }
+    },
+    exit: {
+      opacity: 0,
+      x: '100%',
+      transition: { duration: 0.3, ease: "easeInOut" }
+    }
+  };
+
   return (
     <AnimatePresence>
       {(isScrollingUp || !isScrolled) && (
@@ -317,23 +346,23 @@ export default function Navbar() {
           aria-label="Main navigation"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
+            <div className="flex items-center justify-between h-16 md:h-20">
               {/* Logo with animation */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <Link href="/" className="flex items-center space-x-3" aria-label="KBS homepage"
+                <Link href="/" className="flex items-center space-x-2 md:space-x-3" aria-label="KBS homepage"
                   onClick={(e) => handleNavigation(e, '/')}>
                   <Image
                     src="/images/logo-kbs.png"
                     alt="KBS Logo"
                     width={40}
                     height={40}
-                    className="w-auto h-10 rounded-md shadow-lg"
+                    className="w-auto h-8 md:h-10 rounded-md shadow-lg"
                     priority
                   />
-                  <span className={`text-2xl font-bold bg-gradient-to-r 
+                  <span className={`text-xl md:text-2xl font-bold bg-gradient-to-r 
                     ${isScrolled 
                       ? 'from-[#153969] to-[#718bab]' 
                       : 'from-white to-gray-200'} 
@@ -343,7 +372,7 @@ export default function Navbar() {
                 </Link>
               </motion.div>
 
-              {/* Navigation Links */}
+              {/* Navigation Links - Desktop Only */}
               <div className="hidden md:flex items-center space-x-6" ref={dropdownRef}>
                 {navItems.map((item, index) => (
                   <div key={index} className="relative">
@@ -378,7 +407,6 @@ export default function Navbar() {
                           )}
                         </motion.button>
                       
-                        {/* Redesigned dropdown menu - removed "Lihat semua" section */}
                         <AnimatePresence>
                           {activeDropdown === index && (
                             <motion.div
@@ -462,7 +490,7 @@ export default function Navbar() {
                   </div>
                 ))}
 
-                {/* Get Quote Button */}
+                {/* Get Quote Button - Desktop */}
                 <motion.a
                   href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
                   target="_blank"
@@ -481,57 +509,92 @@ export default function Navbar() {
                 </motion.a>
               </div>
 
-              {/* Mobile Menu Button */}
-              <div className="md:hidden flex items-center">
+              {/* Mobile Actions */}
+              <div className="flex md:hidden items-center space-x-2">
+                {/* Quick Call Button - Mobile Only */}
+                <motion.a
+                  href="tel:+6281218127503"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`p-2 rounded-full ${
+                    isScrolled 
+                      ? 'bg-[#153969] text-white'
+                      : 'bg-white/20 text-white backdrop-blur-sm'
+                  }`}
+                  aria-label="Call us"
+                >
+                  <Phone className="w-4 h-4" />
+                </motion.a>
+                
                 {/* Mobile Menu Toggle */}
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className={`p-2 rounded-md ${
-                    isScrolled ? 'text-[#153969]' : 'text-white'
+                  className={`p-2 rounded-full ${
+                    isScrolled 
+                      ? 'bg-gray-100 text-[#153969]'
+                      : 'bg-white/20 text-white backdrop-blur-sm'
                   }`}
                   aria-expanded={isMobileMenuOpen}
                   aria-label="Toggle mobile menu"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}
-                    />
-                  </svg>
+                  {isMobileMenuOpen ? (
+                    <X className="w-5 h-5" />
+                  ) : (
+                    <Menu className="w-5 h-5" />
+                  )}
                 </motion.button>
               </div>
             </div>
           </div>
 
-          {/* Mobile Menu */}
+          {/* Improved Mobile Menu - Full Screen Slide In */}
           <AnimatePresence>
             {isMobileMenuOpen && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="md:hidden bg-white shadow-lg overflow-hidden"
+                ref={mobileMenuRef}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={mobileMenuVariants}
+                className="fixed top-0 right-0 bottom-0 w-full sm:w-[330px] bg-white shadow-xl z-50 flex flex-col"
               >
-                <div className="p-4 space-y-2 max-h-[70vh] overflow-y-auto">
+                <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                  <div className="flex items-center space-x-2">
+                    <Image
+                      src="/images/logo-kbs.png"
+                      alt="KBS Logo"
+                      width={32}
+                      height={32}
+                      className="w-auto h-8 rounded-md shadow-sm"
+                    />
+                    <span className="text-lg font-bold text-[#153969]">KBS</span>
+                  </div>
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    aria-label="Close menu"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-2">
                   {navItems.map((item, index) => (
-                    <div key={index} className="py-1">
+                    <div key={index} className="mb-1">
                       {item.hasDropdown ? (
                         <div>
                           <button
                             onClick={() => toggleDropdown(index)}
-                            className={`flex items-center justify-between w-full px-3 py-2 rounded-md ${
+                            className={`flex items-center justify-between w-full px-3 py-3 rounded-md ${
                               isLinkActive(item.href)
                                 ? 'bg-[#153969]/10 text-[#153969] font-medium'
                                 : 'text-gray-700 hover:bg-gray-50'
                             }`}
                             aria-expanded={activeDropdown === index}
                           >
-                            <span>{item.name}</span>
+                            <span className="text-base">{item.name}</span>
                             <ChevronDown 
                               className={`h-4 w-4 transition-transform duration-300 ${
                                 activeDropdown === index ? 'transform rotate-180' : ''
@@ -546,11 +609,11 @@ export default function Navbar() {
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
                                 transition={{ duration: 0.3 }}
-                                className="ml-2 mt-1 border-l-2 border-gray-200 pl-2 space-y-1"
+                                className="ml-2 my-1 border-l-2 border-gray-200 pl-2"
                               >
                                 {item.sections && item.sections.map((section, sectionIndex) => (
-                                  <div key={sectionIndex} className="py-1">
-                                    <div className="px-2 text-xs font-bold uppercase tracking-wider text-gray-500">
+                                  <div key={sectionIndex} className="mb-2">
+                                    <div className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-gray-500">
                                       {section.title}
                                     </div>
                                     
@@ -559,7 +622,7 @@ export default function Navbar() {
                                         key={subItemIndex}
                                         href={subItem.href}
                                         onClick={(e) => handleNavigation(e, subItem.href)}
-                                        className="block px-2 py-2 hover:bg-gray-50 rounded-md"
+                                        className="flex flex-col px-3 py-2 hover:bg-gray-50 rounded-md"
                                       >
                                         <div className={`text-sm font-medium ${
                                           isLinkActive(subItem.href) ? 'text-[#153969]' : 'text-gray-700'
@@ -567,7 +630,7 @@ export default function Navbar() {
                                           {subItem.name}
                                         </div>
                                         {subItem.description && (
-                                          <div className="text-xs text-gray-500 line-clamp-1">
+                                          <div className="text-xs text-gray-500 line-clamp-1 mt-0.5">
                                             {subItem.description}
                                           </div>
                                         )}
@@ -583,27 +646,31 @@ export default function Navbar() {
                         <Link
                           href={item.href}
                           onClick={(e) => handleNavigation(e, item.href)}
-                          className={`block px-3 py-2 rounded-md ${
+                          className={`flex items-center w-full px-3 py-3 rounded-md ${
                             isLinkActive(item.href)
                               ? 'bg-[#153969]/10 text-[#153969] font-medium'
                               : 'text-gray-700 hover:bg-gray-50'
                           }`}
                         >
-                          {item.name}
+                          <span className="text-base">{item.name}</span>
                         </Link>
                       )}
                     </div>
                   ))}
+                </div>
+                
+                <div className="p-4 border-t border-gray-100">
+                  <a 
+                    href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-full py-3 bg-gradient-to-r from-[#153969] to-[#718bab] text-white rounded-md font-medium text-center shadow-md"
+                  >
+                    Get Quote
+                  </a>
                   
-                  <div className="pt-4">
-                    <a 
-                      href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="block w-full py-3 bg-gradient-to-r from-[#153969] to-[#718bab] text-white rounded-md font-medium text-center hover:shadow-lg transition-shadow duration-300"
-                    >
-                      Get Quote
-                    </a>
+                  <div className="mt-4 text-center text-xs text-gray-500">
+                    © 2024 KBS. All rights reserved.
                   </div>
                 </div>
               </motion.div>
