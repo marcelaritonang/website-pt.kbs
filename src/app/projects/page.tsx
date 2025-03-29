@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Calendar, MapPin, Building, Filter, X, DollarSign, ExternalLink } from 'lucide-react';
+import { Search, Calendar, MapPin, Building, Filter, X, ExternalLink, Home, ArrowLeft } from 'lucide-react';
 
 // Define interfaces for TypeScript
 interface Project {
@@ -16,7 +16,6 @@ interface Project {
   client: string;
   date: string;
   contractNumber?: string;
-  value: string;
   description: string;
   scope?: string;
   subCategory?: string;
@@ -39,6 +38,7 @@ export default function ProjectsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
   
   // Client-side rendering state
   const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -54,7 +54,7 @@ export default function ProjectsPage() {
     { id: 'waterStructure', name: 'Bangunan Air' },
   ];
 
-  // Project data berdasarkan daftar proyek dari gambar
+  // Project data berdasarkan daftar proyek dari gambar (tanpa nilai kontrak)
   const projectsData: Project[] = [
     {
       id: 1,
@@ -66,7 +66,6 @@ export default function ProjectsPage() {
       client: "PT. Anugerah Griya Lestari",
       date: "9 Agustus 2014",
       contractNumber: "22/DH/AGL/9/08",
-      value: "Rp 41.212.000.000",
       description: "Proyek konstruksi perumahan yang mencakup pekerjaan cut & fill, pembangunan jalan dan saluran, serta konstruksi rumah bertipe.",
       scope: "Konstruksi"
     },
@@ -80,7 +79,6 @@ export default function ProjectsPage() {
       client: "PT. Jaya Konstruksi MP, TBK",
       date: "15 Mei 2001",
       contractNumber: "11/15/2001",
-      value: "Rp 726.895.250",
       description: "Proyek pengendalian banjir melalui pembangunan Banjir Kanal Timur paket 30 di area Bekasi.",
       scope: "Pekerjaan Batu"
     },
@@ -94,7 +92,6 @@ export default function ProjectsPage() {
       client: "PT. Pembangunan Perumahan (Persero)",
       date: "25 Januari 2012",
       contractNumber: "1/25/2012",
-      value: "Rp 21.282.023.300",
       description: "Proyek normalisasi Kali Pesanggrahan untuk mengatasi masalah banjir di Jakarta.",
       scope: "Pengerukan Lumpur"
     },
@@ -108,7 +105,6 @@ export default function ProjectsPage() {
       client: "ADHI-WASKITA JV",
       date: "21 Februari 2014",
       contractNumber: "02/SPP/JUFMP-2/A/ADHI-WASKON JV/2014",
-      value: "Rp 31.663.220.000",
       description: "Proyek pengerukan dan pembuatan tanggul di area cengkareng untuk mengendalikan banjir.",
       scope: "Saluran"
     },
@@ -122,7 +118,6 @@ export default function ProjectsPage() {
       client: "BBWS Ciliwung – Cisadane",
       date: "30 Juni 2014",
       contractNumber: "HK.02.03/PPK.SP-LSRWT PSA-CCS/V/17",
-      value: "Rp 8.324.450.000",
       description: "Proyek pembangunan struktur pengamanan pantai untuk melindungi area pesisir Jakarta dari abrasi dan dampak kenaikan permukaan air laut.",
       scope: "Pemancangan"
     },
@@ -136,7 +131,6 @@ export default function ProjectsPage() {
       client: "BBWS Ciliwung – Cisadane",
       date: "18 Mei 2015",
       contractNumber: "HK.02.03/PPK.SP-LSRWT PSA-CCS/V/138",
-      value: "Rp 23.373.916.000",
       description: "Proyek normalisasi Kali Krukut untuk mengatasi masalah banjir dan meningkatkan kapasitas aliran air.",
       scope: "Pemancangan"
     },
@@ -150,7 +144,6 @@ export default function ProjectsPage() {
       client: "Pekerjaan Umum Perumahan Rakyat",
       date: "23 Maret 2016",
       contractNumber: "HK.02.03/PPK-OPSDA II/SATKER PSDA/C/JN/2016/717",
-      value: "Rp 2.239.137.000",
       description: "Proyek pemeliharaan Situ tarogong untuk menjaga fungsi resapan air dan mencegah banjir di area sekitar.",
       scope: "Galian"
     },
@@ -164,7 +157,6 @@ export default function ProjectsPage() {
       client: "PT. Jaya Konstruksi MP, TBK",
       date: "30 Agustus 2021",
       contractNumber: "JKN/SPK/2021/011",
-      value: "Rp 5.146.000.000",
       description: "Proyek rehabilitasi jalan dan jembatan pada ruas Cipanas-Warung Banten untuk meningkatkan kualitas infrastruktur jalan.",
       scope: "Timbunan"
     },
@@ -178,7 +170,6 @@ export default function ProjectsPage() {
       client: "PT. Plaza Indonesia Realty TBK",
       date: "11 April 2021",
       contractNumber: "GH/PE/G/04",
-      value: "Rp 2.867.000.000",
       description: "Pekerjaan reflected pond untuk area lobby hotel Grand Hyatt Jakarta dengan konsep desain modern.",
       scope: "Interior Lobby"
     },
@@ -192,7 +183,6 @@ export default function ProjectsPage() {
       client: "PT. Multi Bangun Persada",
       date: "22 Februari 2021",
       contractNumber: "79/MBP-KBS/CH/2/2021",
-      value: "Rp 58.325.785.000",
       description: "Pekerjaan interior dan furniture untuk club house di kawasan perumahan Zora BSD City.",
       scope: "Interior"
     },
@@ -206,7 +196,6 @@ export default function ProjectsPage() {
       client: "World Assembly Muslim Youth (WAMY)",
       date: "25 Januari 2021",
       contractNumber: "WAM/Y36/KBS/PSM/1/2021",
-      value: "Rp 385.244.276.000",
       description: "Proyek pembangunan fasilitas sekolah dan mushola di kawasan Parung, Bogor untuk organisasi WAMY.",
       scope: "Bangunan Gedung"
     },
@@ -220,7 +209,6 @@ export default function ProjectsPage() {
       client: "PT. Aneka Jaring Indonesia",
       date: "16 Maret 2021",
       contractNumber: "AJI/SPK/2021/09",
-      value: "Rp 127.873.000.000",
       description: "Pekerjaan timbunan dan urugan untuk pengembangan perumahan Alam Sutera I.",
       scope: "Pematangan Lahan"
     },
@@ -234,7 +222,6 @@ export default function ProjectsPage() {
       client: "PT. Pratama Widya",
       date: "21 April 2021",
       contractNumber: "PW/SPK-KBS/2021",
-      value: "Rp 82.658.685.000",
       description: "Pekerjaan timbunan dan urugan untuk pengembangan perumahan Alam Sutera II di kawasan Cikupa.",
       scope: "Pematangan Lahan"
     },
@@ -248,7 +235,6 @@ export default function ProjectsPage() {
       client: "PT. Lingga Dewata Agung",
       date: "20 Juli 2022",
       contractNumber: "0501-KONTRAK-CH-CLDA-JAP-2022",
-      value: "Rp 465.245.478.000",
       description: "Proyek pembangunan condotel yang terdiri dari 3 tower di kawasan Ciawi, Bogor.",
       scope: "Bangunan Gedung"
     },
@@ -262,7 +248,6 @@ export default function ProjectsPage() {
       client: "PT. Multi Bangun Persada",
       date: "17 Februari 2020",
       contractNumber: "215/MBP-KBS/SP/RR/II/2020",
-      value: "Rp 22.553.037.000",
       description: "Proyek renovasi dan pembangunan struktur, sipil, MEP dan interior untuk restoran Seuara di JB Mansion.",
       scope: "Struktur"
     },
@@ -276,7 +261,6 @@ export default function ProjectsPage() {
       client: "PT. Multi Bangun Persada",
       date: "23 Juni 2020",
       contractNumber: "422/MBP-KBS/SBK/VI/2020",
-      value: "Rp 324.566.170.000",
       description: "Proyek pembangunan showroom Bergler Krisshaku yang mencakup pekerjaan struktur, sipil, MEP, dan interior.",
       scope: "Struktur"
     },
@@ -290,7 +274,6 @@ export default function ProjectsPage() {
       client: "PT. Trincanala Sakti Utama",
       date: "06 April 2020",
       contractNumber: "OPD/26/TSU/KBS/IV/20",
-      value: "Rp 258.112.576.000",
       description: "Proyek pembangunan infrastruktur kawasan OPD di Kabupaten Karawang untuk mendukung aktivitas pemerintahan.",
       scope: "Infrastruktur"
     },
@@ -304,7 +287,6 @@ export default function ProjectsPage() {
       client: "PT. Nusa Raya Cipta",
       date: "13 Mei 2022",
       contractNumber: "063-KONTRAK-KIS-NRC-KBS 2022",
-      value: "Rp 332.280.000.000",
       description: "Proyek pengembangan infrastruktur kawasan industri di Subang yang mencakup pekerjaan cut & fill, land clearing, pembangunan saluran drainase, dan pembangunan jalan utama.",
       scope: "Pengerjaan Lahan"
     }
@@ -336,13 +318,43 @@ export default function ProjectsPage() {
     exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
   };
   
-  // Set isMounted to true when component mounts
+  // Set isMounted to true when component mounts and track scroll position
   useEffect(() => {
     setIsMounted(true);
+    
+    // Ensure body is not locked on component mount
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'auto';
+    }
+    
+    // Track scroll position for "back to top" button
+    const handleScroll = () => {
+      if (typeof window !== 'undefined') {
+        setScrollPosition(window.scrollY);
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll);
+    }
+    
+    // Cleanup function
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = 'auto';
+      }
+      
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', handleScroll);
+      }
+    };
   }, []);
   
   // Handle view detail
-  const handleViewDetail = (project: Project) => {
+  const handleViewDetail = (project: Project, e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent any default action
+    e.stopPropagation(); // Stop event propagation
+    
     setSelectedProject(project);
     setIsModalOpen(true);
     
@@ -362,14 +374,37 @@ export default function ProjectsPage() {
     }
   };
 
-  // Scroll to projects when filter is applied - safely handle window access
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        closeModal();
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleEscapeKey);
+      
+      return () => {
+        window.removeEventListener('keydown', handleEscapeKey);
+      };
+    }
+  }, [isModalOpen]);
+
+  // Safely scroll to projects section
   const scrollToProjects = () => {
     if (!isMounted) return;
     
     if (projectsRef.current) {
-      const yOffset = -100; // Offset to account for sticky header
-      const y = projectsRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      try {
+        const yOffset = -100; // Offset to account for sticky header
+        const y = projectsRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      } catch (error) {
+        console.error('Error scrolling to projects:', error);
+        // Fallback to simpler version
+        projectsRef.current.scrollIntoView();
+      }
     }
   };
 
@@ -398,14 +433,17 @@ export default function ProjectsPage() {
     
     // If filter changes, scroll to projects section
     if ((activeCategory !== 'all' || searchTerm) && projectsRef.current) {
-      scrollToProjects();
+      // Use setTimeout to prevent issues with scrolling
+      setTimeout(() => {
+        scrollToProjects();
+      }, 100);
     }
-  }, [activeCategory, searchTerm, isMounted, projectsData, scrollToProjects]);
+  }, [activeCategory, searchTerm, isMounted]);
 
   // Initialize filteredProjects when component mounts
   useEffect(() => {
     setFilteredProjects(projectsData);
-  }, [projectsData]);
+  }, []);
 
   // Load more projects function
   const loadMoreProjects = () => {
@@ -425,6 +463,17 @@ export default function ProjectsPage() {
 
   return (
     <div className="bg-white min-h-screen">
+      {/* Back to Home Button - Fixed Position */}
+      <div className="fixed top-4 left-4 z-50">
+        <Link 
+          href="/" 
+          className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 flex items-center justify-center transition-colors"
+          aria-label="Kembali ke Beranda"
+        >
+          <ArrowLeft className="h-6 w-6 text-[#153969]" />
+        </Link>
+      </div>
+
       {/* Hero Section */}
       <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
         <Image
@@ -449,23 +498,68 @@ export default function ProjectsPage() {
                 <p className="text-lg md:text-xl text-white/90 mb-8">
                   Portofolio lengkap proyek-proyek yang telah kami kerjakan dengan berbagai klien terkemuka
                 </p>
-                <button 
-                  onClick={scrollToProjects}
-                  className="px-6 py-3 bg-[#153969] hover:bg-[#0f2a4d] text-white rounded-md font-medium transition-colors shadow-md inline-flex items-center gap-2"
-                >
-                  Lihat Proyek
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
+                <div className="flex flex-wrap gap-3">
+                  <button 
+                    onClick={scrollToProjects}
+                    className="px-6 py-3 bg-[#153969] hover:bg-[#0f2a4d] text-white rounded-md font-medium transition-colors shadow-md inline-flex items-center gap-2"
+                  >
+                    Lihat Proyek
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                  <Link 
+                    href="/" 
+                    className="px-6 py-3 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-md font-medium transition-colors shadow-md inline-flex items-center gap-2"
+                  >
+                    <Home className="w-4 h-4" />
+                    Beranda
+                  </Link>
+                </div>
               </motion.div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Primary Navigation Bar */}
+      <nav className="bg-white shadow-md py-3 sticky top-0 z-50">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="flex justify-between items-center">
+            <Link href="/" className="text-xl font-bold text-[#153969]">
+              Logo Perusahaan
+            </Link>
+            
+            <div className="hidden md:flex items-center space-x-6">
+              <Link href="/" className="text-gray-700 hover:text-[#153969] transition-colors">
+                Beranda
+              </Link>
+              <Link href="/services" className="text-gray-700 hover:text-[#153969] transition-colors">
+                Layanan
+              </Link>
+              <Link href="/projects" className="text-[#153969] font-medium">
+                Proyek
+              </Link>
+        
+              <Link href="/contact" className="text-gray-700 hover:text-[#153969] transition-colors">
+                Kontak
+              </Link>
+            </div>
+            
+            <div className="md:hidden">
+              {/* Mobile Menu Button */}
+              <button className="text-gray-700 hover:text-[#153969]">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* Search and Filter Section */}
-      <section className="py-8 md:py-12 bg-gray-50 sticky top-0 z-40 shadow-sm">
+      <section className="py-8 md:py-12 bg-gray-50 sticky top-[57px] z-40 shadow-sm">
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -576,8 +670,8 @@ export default function ProjectsPage() {
                 )}
                 {searchTerm && (
                   <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full mr-2 mb-1 inline-flex items-center">
-                  &quot;{searchTerm}&quot;
-                </span>
+                    "{searchTerm}"
+                  </span>
                 )}
                 <span className="text-gray-400">
                   {filteredProjects.length} proyek ditemukan
@@ -637,7 +731,7 @@ export default function ProjectsPage() {
                         
                         <div className="p-4">
                           <div className="flex justify-between items-start mb-3">
-                          <div className="flex items-start">
+                            <div className="flex items-start">
                               <Building className="h-4 w-4 text-[#153969] mr-1.5 flex-shrink-0 mt-0.5" />
                               <span className="text-gray-700 text-sm line-clamp-1">{project.client}</span>
                             </div>
@@ -651,10 +745,6 @@ export default function ProjectsPage() {
                               <Calendar className="h-4 w-4 text-[#153969] mr-1.5 flex-shrink-0" />
                               <span>{project.date}</span>
                             </div>
-                            <div className="flex items-center text-sm text-gray-600">
-                              <DollarSign className="h-4 w-4 text-[#153969] mr-1.5 flex-shrink-0" />
-                              <span className="font-medium">{project.value}</span>
-                            </div>
                           </div>
                           
                           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
@@ -662,7 +752,7 @@ export default function ProjectsPage() {
                               {project.subCategory}
                             </div>
                             <button 
-                              onClick={() => handleViewDetail(project)}
+                              onClick={(e) => handleViewDetail(project, e)}
                               className="text-[#153969] text-sm font-medium hover:text-[#0f2a4d] flex items-center gap-1 transition-colors"
                             >
                               Detail
@@ -738,7 +828,7 @@ export default function ProjectsPage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden relative z-10"
+                className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative z-10"
               >
                 <div className="relative h-64 md:h-80">
                   <Image
@@ -750,6 +840,7 @@ export default function ProjectsPage() {
                   <button 
                     onClick={closeModal}
                     className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 transition-colors z-10"
+                    aria-label="Tutup Modal"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -802,16 +893,18 @@ export default function ProjectsPage() {
                           <p className="text-xs text-gray-500">Nomor Kontrak</p>
                           <p className="font-medium text-gray-800">{selectedProject.contractNumber || '-'}</p>
                         </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Nilai Proyek</p>
-                          <p className="font-medium text-gray-800">{selectedProject.value}</p>
-                        </div>
                       </div>
                       
-                      <div className="mt-6">
+                      <div className="mt-6 flex flex-col gap-2">
                         <Link href="/contact" className="block w-full py-2.5 bg-[#153969] text-white text-center rounded-lg font-medium hover:bg-[#0f2a4d] transition-colors">
                           Hubungi Kami
                         </Link>
+                        <button 
+                          onClick={closeModal}
+                          className="block w-full py-2.5 bg-gray-100 text-gray-700 text-center rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                        >
+                          Tutup
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -856,7 +949,7 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section with Navigation */}
       <section className="py-16 bg-[#153969] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-full h-full text-white">
@@ -871,17 +964,94 @@ export default function ProjectsPage() {
             <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
               Tim kami siap membantu mewujudkan proyek Anda dengan kualitas terbaik dan profesionalisme tinggi
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
               <Link href="/contact" className="px-8 py-3 bg-white text-[#153969] hover:bg-gray-100 rounded-full font-medium transition-colors shadow-lg">
                 Hubungi Kami
               </Link>
               <Link href="/services" className="px-8 py-3 border border-white hover:bg-white/10 text-white rounded-full font-medium transition-colors">
                 Lihat Layanan
               </Link>
+              <Link href="/" className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-medium transition-colors">
+                <Home className="h-4 w-4 inline-block mr-2" />
+                Kembali ke Beranda
+              </Link>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Fixed Navigation Button (visible when scrolling) */}
+      <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2">
+        <Link 
+          href="/" 
+          className="bg-[#153969] p-3 rounded-full shadow-lg hover:bg-[#0f2a4d] transition-colors text-white flex items-center justify-center"
+          aria-label="Kembali ke Beranda"
+        >
+          <Home className="h-5 w-5" />
+        </Link>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="bg-white p-3 rounded-full shadow-lg hover:bg-gray-100 transition-colors flex items-center justify-center"
+          aria-label="Kembali ke Atas"
+        >
+          <svg className="h-5 w-5 text-[#153969]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path>
+          </svg>
+        </button>
+      </div>
+
+      {/* Shortcuts Menu - Mobile Only */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 z-40">
+        <div className="flex justify-between items-center">
+          <Link href="/" className="flex flex-col items-center text-gray-600 hover:text-[#153969]">
+            <Home className="h-6 w-6" />
+            <span className="text-xs mt-1">Beranda</span>
+          </Link>
+          
+          <Link href="/about" className="flex flex-col items-center text-gray-600 hover:text-[#153969]">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span className="text-xs mt-1">Tentang</span>
+          </Link>
+          
+          <Link href="/services" className="flex flex-col items-center text-gray-600 hover:text-[#153969]">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span className="text-xs mt-1">Layanan</span>
+          </Link>
+          
+          <div className="flex flex-col items-center text-[#153969]">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+            <span className="text-xs mt-1 font-medium">Proyek</span>
+          </div>
+          
+          <Link href="/contact" className="flex flex-col items-center text-gray-600 hover:text-[#153969]">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <span className="text-xs mt-1">Kontak</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Back to Top Button - Appears when scrolling down */}
+      {isMounted && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: scrollPosition > 500 ? 1 : 0 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="hidden md:flex fixed bottom-4 left-4 z-40 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition-colors"
+          aria-label="Kembali ke Atas"
+        >
+          <svg className="h-5 w-5 text-[#153969]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path>
+          </svg>
+        </motion.button>
+      )}
     </div>
-  );
-}
+  );}
