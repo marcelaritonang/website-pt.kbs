@@ -3,8 +3,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Building2, Users, Clock, MapPin, ArrowRight, Phone, Mail } from 'lucide-react';
-import Link from 'next/link';
+import { Building2, Users, Clock, MapPin,  Phone, Mail } from 'lucide-react';
+
 
 const officeLocation = {
   top: "58%",
