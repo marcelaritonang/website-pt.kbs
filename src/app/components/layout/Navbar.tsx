@@ -277,13 +277,7 @@ export default function Navbar() {
                         <div className="p-2 border-b border-gray-100">
                           <div className="flex justify-between items-center">
                             <h3 className="text-sm font-semibold text-[#153969]">{item.name}</h3>
-                            <Link
-                              href={item.href}
-                              className="text-xs text-blue-500 hover:underline"
-                              onClick={() => setActiveDropdown(null)}
-                            >
-                              Lihat Semua
-                            </Link>
+                            
                           </div>
                         </div>
                         
@@ -386,13 +380,6 @@ export default function Navbar() {
                     {activeDropdown === index && (
                       <div className="ml-4 mt-1 border-l-2 border-gray-200 pl-2">
                         <div className="py-1">
-                          <Link
-                            href={item.href}
-                            className="block py-2 text-[#153969] font-medium"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          >
-                            Lihat Semua {item.name}
-                          </Link>
                         </div>
                         
                         {item.sections?.map((section, sectionIndex) => (
