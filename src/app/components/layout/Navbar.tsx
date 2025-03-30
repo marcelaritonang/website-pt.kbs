@@ -152,11 +152,6 @@ const navItems: NavLinkItem[] = [
             name: 'Blog', 
             href: '/blog',
             description: 'Construction trends and updates' 
-          },
-          { 
-            name: 'Case Studies', 
-            href: '/case-studies',
-            description: 'Analysis of successful projects' 
           }
         ]
       }

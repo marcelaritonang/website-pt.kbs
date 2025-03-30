@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, ChevronDown, ChevronUp, Building2, Users, Clock } from 'lucide-react';
-
+import { MapPin, Phone, Mail, ChevronDown, ChevronUp, Building2, Users, Clock, ArrowLeft } from 'lucide-react';
 
 // Office location
 const officeLocation = {
@@ -11,7 +11,7 @@ const officeLocation = {
   address: "Jl. Raya Jatiwaringin No.06 2, RT.2/RW.13, Cipinang Melayu, Kec. Makasar, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13620"
 };
 
-const TeamPage = () => {
+const StrukturOrganisasi = () => {
   const [showFullStructure, setShowFullStructure] = useState(false);
   
   // Animation variants
@@ -61,8 +61,16 @@ const TeamPage = () => {
         </div>
       </div>
 
+      {/* Tombol Kembali ke Beranda */}
+      <div className="container mx-auto px-4 md:px-8 py-4">
+        <Link href="/" className="inline-flex items-center text-[#153969] hover:underline">
+          <ArrowLeft className="mr-2 h-5 w-5" />
+          Kembali ke Beranda
+        </Link>
+      </div>
+
       {/* Organization Chart Section */}
-      <section className="py-16">
+      <section className="py-10 md:py-16">
         <div className="container mx-auto px-4 md:px-8">
           <motion.div 
             initial="hidden"
@@ -79,54 +87,60 @@ const TeamPage = () => {
           </motion.div>
           
           <div className="max-w-5xl mx-auto">
-            {/* Text-based organizational chart */}
-            <div className="bg-white rounded-lg shadow-md p-8">
+            {/* Text-based organizational chart - Responsive version */}
+            <div className="bg-white rounded-lg shadow-md p-4 md:p-8">
               <div className="flex flex-col items-center text-center">
-                <div className="w-64 px-4 py-3 mb-8 bg-[#153969] text-white rounded-lg font-bold">
+                {/* Level 1 - Komisaris Utama */}
+                <div className="w-full max-w-64 px-4 py-3 mb-4 md:mb-8 bg-[#153969] text-white rounded-lg font-bold">
                   Winda Dara E. L.
                   <div className="mt-1 text-sm font-normal">KOMISARIS UTAMA</div>
                 </div>
                 
-                <div className="w-0.5 h-8 bg-gray-300"></div>
+                <div className="w-0.5 h-4 md:h-8 bg-gray-300"></div>
                 
-                <div className="flex items-center justify-center">
-                  <div className="w-64 px-4 py-3 mb-8 bg-[#153969] text-white rounded-lg font-bold">
+                {/* Level 2 - Direktur Utama & Legal */}
+                <div className="flex flex-col md:flex-row items-center justify-center w-full mb-4 md:mb-8 gap-4">
+                  <div className="w-full max-w-64 px-4 py-3 bg-[#153969] text-white rounded-lg font-bold">
                     Andre Sukanto
                     <div className="mt-1 text-sm font-normal">Direktur Utama</div>
                   </div>
-                  <div className="w-32 h-0.5 bg-gray-300"></div>
-                  <div className="w-64 px-4 py-3 mb-8 bg-[#153969] text-white rounded-lg font-bold">
+                  <div className="h-4 w-0.5 md:h-0.5 md:w-8 bg-gray-300 block md:hidden"></div>
+                  <div className="hidden md:block w-32 h-0.5 bg-gray-300"></div>
+                  <div className="w-full max-w-64 px-4 py-3 bg-[#153969] text-white rounded-lg font-bold">
                     Rolas Budiman S.
                     <div className="mt-1 text-sm font-normal">Legal</div>
                   </div>
                 </div>
                 
-                <div className="w-0.5 h-8 bg-gray-300"></div>
+                <div className="w-0.5 h-4 md:h-8 bg-gray-300"></div>
                 
-                <div className="w-64 px-4 py-3 mb-8 bg-[#153969] text-white rounded-lg font-bold">
+                {/* Level 3 - Direktur Operasional */}
+                <div className="w-full max-w-64 px-4 py-3 mb-4 md:mb-8 bg-[#153969] text-white rounded-lg font-bold">
                   Iswanto
                   <div className="mt-1 text-sm font-normal">Direktur Operasional</div>
                 </div>
                 
-                <div className="w-0.5 h-8 bg-gray-300"></div>
+                <div className="w-0.5 h-4 md:h-8 bg-gray-300"></div>
                 
-                <div className="w-64 px-4 py-3 mb-8 bg-[#153969] text-white rounded-lg font-bold">
+                {/* Level 4 - General Manager */}
+                <div className="w-full max-w-64 px-4 py-3 mb-4 md:mb-8 bg-[#153969] text-white rounded-lg font-bold">
                   Haryanto Permana
                   <div className="mt-1 text-sm font-normal">General Manager</div>
                 </div>
                 
-                <div className="w-0.5 h-8 bg-gray-300"></div>
+                <div className="w-0.5 h-4 md:h-8 bg-gray-300"></div>
                 
-                <div className="flex justify-center w-full mb-8 gap-4">
-                  <div className="px-4 py-3 bg-[#718bab] text-white rounded-lg font-bold text-center">
+                {/* Level 5 - Managers */}
+                <div className="flex flex-col md:flex-row justify-center w-full mb-4 md:mb-8 gap-4">
+                  <div className="w-full md:w-auto px-4 py-3 bg-[#718bab] text-white rounded-lg font-bold text-center">
                     Sugiyarto
                     <div className="mt-1 text-sm font-normal">Manager Produksi</div>
                   </div>
-                  <div className="px-4 py-3 bg-[#718bab] text-white rounded-lg font-bold text-center">
+                  <div className="w-full md:w-auto px-4 py-3 bg-[#718bab] text-white rounded-lg font-bold text-center">
                     Ahmad Fahrizal
                     <div className="mt-1 text-sm font-normal">Manager Operasional</div>
                   </div>
-                  <div className="px-4 py-3 bg-[#718bab] text-white rounded-lg font-bold text-center">
+                  <div className="w-full md:w-auto px-4 py-3 bg-[#718bab] text-white rounded-lg font-bold text-center">
                     Riana Siagian
                     <div className="mt-1 text-sm font-normal">Manager Keuangan</div>
                   </div>
@@ -134,9 +148,9 @@ const TeamPage = () => {
                 
                 {showFullStructure && (
                   <>
-                    <div className="w-full max-w-5xl border-t border-dashed border-gray-300 pt-8 mt-4"></div>
+                    <div className="w-full max-w-5xl border-t border-dashed border-gray-300 pt-4 md:pt-8 mt-4"></div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 md:mt-8 w-full">
                       {/* Produksi Team */}
                       <div className="text-center">
                         <h3 className="text-lg font-bold text-[#153969] mb-4">Divisi Produksi</h3>
@@ -207,7 +221,7 @@ const TeamPage = () => {
                 
                 <button 
                   onClick={() => setShowFullStructure(!showFullStructure)}
-                  className="flex items-center gap-2 mt-8 px-6 py-3 bg-white text-[#153969] rounded-md font-medium border border-[#153969] hover:bg-[#153969] hover:text-white transition-colors"
+                  className="flex items-center gap-2 mt-6 md:mt-8 px-6 py-3 bg-white text-[#153969] rounded-md font-medium border border-[#153969] hover:bg-[#153969] hover:text-white transition-colors"
                 >
                   {showFullStructure ? 'Tampilkan Lebih Sedikit' : 'Tampilkan Semua Tim'}
                   {showFullStructure ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -219,14 +233,14 @@ const TeamPage = () => {
       </section>
 
       {/* Company Values Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-12 md:py-16 bg-gray-50">
         <div className="container mx-auto px-4 md:px-8">
           <motion.div 
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeIn}
-            className="max-w-4xl mx-auto text-center mb-12"
+            className="max-w-4xl mx-auto text-center mb-8 md:mb-12"
           >
             <h2 className="text-3xl font-bold text-[#153969] mb-4">Nilai-Nilai Perusahaan</h2>
             <div className="w-16 h-1 bg-[#153969] mx-auto mb-6"></div>
@@ -235,7 +249,7 @@ const TeamPage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -253,7 +267,7 @@ const TeamPage = () => {
             <motion.div
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true }}
               variants={fadeIn}
               className="bg-white p-6 rounded-lg shadow-sm border-t-4 border-[#153969]"
             >
@@ -267,7 +281,7 @@ const TeamPage = () => {
             <motion.div
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true }}
               variants={fadeIn}
               className="bg-white p-6 rounded-lg shadow-sm border-t-4 border-[#153969]"
             >
@@ -282,14 +296,14 @@ const TeamPage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-[#153969] text-white">
+      <section className="py-12 md:py-16 bg-[#153969] text-white">
         <div className="container mx-auto px-4 md:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeIn}
-            className="max-w-4xl mx-auto text-center mb-12"
+            className="max-w-4xl mx-auto text-center mb-8 md:mb-12"
           >
             <h2 className="text-3xl font-bold mb-4">Performa Kami</h2>
             <div className="w-16 h-1 bg-white mx-auto mb-6"></div>
@@ -298,7 +312,7 @@ const TeamPage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -318,14 +332,14 @@ const TeamPage = () => {
       </section>
 
       {/* Office Location Section */}
-      <section className="py-16">
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4 md:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeIn}
-            className="max-w-4xl mx-auto text-center mb-12"
+            className="max-w-4xl mx-auto text-center mb-8 md:mb-12"
           >
             <h2 className="text-3xl font-bold text-[#153969] mb-4">Lokasi Kantor</h2>
             <div className="w-16 h-1 bg-[#153969] mx-auto mb-6"></div>
@@ -349,7 +363,7 @@ const TeamPage = () => {
                   </div>
                   <div className="flex items-center">
                     <Mail className="h-5 w-5 text-[#153969] mr-3 flex-shrink-0" />
-                    <p>karyabangunsemestas@gmail.com</p>
+                    <p className="break-words">karyabangunsemestas@gmail.com</p>
                   </div>
                 </div>
                 <div className="mt-6">
@@ -379,6 +393,16 @@ const TeamPage = () => {
         </div>
       </section>
 
+      {/* Floating Back to Home Button for Mobile */}
+      <div className="fixed bottom-6 right-6 md:hidden z-50">
+        <Link 
+          href="/" 
+          className="flex items-center justify-center w-12 h-12 bg-[#153969] text-white rounded-full shadow-lg hover:bg-[#0f2a4d] transition-colors"
+        >
+          <ArrowLeft className="h-6 w-6" />
+        </Link>
+      </div>
+
       <style jsx>{`
         .pattern-grid {
           background-image: radial-gradient(#ffffff 1px, transparent 1px);
@@ -389,4 +413,4 @@ const TeamPage = () => {
   );
 };
 
-export default TeamPage;
+export default StrukturOrganisasi;

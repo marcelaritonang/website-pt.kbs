@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Download, FileText, Users, Award, Clock, Globe, ChevronDown, ChevronUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Download, FileText, ArrowLeft,Users, Award, Clock, Globe, ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function CompanyProfile() {
+export default function ProfilPerusahaan() {
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const toggleSection = (section: string) => {
@@ -17,7 +19,7 @@ export default function CompanyProfile() {
     }
   };
 
-  // Animation variants
+  // Varian animasi
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
@@ -35,11 +37,11 @@ export default function CompanyProfile() {
 
   return (
     <div className="bg-white">
-      {/* Hero Section */}
+      {/* Bagian Hero */}
       <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
         <Image
-          src="/images/blog/comprof.jpg" // Replace with your actual hero image
-          alt="KBS Company Profile"
+          src="/images/blog/comprof.jpg" // Ganti dengan gambar hero Anda
+          alt="KBS Profil Perusahaan"
           fill
           className="object-cover"
           priority
@@ -47,13 +49,20 @@ export default function CompanyProfile() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent flex items-center">
           <div className="container mx-auto px-4 md:px-8">
             <div className="max-w-2xl">
+            <button 
+                onClick={() => router.push('/')} 
+                className="inline-flex items-center text-white bg-[#153969]/70 backdrop-blur-sm px-4 py-2 rounded-full mb-6 hover:bg-[#153969] transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Kembali ke Beranda
+              </button>
               <motion.h1 
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4"
               >
-                Company Profile
+                Profil Perusahaan
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
@@ -61,7 +70,7 @@ export default function CompanyProfile() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="text-lg md:text-xl text-white/90 mb-8"
               >
-                Building the future with excellence and integrity since 2005
+                Membangun masa depan dengan keunggulan dan integritas sejak 2005
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -69,13 +78,13 @@ export default function CompanyProfile() {
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
                 <a 
-                  href="/documents/KBS-Company-Profile.pdf" 
+                  href="/documents/KBS-Profil-Perusahaan.pdf" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center bg-[#153969] hover:bg-[#0f2a4d] text-white px-6 py-3 rounded-md font-medium transition-colors shadow-lg"
                 >
                   <FileText className="mr-2 h-5 w-5" />
-                  View Full Company Profile
+                  Lihat Profil Perusahaan Lengkap
                 </a>
               </motion.div>
             </div>
@@ -83,7 +92,9 @@ export default function CompanyProfile() {
         </div>
       </div>
 
-      {/* Introduction Section */}
+     
+
+      {/* Bagian Pengenalan */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-4xl mx-auto text-center">
@@ -94,7 +105,7 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold text-[#153969] mb-6"
             >
-              About KBS
+              Tentang KBS
             </motion.h2>
             <motion.div 
               initial="hidden"
@@ -110,7 +121,7 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="text-lg text-gray-700 mb-6"
             >
-              PT Karya Bersama Sejahtera (KBS) is a leading construction and engineering company in Indonesia. Established in 2005, we have grown to become a trusted partner for various construction projects across the country, from commercial buildings to infrastructure development.
+              PT Karya Bersama Sejahtera (KBS) adalah perusahaan konstruksi dan teknik terkemuka di Indonesia. Didirikan pada tahun 2005, kami telah berkembang menjadi mitra terpercaya untuk berbagai proyek konstruksi di seluruh negeri, mulai dari bangunan komersial hingga pengembangan infrastruktur.
             </motion.p>
             <motion.p 
               initial="hidden"
@@ -119,13 +130,13 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="text-lg text-gray-700"
             >
-              {`With our commitment to quality, innovation, and sustainability, we strive to deliver excellence in every project we undertake, ensuring client satisfaction and contributing to Indonesia's development.`}
+              {`Dengan komitmen kami terhadap kualitas, inovasi, dan keberlanjutan, kami berusaha memberikan keunggulan dalam setiap proyek yang kami lakukan, memastikan kepuasan klien dan berkontribusi pada pembangunan Indonesia.`}
             </motion.p>
           </div>
         </div>
       </section>
 
-      {/* Key Information Cards */}
+      {/* Kartu Informasi Utama */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 md:px-8">
           <motion.div 
@@ -135,58 +146,58 @@ export default function CompanyProfile() {
             variants={staggerChildren}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
           >
-            {/* Card 1 */}
+            {/* Kartu 1 */}
             <motion.div 
               variants={fadeInUp}
               className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow"
             >
               <Users className="h-12 w-12 text-[#153969] mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 mb-2">18+ Years Experience</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">18+ Tahun Pengalaman</h3>
               <p className="text-gray-600">
-                With over 18 years in the industry, we bring expertise and knowledge to every project.
+                Dengan lebih dari 18 tahun di industri, kami membawa keahlian dan pengetahuan untuk setiap proyek.
               </p>
             </motion.div>
 
-            {/* Card 2 */}
+            {/* Kartu 2 */}
             <motion.div 
               variants={fadeInUp}
               className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow"
             >
               <Award className="h-12 w-12 text-[#153969] mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 mb-2">ISO Certified</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Bersertifikat ISO</h3>
               <p className="text-gray-600">
-                We maintain the highest standards with ISO 9001, ISO 14001, and OHSAS 18001 certifications.
+                Kami mempertahankan standar tertinggi dengan sertifikasi ISO 9001, ISO 14001, dan OHSAS 18001.
               </p>
             </motion.div>
 
-            {/* Card 3 */}
+            {/* Kartu 3 */}
             <motion.div 
               variants={fadeInUp}
               className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow"
             >
               <Clock className="h-12 w-12 text-[#153969] mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 mb-2">On-Time Delivery</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Pengiriman Tepat Waktu</h3>
               <p className="text-gray-600">
-                We pride ourselves on meeting deadlines consistently without compromising quality.
+                Kami bangga dapat memenuhi tenggat waktu secara konsisten tanpa mengorbankan kualitas.
               </p>
             </motion.div>
 
-            {/* Card 4 */}
+            {/* Kartu 4 */}
             <motion.div 
               variants={fadeInUp}
               className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow"
             >
               <Globe className="h-12 w-12 text-[#153969] mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 mb-2">Nationwide Projects</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Proyek Nasional</h3>
               <p className="text-gray-600">
-                Successfully delivered projects throughout Indonesia, from Java.
+                Berhasil menyelesaikan proyek di seluruh Indonesia, dari Jawa hingga daerah lainnya.
               </p>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Company Vision, Mission, Values */}
+      {/* Visi, Misi, Nilai Perusahaan */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -201,7 +212,7 @@ export default function CompanyProfile() {
                   variants={fadeInUp}
                   className="text-3xl md:text-4xl font-bold text-[#153969] mb-3"
                 >
-                  Our Vision
+                  Visi Kami
                 </motion.h2>
                 <motion.div 
                   variants={fadeInUp}
@@ -211,14 +222,14 @@ export default function CompanyProfile() {
                   variants={fadeInUp}
                   className="text-lg text-gray-700 mb-8"
                 >
-                  To be the leading construction company in Indonesia, recognized for excellence, innovation, and integrity in every project we undertake.
+                  Menjadi perusahaan konstruksi terkemuka di Indonesia, dikenal karena keunggulan, inovasi, dan integritas dalam setiap proyek yang kami lakukan.
                 </motion.p>
 
                 <motion.h2 
                   variants={fadeInUp}
                   className="text-3xl md:text-4xl font-bold text-[#153969] mb-3"
                 >
-                  Our Mission
+                  Misi Kami
                 </motion.h2>
                 <motion.div 
                   variants={fadeInUp}
@@ -228,16 +239,16 @@ export default function CompanyProfile() {
                   variants={fadeInUp}
                   className="text-lg text-gray-700 mb-4"
                 >
-                  We are committed to:
+                  Kami berkomitmen untuk:
                 </motion.p>
                 <motion.ul 
                   variants={fadeInUp}
                   className="list-disc pl-6 space-y-2 text-gray-700 mb-8"
                 >
-                  <li>Delivering high-quality construction projects safely, on time, and within budget</li>
-                  <li>Implementing innovative solutions and sustainable practices</li>
-                  <li>Building long-term relationships with clients based on trust and excellence</li>
-                  <li>Developing our employees and contributing positively to communities</li>
+                  <li>Memberikan proyek konstruksi berkualitas tinggi dengan aman, tepat waktu, dan sesuai anggaran</li>
+                  <li>Menerapkan solusi inovatif dan praktik berkelanjutan</li>
+                  <li>Membangun hubungan jangka panjang dengan klien berdasarkan kepercayaan dan keunggulan</li>
+                  <li>Mengembangkan karyawan kami dan berkontribusi positif pada masyarakat</li>
                 </motion.ul>
               </motion.div>
             </div>
@@ -253,7 +264,7 @@ export default function CompanyProfile() {
                 variants={fadeInUp}
                 className="text-3xl md:text-4xl font-bold text-[#153969] mb-3"
               >
-                Our Core Values
+                Nilai-Nilai Inti Kami
               </motion.h2>
               <motion.div 
                 variants={fadeInUp}
@@ -263,7 +274,7 @@ export default function CompanyProfile() {
               <div className="space-y-6">
                 <motion.div variants={fadeInUp} className="border-b border-gray-200 pb-4">
                   <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleSection('excellence')}>
-                    <h3 className="text-xl font-bold text-gray-800">Excellence</h3>
+                    <h3 className="text-xl font-bold text-gray-800">Keunggulan</h3>
                     {activeSection === 'excellence' ? (
                       <ChevronUp className="h-5 w-5 text-[#153969]" />
                     ) : (
@@ -272,14 +283,14 @@ export default function CompanyProfile() {
                   </div>
                   {activeSection === 'excellence' && (
                     <p className="mt-2 text-gray-600">
-                      We strive for excellence in every aspect of our work, consistently exceeding expectations and delivering superior results.
+                      Kami berusaha untuk mencapai keunggulan dalam setiap aspek pekerjaan kami, secara konsisten melebihi harapan dan memberikan hasil yang unggul.
                     </p>
                   )}
                 </motion.div>
 
                 <motion.div variants={fadeInUp} className="border-b border-gray-200 pb-4">
                   <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleSection('integrity')}>
-                    <h3 className="text-xl font-bold text-gray-800">Integrity</h3>
+                    <h3 className="text-xl font-bold text-gray-800">Integritas</h3>
                     {activeSection === 'integrity' ? (
                       <ChevronUp className="h-5 w-5 text-[#153969]" />
                     ) : (
@@ -288,14 +299,14 @@ export default function CompanyProfile() {
                   </div>
                   {activeSection === 'integrity' && (
                     <p className="mt-2 text-gray-600">
-                      We conduct our business with the highest standards of honesty, transparency, and ethical behavior, building trust with all stakeholders.
+                      Kami menjalankan bisnis kami dengan standar kejujuran, transparansi, dan perilaku etis tertinggi, membangun kepercayaan dengan semua pemangku kepentingan.
                     </p>
                   )}
                 </motion.div>
 
                 <motion.div variants={fadeInUp} className="border-b border-gray-200 pb-4">
                   <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleSection('innovation')}>
-                    <h3 className="text-xl font-bold text-gray-800">Innovation</h3>
+                    <h3 className="text-xl font-bold text-gray-800">Inovasi</h3>
                     {activeSection === 'innovation' ? (
                       <ChevronUp className="h-5 w-5 text-[#153969]" />
                     ) : (
@@ -304,14 +315,14 @@ export default function CompanyProfile() {
                   </div>
                   {activeSection === 'innovation' && (
                     <p className="mt-2 text-gray-600">
-                      We embrace new ideas, technologies, and methodologies to continually improve and deliver cutting-edge solutions to our clients.
+                      Kami merangkul ide, teknologi, dan metodologi baru untuk terus meningkatkan dan memberikan solusi terdepan kepada klien kami.
                     </p>
                   )}
                 </motion.div>
 
                 <motion.div variants={fadeInUp} className="border-b border-gray-200 pb-4">
                   <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleSection('teamwork')}>
-                    <h3 className="text-xl font-bold text-gray-800">Teamwork</h3>
+                    <h3 className="text-xl font-bold text-gray-800">Kerja Sama Tim</h3>
                     {activeSection === 'teamwork' ? (
                       <ChevronUp className="h-5 w-5 text-[#153969]" />
                     ) : (
@@ -320,14 +331,14 @@ export default function CompanyProfile() {
                   </div>
                   {activeSection === 'teamwork' && (
                     <p className="mt-2 text-gray-600">
-                      We believe in the power of collaboration, working together across disciplines and with our clients to achieve common goals.
+                      Kami percaya pada kekuatan kolaborasi, bekerja sama di seluruh disiplin dan dengan klien kami untuk mencapai tujuan bersama.
                     </p>
                   )}
                 </motion.div>
 
                 <motion.div variants={fadeInUp}>
                   <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleSection('responsibility')}>
-                    <h3 className="text-xl font-bold text-gray-800">Social Responsibility</h3>
+                    <h3 className="text-xl font-bold text-gray-800">Tanggung Jawab Sosial</h3>
                     {activeSection === 'responsibility' ? (
                       <ChevronUp className="h-5 w-5 text-[#153969]" />
                     ) : (
@@ -336,7 +347,7 @@ export default function CompanyProfile() {
                   </div>
                   {activeSection === 'responsibility' && (
                     <p className="mt-2 text-gray-600">
-                      We are committed to sustainable practices, safety, and giving back to the communities where we operate.
+                      Kami berkomitmen pada praktik berkelanjutan, keselamatan, dan memberikan kembali kepada masyarakat di mana kami beroperasi.
                     </p>
                   )}
                 </motion.div>
@@ -346,7 +357,7 @@ export default function CompanyProfile() {
         </div>
       </section>
 
-      {/* Company PDF Section */}
+      {/* Bagian PDF Perusahaan */}
       <section className="py-16 bg-[#153969] text-white">
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-4xl mx-auto text-center">
@@ -357,7 +368,7 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold mb-6"
             >
-              Download Our Company Profile
+              Unduh Profil Perusahaan Kami
             </motion.h2>
             <motion.p 
               initial="hidden"
@@ -366,7 +377,7 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="text-lg text-white/90 mb-8"
             >
-              For more detailed information about our company, services, and past projects, download our comprehensive company profile document.
+              Untuk informasi lebih rinci tentang perusahaan kami, layanan, dan proyek-proyek sebelumnya, unduh dokumen profil perusahaan kami yang komprehensif.
             </motion.p>
             <motion.div 
               initial="hidden"
@@ -376,28 +387,28 @@ export default function CompanyProfile() {
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
               <a 
-                href="/documents/KBS-Company-Profile.pdf" 
+                href="/documents/KBS-Profil-Perusahaan.pdf" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center bg-white text-[#153969] hover:bg-gray-100 px-6 py-3 rounded-md font-medium transition-colors shadow-lg"
               >
                 <FileText className="mr-2 h-5 w-5" />
-                View Online
+                Lihat Online
               </a>
               <a 
-                href="/documents/KBS-Company-Profile.pdf" 
+                href="/documents/KBS-Profil-Perusahaan.pdf" 
                 download
                 className="inline-flex items-center bg-transparent hover:bg-white/10 border border-white text-white px-6 py-3 rounded-md font-medium transition-colors"
               >
                 <Download className="mr-2 h-5 w-5" />
-                Download PDF
+                Unduh PDF
               </a>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Company History Timeline */}
+      {/* Linimasa Sejarah Perusahaan */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-4xl mx-auto">
@@ -412,7 +423,7 @@ export default function CompanyProfile() {
                 variants={fadeInUp}
                 className="text-3xl md:text-4xl font-bold text-[#153969] mb-3"
               >
-                Our Journey
+                Perjalanan Kami
               </motion.h2>
               <motion.div 
                 variants={fadeInUp}
@@ -422,12 +433,12 @@ export default function CompanyProfile() {
                 variants={fadeInUp}
                 className="text-lg text-gray-700"
               >
-                Key milestones in our company&apos;s growth and development
+                Tonggak penting dalam pertumbuhan dan perkembangan perusahaan kami
               </motion.p>
             </motion.div>
 
             <div className="relative">
-              {/* Vertical line */}
+              {/* Garis vertikal */}
               <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-[#153969]/20"></div>
               
               <div className="space-y-12">
@@ -443,8 +454,8 @@ export default function CompanyProfile() {
                     <div className="flex flex-col items-end w-1/2 pr-8">
                       <div className="text-right">
                         <h3 className="text-xl font-bold text-[#153969]">2005</h3>
-                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Company Founded</h4>
-                        <p className="text-gray-600">KBS was established with a vision to become a leading construction company in Indonesia.</p>
+                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Perusahaan Didirikan</h4>
+                        <p className="text-gray-600">KBS didirikan dengan visi untuk menjadi perusahaan konstruksi terkemuka di Indonesia.</p>
                       </div>
                     </div>
                     <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-[#153969] z-10"></div>
@@ -465,8 +476,8 @@ export default function CompanyProfile() {
                     <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-[#153969] z-10"></div>
                     <div className="flex flex-col w-1/2 pl-8">
                       <h3 className="text-xl font-bold text-[#153969]">2010</h3>
-                      <h4 className="text-lg font-semibold text-gray-800 mb-2">First Major Project</h4>
-                      <p className="text-gray-600">Completed our first major commercial building project in Jakarta, establishing our reputation for quality and reliability.</p>
+                      <h4 className="text-lg font-semibold text-gray-800 mb-2">Proyek Besar Pertama</h4>
+                      <p className="text-gray-600">Menyelesaikan proyek bangunan komersial besar pertama kami di Jakarta, membangun reputasi kami untuk kualitas dan keandalan.</p>
                     </div>
                   </div>
                 </motion.div>
@@ -483,8 +494,8 @@ export default function CompanyProfile() {
                     <div className="flex flex-col items-end w-1/2 pr-8">
                       <div className="text-right">
                         <h3 className="text-xl font-bold text-[#153969]">2015</h3>
-                        <h4 className="text-lg font-semibold text-gray-800 mb-2">ISO Certification</h4>
-                        <p className="text-gray-600">Achieved ISO 9001 certification, demonstrating our commitment to quality management systems.</p>
+                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Sertifikasi ISO</h4>
+                        <p className="text-gray-600">Meraih sertifikasi ISO 9001, menunjukkan komitmen kami terhadap sistem manajemen mutu.</p>
                       </div>
                     </div>
                     <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-[#153969] z-10"></div>
@@ -505,8 +516,8 @@ export default function CompanyProfile() {
                     <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-[#153969] z-10"></div>
                     <div className="flex flex-col w-1/2 pl-8">
                       <h3 className="text-xl font-bold text-[#153969]">2018</h3>
-                      <h4 className="text-lg font-semibold text-gray-800 mb-2">Expansion to East Indonesia</h4>
-                      <p className="text-gray-600">Opened our first office in Makassar to better serve clients in Eastern Indonesia and take on infrastructure projects in the region.</p>
+                      <h4 className="text-lg font-semibold text-gray-800 mb-2">Ekspansi ke Indonesia Timur</h4>
+                      <p className="text-gray-600">Membuka kantor pertama kami di Makassar untuk melayani klien di Indonesia Timur dan mengerjakan proyek infrastruktur di wilayah tersebut.</p>
                     </div>
                   </div>
                 </motion.div>
@@ -523,8 +534,8 @@ export default function CompanyProfile() {
                     <div className="flex flex-col items-end w-1/2 pr-8">
                       <div className="text-right">
                         <h3 className="text-xl font-bold text-[#153969]">2020</h3>
-                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Pandemic Adaptation</h4>
-                        <p className="text-gray-600">Successfully adapted to the challenges of the global pandemic, implementing innovative safety protocols and digital solutions.</p>
+                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Adaptasi Pandemi</h4>
+                        <p className="text-gray-600">Berhasil beradaptasi dengan tantangan pandemi global, menerapkan protokol keselamatan inovatif dan solusi digital.</p>
                       </div>
                     </div>
                     <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-[#153969] z-10"></div>
@@ -545,13 +556,13 @@ export default function CompanyProfile() {
                     <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-[#153969] z-10"></div>
                     <div className="flex flex-col w-1/2 pl-8">
                       <h3 className="text-xl font-bold text-[#153969]">2023</h3>
-                      <h4 className="text-lg font-semibold text-gray-800 mb-2">Green Building Initiative</h4>
-                      <p className="text-gray-600">Launched our commitment to sustainable construction with the completion of our first fully green-certified building project.</p>
+                      <h4 className="text-lg font-semibold text-gray-800 mb-2">Inisiatif Bangunan Hijau</h4>
+                      <p className="text-gray-600">Meluncurkan komitmen kami untuk konstruksi berkelanjutan dengan penyelesaian proyek bangunan bersertifikat hijau pertama kami.</p>
                     </div>
                   </div>
                 </motion.div>
 
-                {/* Today */}
+                {/* Sekarang */}
                 <motion.div 
                   initial="hidden"
                   whileInView="visible"
@@ -562,9 +573,9 @@ export default function CompanyProfile() {
                   <div className="flex items-center">
                     <div className="flex flex-col items-end w-1/2 pr-8">
                       <div className="text-right">
-                        <h3 className="text-xl font-bold text-[#153969]">Today</h3>
-                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Looking to the Future</h4>
-                        <p className="text-gray-600">Continuing to grow and innovate, with a focus on sustainable building practices and expanding our service offerings.</p>
+                        <h3 className="text-xl font-bold text-[#153969]">Sekarang</h3>
+                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Menatap Masa Depan</h4>
+                        <p className="text-gray-600">Terus tumbuh dan berinovasi, dengan fokus pada praktik bangunan berkelanjutan dan memperluas penawaran layanan kami.</p>
                       </div>
                     </div>
                     <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-[#153969] z-10"></div>
@@ -577,7 +588,7 @@ export default function CompanyProfile() {
         </div>
       </section>
 
-      {/* Call to Action */}
+      {/* Ajakan Bertindak */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-4xl mx-auto text-center">
@@ -588,7 +599,7 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold text-[#153969] mb-6"
             >
-              Partner with KBS for Your Next Project
+              Bermitra dengan KBS untuk Proyek Anda Berikutnya
             </motion.h2>
             <motion.p 
               initial="hidden"
@@ -597,7 +608,7 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="text-lg text-gray-700 mb-8"
             >
-              Ready to discuss your construction needs? Our team is here to help you bring your vision to life with expertise, quality, and dedication.
+              Siap untuk membahas kebutuhan konstruksi Anda? Tim kami siap membantu Anda mewujudkan visi Anda dengan keahlian, kualitas, dan dedikasi.
             </motion.p>
             <motion.div 
               initial="hidden"
@@ -606,16 +617,15 @@ export default function CompanyProfile() {
               variants={fadeInUp}
               className="flex flex-col sm:flex-row justify-center gap-4"
             >
-              <Link href="/contact" className="px-8 py-3 bg-[#153969] hover:bg-[#0f2a4d] text-white rounded-md font-medium transition-colors shadow-lg">
-                Contact Us
+              <Link href="/kontak" className="px-8 py-3 bg-[#153969] hover:bg-[#0f2a4d] text-white rounded-md font-medium transition-colors shadow-lg">
+                Hubungi Kami
               </Link>
-              <Link href="/services" className="px-8 py-3 border border-[#153969] text-[#153969] hover:bg-[#153969] hover:text-white rounded-md font-medium transition-colors">
-                Our Services
+              <Link href="/layanan" className="px-8 py-3 border border-[#153969] text-[#153969] hover:bg-[#153969] hover:text-white rounded-md font-medium transition-colors">
+                Layanan Kami
               </Link>
             </motion.div>
           </div>
         </div>
       </section>
     </div>
-  );
-}
+  );}
