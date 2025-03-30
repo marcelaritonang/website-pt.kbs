@@ -6,10 +6,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   ChevronDown, 
-  ChevronRight,
   Menu, 
-  X, 
-  Phone 
+  X 
 } from 'lucide-react';
 
 // Tipe data untuk item navigasi
