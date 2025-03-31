@@ -87,14 +87,19 @@ export default function ContactPage() {
         setErrorMessage(data?.message || 'Terjadi kesalahan saat mengirim pesan');
         console.error('Error response:', data);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setSubmitStatus('error');
       
-      if (error.name === 'AbortError') {
-        setErrorMessage('Koneksi timeout. Silakan coba lagi nanti.');
-      } else if (error.message.includes('fetch')) {
-        setErrorMessage('Tidak dapat terhubung ke server. Pastikan koneksi internet Anda stabil.');
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          setErrorMessage('Koneksi timeout. Silakan coba lagi nanti.');
+        } else if (error.message.includes('fetch')) {
+          setErrorMessage('Tidak dapat terhubung ke server. Pastikan koneksi internet Anda stabil.');
+        } else {
+          setErrorMessage('Gagal mengirim pesan, silakan coba lagi nanti.');
+        }
       } else {
+        // Fallback untuk error yang bukan instance dari Error
         setErrorMessage('Gagal mengirim pesan, silakan coba lagi nanti.');
       }
       
