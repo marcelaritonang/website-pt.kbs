@@ -42,11 +42,18 @@ export default function ContactPage() {
     setErrorMessage('');
     
     try {
+      // Log data yang akan dikirim untuk debugging
+      console.log('Sending form data:', formData);
+      
       // Menambahkan timeout control
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 detik timeout
       
-      const response = await fetch('https://backend-kbs-website.vercel.app/api/contact', {
+      // Gunakan backend URL yang dapat dikonfigurasi melalui environment variable
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend-kbs-website.vercel.app';
+      console.log('Using backend URL:', backendUrl);
+      
+      const response = await fetch(`${backendUrl}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,22 +61,32 @@ export default function ContactPage() {
         },
         body: JSON.stringify(formData),
         signal: controller.signal,
-        // Menambahkan mode credentials untuk cross-origin request
         credentials: 'omit'
       });
       
       clearTimeout(timeoutId);
       
+      // Log response status untuk debugging
+      console.log('Response status:', response.status);
+      
+      // Baca response sebagai text terlebih dahulu
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+      
+      // Parse response JSON
       let data;
       try {
-        data = await response.json();
+        data = responseText ? JSON.parse(responseText) : {};
+        console.log('Parsed response data:', data);
       } catch (parseError) {
         console.error('Error parsing response:', parseError);
-        throw new Error('Tidak dapat memproses respons dari server');
+        throw new Error('Tidak dapat memproses respons dari server: ' + responseText.substring(0, 100));
       }
       
       if (response.ok) {
         setSubmitStatus('success');
+        console.log('Form submitted successfully');
+        
         // Reset form setelah berhasil
         setTimeout(() => {
           setFormData({
@@ -96,7 +113,8 @@ export default function ContactPage() {
         } else if (error.message.includes('fetch')) {
           setErrorMessage('Tidak dapat terhubung ke server. Pastikan koneksi internet Anda stabil.');
         } else {
-          setErrorMessage('Gagal mengirim pesan, silakan coba lagi nanti.');
+          // Tampilkan pesan error yang lebih detail
+          setErrorMessage(`Gagal mengirim pesan: ${error.message}`);
         }
       } else {
         // Fallback untuk error yang bukan instance dari Error
