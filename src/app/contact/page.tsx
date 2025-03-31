@@ -27,6 +27,7 @@ export default function ContactPage() {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitStatus, setSubmitStatus] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -38,23 +39,46 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMessage('');
     
-    // Simulasi pengiriman form
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSubmitStatus('success');
-    setIsSubmitting(false);
-    
-    // Reset form setelah berhasil
-    setTimeout(() => {
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
+    try {
+      // Kirim data form ke API endpoint yang sudah dibuat di serverless function
+      const response = await fetch('https://backend-kbs-website.vercel.app/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-      setSubmitStatus('');
-    }, 3000);
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setSubmitStatus('success');
+        // Reset form setelah berhasil
+        setTimeout(() => {
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            subject: '',
+            message: ''
+          });
+          setSubmitStatus('');
+        }, 3000);
+      } else {
+        // Tambahkan penanganan error
+        setSubmitStatus('error');
+        setErrorMessage(data.message || 'Terjadi kesalahan saat mengirim pesan');
+        console.error('Error sending message:', data.message);
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      setErrorMessage('Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.');
+      console.error('Error sending message:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Animation variants
@@ -286,13 +310,19 @@ export default function ContactPage() {
                     />
                   </div>
 
+                  {submitStatus === 'error' && (
+                    <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                      <p>{errorMessage || 'Terjadi kesalahan. Silakan coba lagi nanti.'}</p>
+                    </div>
+                  )}
+
                   <motion.button
                     type="submit"
                     disabled={isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`w-full py-3 md:py-4 rounded-lg font-medium text-white
-                      ${isSubmitting ? 'bg-[#153969]/70' : submitStatus === 'success' ? 'bg-green-600' : 'bg-[#153969] hover:bg-[#0e2752]'} 
+                      ${isSubmitting ? 'bg-[#153969]/70' : submitStatus === 'success' ? 'bg-green-600' : submitStatus === 'error' ? 'bg-red-600' : 'bg-[#153969] hover:bg-[#0e2752]'} 
                       transition-colors relative overflow-hidden flex items-center justify-center gap-2`}
                   >
                     {isSubmitting ? (
@@ -309,6 +339,13 @@ export default function ContactPage() {
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         <span>Pesan Terkirim!</span>
+                      </>
+                    ) : submitStatus === 'error' ? (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        <span>Gagal Mengirim!</span>
                       </>
                     ) : (
                       <>
