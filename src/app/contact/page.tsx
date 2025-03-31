@@ -42,16 +42,31 @@ export default function ContactPage() {
     setErrorMessage('');
     
     try {
-      // Kirim data form ke API endpoint yang sudah dibuat di serverless function
+      // Menambahkan timeout control
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 detik timeout
+      
       const response = await fetch('https://backend-kbs-website.vercel.app/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
+        signal: controller.signal,
+        // Menambahkan mode credentials untuk cross-origin request
+        credentials: 'omit'
       });
       
-      const data = await response.json();
+      clearTimeout(timeoutId);
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError);
+        throw new Error('Tidak dapat memproses respons dari server');
+      }
       
       if (response.ok) {
         setSubmitStatus('success');
@@ -69,12 +84,20 @@ export default function ContactPage() {
       } else {
         // Tambahkan penanganan error
         setSubmitStatus('error');
-        setErrorMessage(data.message || 'Terjadi kesalahan saat mengirim pesan');
-        console.error('Error sending message:', data.message);
+        setErrorMessage(data?.message || 'Terjadi kesalahan saat mengirim pesan');
+        console.error('Error response:', data);
       }
-    } catch (error) {
+    } catch (error: any) {
       setSubmitStatus('error');
-      setErrorMessage('Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.');
+      
+      if (error.name === 'AbortError') {
+        setErrorMessage('Koneksi timeout. Silakan coba lagi nanti.');
+      } else if (error.message.includes('fetch')) {
+        setErrorMessage('Tidak dapat terhubung ke server. Pastikan koneksi internet Anda stabil.');
+      } else {
+        setErrorMessage('Gagal mengirim pesan, silakan coba lagi nanti.');
+      }
+      
       console.error('Error sending message:', error);
     } finally {
       setIsSubmitting(false);
@@ -311,7 +334,7 @@ export default function ContactPage() {
                   </div>
 
                   {submitStatus === 'error' && (
-                    <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                    <div className="p-3 bg-red-100 text-red-700 rounded-lg">
                       <p>{errorMessage || 'Terjadi kesalahan. Silakan coba lagi nanti.'}</p>
                     </div>
                   )}
