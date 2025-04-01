@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Instagram, Twitter, Youtube, Linkedin, Mail, Phone } from 'lucide-react';
+import { Instagram, Youtube, Linkedin, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
   const mainLinks = [
@@ -17,11 +17,6 @@ const Footer = () => {
       icon: <Instagram className="w-5 h-5" />, 
       href: "https://www.instagram.com/karyabangunsemesta?igsh=OHFjM3J5azd4NnVw",
       label: "Instagram"
-    },
-    { 
-      icon: <Twitter className="w-5 h-5" />, 
-      href: "https://twitter.com/kbs",
-      label: "Twitter"
     },
     { 
       icon: <Youtube className="w-5 h-5" />, 
