@@ -4,6 +4,8 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Building2, Hammer, Factory, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 
 // Definisikan tipe untuk project
 interface Project {
@@ -14,85 +16,54 @@ interface Project {
 // Definisikan tipe untuk service
 interface Service {
   id: string;
-  title: string;
+  titleKey: string;
   icon: React.ElementType;
   image: string;
-  description: string;
-  projects: Project[];
+  descriptionKey: string;
+  projectsKeys: string[];
 }
 
-const services: Service[] = [
-  {
-    id: 'buildings',
-    title: 'Gedung & Properti',
-    icon: Building2,
-    image: '/images/servicesection-1.jpg',
-    description: 'Pembangunan dan renovasi gedung komersial dan residensial dengan standar kualitas tinggi',
-    projects: [
-      {
-        title: 'Pembangunan Condotel HAPPER Ciawi Tower A, B, C',
-        description: 'Pengembangan properti hunian modern dengan fasilitas lengkap'
-      },
-      {
-        title: 'KERATON AT THE PLAZA RESIDENCE',
-        description: 'Pekerjaan renovasi lantai 6 dengan standar premium'
-      }
-    ]
-  },
-  {
-    id: 'infrastructure',
-    title: 'Infrastruktur Sipil',
-    icon: Hammer,
-    image: '/images/servicesection-2.jpg',
-    description: 'Pengembangan dan rehabilitasi infrastruktur untuk menunjang kebutuhan masyarakat',
-    projects: [
-      {
-        title: 'Rehabilitasi Jalan dan Jembatan',
-        description: 'Ruas Cipanas – Warung Banten, peningkatan kualitas infrastruktur'
-      },
-      {
-        title: 'Saluran Drainase & Pematangan Lahan',
-        description: 'Pengembangan sistem drainase dan persiapan lahan konstruksi'
-      }
-    ]
-  },
-  {
-    id: 'land-development',
-    title: 'Pengembangan Lahan',
-    icon: Factory,
-    image: '/images/servicesection-3.jpg',
-    description: 'Pematangan dan pengembangan lahan untuk berbagai kebutuhan proyek',
-    projects: [
-      {
-        title: 'Pekerjaan Cut & Fill',
-        description: 'Penyesuaian kontur tanah dan persiapan lahan pembangunan'
-      },
-      {
-        title: 'Pekerjaan Timbunan Perumahan Alam Sutera I',
-        description: 'Pengembangan kawasan residensial premium'
-      }
-    ]
-  },
-  {
-    id: 'special',
-    title: 'Proyek Khusus',
-    icon: Settings,
-    image: '/images/servicesection-4.jpg',
-    description: 'Penanganan proyek-proyek dengan spesifikasi dan kebutuhan khusus',
-    projects: [
-      {
-        title: 'Interior & Furniture Club House',
-        description: 'Pengerjaan interior dan furnishing untuk Zora BSD City'
-      },
-      {
-        title: 'Pekerjaan Reflected Pond Lobby',
-        description: 'Konstruksi fitur air arsitektural di Grand Hyatt'
-      }
-    ]
-  }
-];
-
 const ServicesSection: React.FC = () => {
+  const { t } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
+  // Services data using translation keys
+  const services: Service[] = [
+    {
+      id: 'buildings',
+      titleKey: 'services.buildings.title',
+      icon: Building2,
+      image: '/images/servicesection-1.jpg',
+      descriptionKey: 'services.buildings.description',
+      projectsKeys: ['services.buildings.project1', 'services.buildings.project2']
+    },
+    {
+      id: 'infrastructure',
+      titleKey: 'services.infrastructure.title',
+      icon: Hammer,
+      image: '/images/servicesection-2.jpg',
+      descriptionKey: 'services.infrastructure.description',
+      projectsKeys: ['services.infrastructure.project1', 'services.infrastructure.project2']
+    },
+    {
+      id: 'land-development',
+      titleKey: 'services.landDevelopment.title',
+      icon: Factory,
+      image: '/images/servicesection-3.jpg',
+      descriptionKey: 'services.landDevelopment.description',
+      projectsKeys: ['services.landDevelopment.project1', 'services.landDevelopment.project2']
+    },
+    {
+      id: 'special',
+      titleKey: 'services.special.title',
+      icon: Settings,
+      image: '/images/servicesection-4.jpg',
+      descriptionKey: 'services.special.description',
+      projectsKeys: ['services.special.project1', 'services.special.project2']
+    }
+  ];
+
   const [activeService, setActiveService] = useState<Service>(services[0]);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -132,26 +103,84 @@ const ServicesSection: React.FC = () => {
     scrollTabIntoView(index);
   };
 
+  // Get translated project data for the active service
+  const getTranslatedProjects = (): Project[] => {
+    return activeService.projectsKeys.map(key => {
+      // Split key into title and description keys
+      const baseKey = key;
+      const titleKey = `${baseKey}.title`;
+      const descriptionKey = `${baseKey}.description`;
+      
+      return {
+        title: t(titleKey),
+        description: t(descriptionKey)
+      };
+    });
+  };
+
+  const projects = getTranslatedProjects();
+  
   return (
-    <section className="min-h-screen bg-[#f8fafc] py-10 md:py-20">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className="relative min-h-screen flex items-center py-10 md:py-20 overflow-hidden">
+      {/* Create a seamless gradient with smooth transition between theme modes */}
+      <div className="absolute inset-0 transition-colors duration-700">
+        {/* Main background gradient - note the transition-all for smooth theme change */}
+        <div className={`absolute inset-0 transition-all duration-1000 ${
+          isDark 
+            ? 'bg-gray-900' 
+            : 'bg-[#f8fafc]'
+        }`} />
+        
+        {/* Top gradient for visual interest */}
+        <div className={`absolute top-0 left-0 right-0 h-64 transition-opacity duration-1000 ${
+          isDark 
+            ? 'bg-gradient-to-b from-blue-900/10 to-transparent' 
+            : 'bg-gradient-to-b from-blue-50/50 to-transparent'
+        }`} />
+        
+        {/* Bottom diagonal gradient that creates a smooth transition to next section */}
+        <div className={`absolute bottom-0 left-0 right-0 h-2/5 transition-all duration-1000 ${
+          isDark 
+            ? 'bg-gradient-to-t from-[#111827] via-[#111827]/70 to-transparent' 
+            : 'bg-gradient-to-t from-[#f8fafc] via-[#f8fafc]/70 to-transparent'
+        }`} />
+        
+        {/* Diagonal gradient overlay with 45-degree angle */}
+        <div className={`absolute inset-0 transition-opacity duration-1000 ${
+          isDark 
+            ? 'bg-gradient-to-br from-gray-900 via-gray-900/95 to-[#111827]/90 opacity-100' 
+            : 'bg-gradient-to-br from-[#f8fafc] via-[#f8fafc]/95 to-[#f8fafc]/90 opacity-100'
+        }`} />
+        
+        {/* Subtle radial gradients for depth */}
+        <div className={`absolute top-1/4 left-1/4 w-full h-full transition-all duration-1000 ${
+          isDark 
+            ? 'bg-radial-gradient-dark' 
+            : 'bg-radial-gradient-light'
+        } opacity-40`} />
+        
+        {/* Very subtle noise texture overlay with transition */}
+        <div className="absolute inset-0 bg-noise opacity-[0.02] transition-opacity duration-1000"></div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8 md:mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-xs md:text-sm font-semibold text-[#153969] tracking-wider uppercase mb-2 md:mb-3"
+            className={`text-xs md:text-sm font-semibold transition-colors duration-700 ${isDark ? 'text-blue-400' : 'text-[#153969]'} tracking-wider uppercase mb-2 md:mb-3`}
           >
-            LAYANAN KAMI
+            {t('services.sectionTitle')}
           </motion.h2>
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6"
+            className={`text-2xl md:text-4xl lg:text-5xl font-bold transition-colors duration-700 ${isDark ? 'text-white' : 'text-gray-900'} mb-4 md:mb-6`}
           >
-            Membangun dengan Visi dan Kualitas
+            {t('services.sectionSubtitle')}
           </motion.h3>
         </div>
 
@@ -159,18 +188,26 @@ const ServicesSection: React.FC = () => {
         <div className="flex items-center justify-between mb-4 md:hidden">
           <button 
             onClick={handlePrevService}
-            className="p-2 rounded-full bg-white shadow-md border border-gray-100"
+            className={`p-2 rounded-full transition-all duration-500 ${
+              isDark 
+                ? 'bg-gray-800/90 border-gray-700/80' 
+                : 'bg-white/90 border-gray-100/80'
+            } shadow-md border`}
           >
-            <ChevronLeft className="w-5 h-5 text-[#153969]" />
+            <ChevronLeft className={`w-5 h-5 transition-colors duration-700 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
           </button>
-          <span className="text-sm font-medium text-gray-600">
-            {activeService.title}
+          <span className={`text-sm font-medium transition-colors duration-700 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+            {t(activeService.titleKey)}
           </span>
           <button 
             onClick={handleNextService}
-            className="p-2 rounded-full bg-white shadow-md border border-gray-100"
+            className={`p-2 rounded-full transition-all duration-500 ${
+              isDark 
+                ? 'bg-gray-800/90 border-gray-700/80' 
+                : 'bg-white/90 border-gray-100/80'
+            } shadow-md border`}
           >
-            <ChevronRight className="w-5 h-5 text-[#153969]" />
+            <ChevronRight className={`w-5 h-5 transition-colors duration-700 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
           </button>
         </div>
 
@@ -183,17 +220,17 @@ const ServicesSection: React.FC = () => {
                 onClick={() => selectService(service, index)}
                 className="group relative px-4 py-2"
               >
-                <span className={`text-lg font-medium transition-colors whitespace-nowrap ${
+                <span className={`text-lg font-medium transition-colors duration-500 whitespace-nowrap ${
                   activeService.id === service.id 
-                    ? 'text-[#153969]' 
-                    : 'text-gray-500 group-hover:text-[#153969]'
+                    ? isDark ? 'text-blue-400' : 'text-[#153969]' 
+                    : isDark ? 'text-gray-400 group-hover:text-blue-400' : 'text-gray-500 group-hover:text-[#153969]'
                 }`}>
-                  {service.title}
+                  {t(service.titleKey)}
                 </span>
                 {activeService.id === service.id && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153969]"
+                    className={`absolute bottom-0 left-0 right-0 h-0.5 transition-colors duration-700 ${isDark ? 'bg-blue-400' : 'bg-[#153969]'}`}
                   />
                 )}
               </button>
@@ -210,16 +247,16 @@ const ServicesSection: React.FC = () => {
                 <button
                   key={service.id}
                   onClick={() => selectService(service, index)}
-                  className={`flex-shrink-0 px-3 py-2 rounded-full ${
+                  className={`flex-shrink-0 px-3 py-2 rounded-full transition-all duration-500 ${
                     activeService.id === service.id 
-                      ? 'bg-[#153969] text-white shadow-md' 
-                      : 'bg-white border border-gray-200 text-gray-700'
-                  }`}
+                      ? isDark ? 'bg-[#153969] text-white' : 'bg-[#153969] text-white'
+                      : isDark ? 'bg-gray-800/80 border-gray-700/80 text-gray-300' : 'bg-white/80 border-gray-200/80 text-gray-700'
+                  } ${isDark ? 'border-gray-700/80' : 'border'} shadow-md backdrop-blur-sm`}
                 >
                   <div className="flex items-center space-x-2">
-                    <ServiceIcon className="w-4 h-4" />
-                    <span className="text-xs font-medium whitespace-nowrap">
-                      {service.title}
+                    <ServiceIcon className="w-4 h-4 transition-colors duration-500" />
+                    <span className="text-xs font-medium whitespace-nowrap transition-colors duration-500">
+                      {t(service.titleKey)}
                     </span>
                   </div>
                 </button>
@@ -239,7 +276,7 @@ const ServicesSection: React.FC = () => {
             className="grid lg:grid-cols-12 gap-6 md:gap-12 items-start"
           >
             {/* Image Section */}
-            <div className="lg:col-span-7 relative h-[300px] md:h-[450px] lg:h-[600px] rounded-xl md:rounded-2xl overflow-hidden">
+            <div className="lg:col-span-7 relative h-[300px] md:h-[450px] lg:h-[600px] rounded-xl md:rounded-2xl overflow-hidden shadow-xl">
               <motion.div
                 initial={{ scale: 1.5 }}
                 animate={{ scale: 1 }}
@@ -248,7 +285,7 @@ const ServicesSection: React.FC = () => {
               >
                 <Image
                   src={activeService.image}
-                  alt={activeService.title}
+                  alt={t(activeService.titleKey)}
                   fill
                   className="object-cover"
                 />
@@ -266,32 +303,40 @@ const ServicesSection: React.FC = () => {
                     {React.createElement(activeService.icon, { className: "w-4 h-4 md:w-6 md:h-6 text-white" })}
                   </div>
                   <h4 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
-                    {activeService.title}
+                    {t(activeService.titleKey)}
                   </h4>
                 </div>
                 <p className="text-sm md:text-base lg:text-lg text-white/90 max-w-2xl line-clamp-2 md:line-clamp-none">
-                  {activeService.description}
+                  {t(activeService.descriptionKey)}
                 </p>
               </motion.div>
             </div>
 
             {/* Projects List */}
             <div className="lg:col-span-5 space-y-4 md:space-y-6">
-              <h5 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-8">
-                Proyek Unggulan
+              <h5 className={`text-lg md:text-xl font-semibold transition-colors duration-700 ${isDark ? 'text-white' : 'text-gray-900'} mb-4 md:mb-8`}>
+                {t('services.featuredProjects')}
               </h5>
-              {activeService.projects.map((project, index) => (
+              {projects.map((project, index) => (
                 <motion.div
-                  key={project.title}
+                  key={index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.2 }}
-                  className="group p-4 md:p-6 rounded-lg md:rounded-xl bg-white border border-gray-200 hover:border-[#153969] transition-all duration-300 hover:shadow-lg"
+                  className={`group p-4 md:p-6 rounded-lg md:rounded-xl transition-all duration-500 ${
+                    isDark 
+                      ? 'bg-gray-800/60 backdrop-blur-xl border-gray-700/70 hover:border-blue-500/70 shadow-lg' 
+                      : 'bg-white/60 backdrop-blur-xl border-gray-200/70 hover:border-[#153969]/70 shadow-lg'
+                  } border hover:shadow-xl`}
                 >
-                  <h6 className="text-base md:text-lg font-semibold text-gray-900 mb-1 md:mb-2 group-hover:text-[#153969] transition-colors">
+                  <h6 className={`text-base md:text-lg font-semibold transition-colors duration-500 ${
+                    isDark 
+                      ? 'text-white group-hover:text-blue-400' 
+                      : 'text-gray-900 group-hover:text-[#153969]'
+                  } mb-1 md:mb-2`}>
                     {project.title}
                   </h6>
-                  <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                  <p className={`text-sm md:text-base transition-colors duration-700 ${isDark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
                     {project.description}
                   </p>
                 </motion.div>
@@ -300,16 +345,33 @@ const ServicesSection: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="mt-6 md:mt-8 w-full bg-[#153969] text-white px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl hover:bg-[#1e4d8d] transition-all duration-300 shadow-md md:shadow-lg hover:shadow-[#153969]/20 text-sm md:text-base"
+                className={`mt-6 md:mt-8 w-full ${
+                  isDark 
+                    ? 'bg-[#153969] hover:bg-[#1e4d8d] hover:shadow-[#153969]/20' 
+                    : 'bg-[#153969] hover:bg-[#1e4d8d] hover:shadow-[#153969]/20'
+                } text-white px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl transition-all duration-500 shadow-md md:shadow-lg text-sm md:text-base`}
               >
-                Konsultasikan Proyek Anda
+                {t('services.consultButton')}
               </motion.button>
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
 
+      {/* CSS for gradient and texture effects */}
       <style jsx global>{`
+        .bg-radial-gradient-light {
+          background: radial-gradient(circle at center, rgba(219, 234, 254, 0.3) 0%, rgba(248, 250, 252, 0) 70%);
+        }
+        
+        .bg-radial-gradient-dark {
+          background: radial-gradient(circle at center, rgba(30, 58, 138, 0.1) 0%, rgba(17, 24, 39, 0) 70%);
+        }
+        
+        .bg-noise {
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
         .hide-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;

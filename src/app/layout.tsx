@@ -1,7 +1,10 @@
+// src/app/layout.tsx
 'use client';
 
 import './globals.css';
 import React, { useState, useEffect } from 'react';
+import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/layout/Navbar';
@@ -35,38 +38,42 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className="min-h-screen bg-white">
-        {/* Loading Screen */}
-        <AnimatePresence mode="wait">
-          {isLoading && (
-            <LoadingScreen 
-              isLoading={isLoading} 
-              setIsLoading={setIsLoading} 
-            />
-          )}
-        </AnimatePresence>
+      <body className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
+        <ThemeProvider>
+          <LanguageProvider>
+            {/* Loading Screen */}
+            <AnimatePresence mode="wait">
+              {isLoading && (
+                <LoadingScreen 
+                  isLoading={isLoading} 
+                  setIsLoading={setIsLoading} 
+                />
+              )}
+            </AnimatePresence>
 
-        {/* Main Content */}
-        <AnimatePresence mode="wait">
-          {!isLoading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col min-h-screen"
-            >
-              <Navbar />
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </motion.div>
-          )}
-        </AnimatePresence>
+            {/* Main Content */}
+            <AnimatePresence mode="wait">
+              {!isLoading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="flex flex-col min-h-screen"
+                >
+                  <Navbar />
+                  <main className="flex-grow">
+                    {children}
+                  </main>
+                  <Footer />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-        {/* Add portal root for modals */}
-        <div id="modal-root"></div>
+            {/* Add portal root for modals */}
+            <div id="modal-root"></div>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

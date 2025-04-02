@@ -1,8 +1,13 @@
 import React, { ReactElement, useState } from 'react';
 import { motion } from 'framer-motion';
 import { EyeIcon, BookmarkIcon, CheckIcon, } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const AnimatedIsometric = () => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
   // Animation variants for isometric shapes
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -58,18 +63,21 @@ const AnimatedIsometric = () => {
         <svg viewBox="0 0 200 200" className="w-full h-full">
           <path
             d="M100 20L180 70L100 120L20 70L100 20Z"
-            fill="#153969"
-            fillOpacity="0.1"
+            fill={isDark ? "#4A90E2" : "#153969"}
+            fillOpacity={isDark ? "0.2" : "0.1"}
+            className="transition-all duration-700"
           />
           <path
             d="M100 120L180 70L180 170L100 220L100 120Z"
-            fill="#153969"
-            fillOpacity="0.15"
+            fill={isDark ? "#4A90E2" : "#153969"}
+            fillOpacity={isDark ? "0.25" : "0.15"}
+            className="transition-all duration-700"
           />
           <path
             d="M100 120L100 220L20 170L20 70L100 120Z"
-            fill="#153969"
-            fillOpacity="0.2"
+            fill={isDark ? "#4A90E2" : "#153969"}
+            fillOpacity={isDark ? "0.3" : "0.2"}
+            className="transition-all duration-700"
           />
           {/* Windows */}
           {[...Array(3)].map((_, i) => (
@@ -79,8 +87,9 @@ const AnimatedIsometric = () => {
               y={80}
               width="15"
               height="20"
-              fill="#153969"
-              fillOpacity="0.3"
+              fill={isDark ? "#4A90E2" : "#153969"}
+              fillOpacity={isDark ? "0.4" : "0.3"}
+              className="transition-all duration-700"
             />
           ))}
         </svg>
@@ -104,18 +113,21 @@ const AnimatedIsometric = () => {
         <svg viewBox="0 0 200 200" className="w-full h-full">
           <path
             d="M100 50L120 60L120 160L100 150L100 50Z"
-            fill="#1E4D2B"
-            fillOpacity="0.2"
+            fill={isDark ? "#6B7280" : "#1E4D2B"}
+            fillOpacity={isDark ? "0.3" : "0.2"}
+            className="transition-all duration-700"
           />
           <path
             d="M120 60L180 90L180 110L120 80L120 60Z"
-            fill="#1E4D2B"
-            fillOpacity="0.15"
+            fill={isDark ? "#6B7280" : "#1E4D2B"}
+            fillOpacity={isDark ? "0.25" : "0.15"}
+            className="transition-all duration-700"
           />
           <path
             d="M100 50L160 30L180 90L120 60L100 50Z"
-            fill="#1E4D2B"
-            fillOpacity="0.25"
+            fill={isDark ? "#6B7280" : "#1E4D2B"}
+            fillOpacity={isDark ? "0.35" : "0.25"}
+            className="transition-all duration-700"
           />
         </svg>
       </motion.div>
@@ -138,19 +150,22 @@ const AnimatedIsometric = () => {
         <svg viewBox="0 0 200 200" className="w-full h-full">
           <path
             d="M40 80L160 80L180 100L20 100L40 80Z"
-            fill="#4A90E2"
-            fillOpacity="0.15"
+            fill={isDark ? "#6366F1" : "#4A90E2"}
+            fillOpacity={isDark ? "0.3" : "0.15"}
+            className="transition-all duration-700"
           />
           <path
             d="M60 100L140 100L140 140L60 140L60 100Z"
-            fill="#4A90E2"
-            fillOpacity="0.2"
+            fill={isDark ? "#6366F1" : "#4A90E2"}
+            fillOpacity={isDark ? "0.35" : "0.2"}
+            className="transition-all duration-700"
           />
           {/* Equipment */}
           <path
             d="M80 110L120 110L130 120L70 120L80 110Z"
-            fill="#4A90E2"
-            fillOpacity="0.25"
+            fill={isDark ? "#6366F1" : "#4A90E2"}
+            fillOpacity={isDark ? "0.4" : "0.25"}
+            className="transition-all duration-700"
           />
         </svg>
       </motion.div>
@@ -159,6 +174,9 @@ const AnimatedIsometric = () => {
 };
 
 const VisionMissionSection = () => {
+  const { t, language } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [activeTab, setActiveTab] = useState('vision'); // 'vision' or 'mission'
   
   // Text animation variants
@@ -187,6 +205,7 @@ const VisionMissionSection = () => {
 
   // Split text into words for animation with proper typing
   const splitText = (text: string): ReactElement[] => {
+    if (!text) return []; // Guard against undefined text
     return text.split(' ').map((word: string, i: number) => (
       <motion.span
         key={i}
@@ -198,84 +217,150 @@ const VisionMissionSection = () => {
     ));
   };
 
+  // Get mission points from translations
+  const missionPoints = [
+    t('visionMission.missionPoint1'),
+    t('visionMission.missionPoint2')
+  ];
+
   return (
-    <section className="relative bg-white py-6 md:py-8 overflow-hidden min-h-screen flex items-center">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-blue-50" />
+    <section className="relative min-h-screen flex items-center py-10 md:py-20 overflow-hidden">
+      {/* Create a seamless gradient with smooth transition between theme modes */}
+      <div className="absolute inset-0 transition-colors duration-700">
+        {/* Main background gradient - note the transition-all for smooth theme change */}
+        <div className={`absolute inset-0 transition-all duration-1000 ${
+          isDark 
+            ? 'bg-gray-900' 
+            : 'bg-[#f8fafc]'
+        }`} />
+        
+        {/* Top gradient for visual interest */}
+        <div className={`absolute top-0 left-0 right-0 h-64 transition-opacity duration-1000 ${
+          isDark 
+            ? 'bg-gradient-to-b from-blue-900/10 to-transparent' 
+            : 'bg-gradient-to-b from-blue-50/50 to-transparent'
+        }`} />
+        
+        {/* Bottom diagonal gradient that creates a smooth transition to services section */}
+        <div className={`absolute bottom-0 left-0 right-0 h-2/5 transition-all duration-1000 ${
+          isDark 
+            ? 'bg-gradient-to-t from-[#111827] via-[#111827]/70 to-transparent' 
+            : 'bg-gradient-to-t from-[#f8fafc] via-[#f8fafc]/70 to-transparent'
+        }`} />
+        
+        {/* Diagonal gradient overlay with 45-degree angle */}
+        <div className={`absolute inset-0 transition-opacity duration-1000 ${
+          isDark 
+            ? 'bg-gradient-to-br from-gray-900 via-gray-900/95 to-[#111827]/90 opacity-100' 
+            : 'bg-gradient-to-br from-[#f8fafc] via-[#f8fafc]/95 to-[#f8fafc]/90 opacity-100'
+        }`} />
+        
+        {/* Subtle radial gradients for depth */}
+        <div className={`absolute top-1/4 left-1/4 w-full h-full transition-all duration-1000 ${
+          isDark 
+            ? 'bg-radial-gradient-dark' 
+            : 'bg-radial-gradient-light'
+        } opacity-40`} />
+        
+        {/* Very subtle noise texture overlay with transition */}
+        <div className="absolute inset-0 bg-noise opacity-[0.02] transition-opacity duration-1000"></div>
+      </div>
       
       {/* Animated Isometric Elements */}
       <AnimatedIsometric />
       
       {/* Content Container */}
-      <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         {/* Header */}
         <motion.div 
           variants={textContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-4 md:mb-6"
+          className="text-center mb-6 md:mb-10"
         >
           <motion.h2 
-            className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4"
+            className={`text-2xl md:text-3xl font-bold transition-colors duration-700 ${isDark ? 'text-white' : 'text-gray-900'} mb-3 md:mb-4`}
             variants={textContainerVariants}
           >
-            {splitText("Visi & Misi Perusahaan")}
+            {language === 'en' ? 'Vision & Mission' : 'Visi & Misi'}
           </motion.h2>
           <motion.div 
-            className="w-20 md:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto rounded-full"
+            className="w-20 md:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto rounded-full transition-all duration-700"
             variants={textVariants}
           />
         </motion.div>
 
         {/* Tab navigation for mobile */}
-        <div className="flex justify-center mb-4 md:hidden">
-          <div className="flex rounded-lg bg-gray-100 p-1">
+        <div className="flex justify-center mb-6 md:hidden">
+          <div className={`flex rounded-lg transition-all duration-700 ${
+            isDark 
+              ? 'bg-gray-800/70 backdrop-blur-md' 
+              : 'bg-white/70 backdrop-blur-md shadow-sm'
+            } p-1`}
+          >
             <button
               onClick={() => setActiveTab('vision')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition ${
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-500 ${
                 activeTab === 'vision' 
-                  ? 'bg-white shadow text-blue-600' 
-                  : 'text-gray-600'
+                  ? isDark 
+                    ? 'bg-[#153969] text-white'
+                    : 'bg-[#153969] text-white' 
+                  : isDark
+                    ? 'text-gray-300 hover:text-white'
+                    : 'text-gray-600 hover:text-[#153969]'
               }`}
             >
-              Visi
+              {language === 'en' ? 'Vision' : 'Visi'}
             </button>
             <button
               onClick={() => setActiveTab('mission')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition ${
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-500 ${
                 activeTab === 'mission' 
-                  ? 'bg-white shadow text-blue-600' 
-                  : 'text-gray-600'
+                  ? isDark 
+                    ? 'bg-[#153969] text-white'
+                    : 'bg-[#153969] text-white' 
+                  : isDark
+                    ? 'text-gray-300 hover:text-white'
+                    : 'text-gray-600 hover:text-[#153969]'
               }`}
             >
-              Misi
+              {language === 'en' ? 'Mission' : 'Misi'}
             </button>
           </div>
         </div>
 
         {/* Vision & Mission Content */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Vision Card - Always visible on desktop, conditionally on mobile */}
           <motion.div
             variants={textContainerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className={`relative group bg-white/80 backdrop-blur-xl p-4 rounded-2xl border border-blue-100 shadow-xl ${
+            className={`relative group transition-all duration-700 ${
+              isDark 
+                ? 'bg-gray-800/60 backdrop-blur-xl border-gray-700/70 shadow-lg' 
+                : 'bg-white/60 backdrop-blur-xl border-blue-100/70 shadow-lg'
+            } p-6 rounded-xl border ${
               activeTab !== 'vision' ? 'hidden md:block' : ''
             }`}
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100">
-                <EyeIcon className="w-5 h-5 text-blue-500" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`p-2 rounded-xl transition-all duration-700 ${
+                isDark ? 'bg-[#153969]/50 border-gray-600/50' : 'bg-blue-50/80 border-blue-100/80'
+              } border`}>
+                <EyeIcon className={`w-5 h-5 transition-colors duration-700 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
               </div>
-              <motion.h3 variants={textVariants} className="text-xl md:text-2xl font-bold text-gray-900">
-                Visi
+              <motion.h3 
+                variants={textVariants} 
+                className={`text-xl md:text-2xl font-bold transition-colors duration-700 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              >
+                {language === 'en' ? 'Vision' : 'Visi'}
               </motion.h3>
             </div>
-            <motion.p className="text-gray-600 leading-relaxed text-sm md:text-base">
-              {splitText("Menjadi perusahaan terpercaya dan terdepan dalam layanan General Contractor, Dump Truck, dan Heavy Equipment, dengan menghadirkan solusi pembangunan yang inovatif, berkualitas tinggi, dan berkelanjutan.")}
+            <motion.p className={`transition-colors duration-700 ${isDark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed text-sm md:text-base`}>
+              {splitText(t('visionMission.visionText'))}
             </motion.p>
           </motion.div>
 
@@ -285,32 +370,40 @@ const VisionMissionSection = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className={`relative group bg-white/80 backdrop-blur-xl p-4 rounded-2xl border border-blue-100 shadow-xl ${
+            className={`relative group transition-all duration-700 ${
+              isDark 
+                ? 'bg-gray-800/60 backdrop-blur-xl border-gray-700/70 shadow-lg' 
+                : 'bg-white/60 backdrop-blur-xl border-blue-100/70 shadow-lg'
+            } p-6 rounded-xl border ${
               activeTab !== 'mission' ? 'hidden md:block' : ''
             }`}
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100">
-                <BookmarkIcon className="w-5 h-5 text-blue-500" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`p-2 rounded-xl transition-all duration-700 ${
+                isDark ? 'bg-[#153969]/50 border-gray-600/50' : 'bg-blue-50/80 border-blue-100/80'
+              } border`}>
+                <BookmarkIcon className={`w-5 h-5 transition-colors duration-700 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
               </div>
-              <motion.h3 variants={textVariants} className="text-xl md:text-2xl font-bold text-gray-900">
-                Misi
+              <motion.h3 
+                variants={textVariants} 
+                className={`text-xl md:text-2xl font-bold transition-colors duration-700 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              >
+                {language === 'en' ? 'Mission' : 'Misi'}
               </motion.h3>
             </div>
-            <ul className="space-y-3">
-              {[
-                "Memberikan Layanan Berkualitas Tinggi Menyediakan layanan konstruksi, pengangkutan, dan alat berat yang memenuhi standar keselamatan, efisiensi, dan kepuasan pelanggan.",
-                "Meningkatkan Kompetensi dan Inovasi Mengadopsi teknologi terkini dan memberdayakan sumber daya manusia profesional untuk menciptakan solusi pembangunan yang efektif dan modern."
-              ].map((mission, index) => (
+            <ul className="space-y-4">
+              {missionPoints.map((mission, index) => (
                 <motion.li
                   key={index}
                   variants={textVariants}
-                  className="flex gap-2 md:gap-3"
+                  className="flex gap-3"
                 >
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mt-1">
-                    <CheckIcon className="w-3 h-3 text-blue-500" />
+                  <div className={`flex-shrink-0 w-5 h-5 rounded-full transition-all duration-700 ${
+                    isDark ? 'bg-[#153969]/50 border-gray-600/50' : 'bg-blue-50/80 border-blue-100/80'
+                  } border flex items-center justify-center mt-1`}>
+                    <CheckIcon className={`w-3 h-3 transition-colors duration-700 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
                   </div>
-                  <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                  <p className={`transition-colors duration-700 ${isDark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed text-sm md:text-base`}>
                     {splitText(mission)}
                   </p>
                 </motion.li>
@@ -319,6 +412,21 @@ const VisionMissionSection = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* CSS for gradient and texture effects */}
+      <style jsx global>{`
+        .bg-radial-gradient-light {
+          background: radial-gradient(circle at center, rgba(219, 234, 254, 0.3) 0%, rgba(248, 250, 252, 0) 70%);
+        }
+        
+        .bg-radial-gradient-dark {
+          background: radial-gradient(circle at center, rgba(30, 58, 138, 0.1) 0%, rgba(17, 24, 39, 0) 70%);
+        }
+        
+        .bg-noise {
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+      `}</style>
     </section>
   );
 };

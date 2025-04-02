@@ -3,43 +3,60 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { useLanguage } from '../../context/LanguageContext'
+import { useRouter } from 'next/navigation'
 
-const slides = [
-  {
-    image: "/images/company.jpg",
-    category: "PT Karya Bangun Semesta",
-    title: "Karya Nyata, Membangun Semesta",
-    description: "Menjadi perusahaan terpercaya dan terdepan dalam layanan General Contractor, Dump Truck, dan Heavy Equipment, dengan menghadirkan solusi pembangunan yang inovatif, berkualitas tinggi, dan berkelanjutan."
-  },
-  {
-    image: "/images/construction1.jpg",
-    category: "Gedung Modern",
-    title: "Konstruksi Gedung Perkantoran",
-    description: "Pembangunan gedung komersial dan residensial dengan standar tinggi"
-  },
-  {
-    image: "/images/construction2.jpg", 
-    category: "Infrastruktur",
-    title: "Pengembangan Infrastruktur",
-    description: "Pembangunan infrastruktur kota dengan teknologi modern"
-  },
-  {
-    image: "/images/construction3.jpg",
-    category: "Residensial",
-    title: "Perumahan Elite",
-    description: "Pembangunan kawasan perumahan modern berkualitas"
-  }
-];
-
-// Pemetaan slide ke section content terkait
-const slideToSection = {
-  0: "about", // Company info ke About
-  1: "services", // Gedung Modern ke Services
-  2: "projects", // Infrastruktur ke Projects
-  3: "contact" // Residensial ke Contact
+// Pemetaan slide ke URL yang sesuai
+const slideToUrl = {
+  0: "/about/profile",                    // PT Karya Bangun Semesta -> About/Profile
+  1: "/services/building-construction",   // Modern Building -> Services/Building Construction
+  2: "/services/infrastructure",          // Infrastructure -> Services/Infrastructure
+  3: "/projects"                          // Residential -> Projects (alternatif jika tidak ada halaman khusus perumahan)
 };
 
+// Data gambar tetap sama untuk kedua bahasa
+const slideImages = [
+  "/images/company.jpg",
+  "/images/construction1.jpg",
+  "/images/construction2.jpg", 
+  "/images/construction3.jpg"
+];
+
+// Interface untuk slide
+interface Slide {
+  category: string;
+  title: string;
+  description: string;
+}
+
 export default function HeroSection() {
+  const router = useRouter();
+  const { t, language } = useLanguage();
+  
+  // Definisi slide statis 
+  const slides: Slide[] = [
+    {
+      category: t('hero.slides.0.category'),
+      title: t('hero.slides.0.title'),
+      description: t('hero.slides.0.description')
+    },
+    {
+      category: t('hero.slides.1.category'),
+      title: t('hero.slides.1.title'),
+      description: t('hero.slides.1.description')
+    },
+    {
+      category: t('hero.slides.2.category'),
+      title: t('hero.slides.2.title'),
+      description: t('hero.slides.2.description')
+    },
+    {
+      category: t('hero.slides.3.category'),
+      title: t('hero.slides.3.title'),
+      description: t('hero.slides.3.description')
+    }
+  ];
+  
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [direction, setDirection] = useState(0);
@@ -105,7 +122,12 @@ export default function HeroSection() {
         slideIntervalRef.current = null;
       }
     };
-  }, [isPlaying, isMounted]);
+  }, [isPlaying, isMounted, slides.length]);
+
+  // Update when language changes
+  useEffect(() => {
+    // Force re-render when language changes
+  }, [language]);
 
   // Progress bar - improved with useRef for cleanup
   useEffect(() => {
@@ -147,15 +169,12 @@ export default function HeroSection() {
 
   // Handle Explore More button click
   const handleExploreClick = () => {
-    // Get section ID based on current slide
-    const sectionId = slideToSection[currentSlide as keyof typeof slideToSection];
-    if (!sectionId) return;
+    // Get URL based on current slide
+    const url = slideToUrl[currentSlide as keyof typeof slideToUrl];
+    if (!url) return;
     
-    // Find the section element and scroll to it
-    const sectionElement = document.getElementById(sectionId);
-    if (sectionElement) {
-      sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // Navigate to URL
+    router.push(url);
   };
 
   // Animation variants
@@ -381,7 +400,7 @@ export default function HeroSection() {
             transition={{ duration: 6 }}
           >
             <Image
-              src={slides[currentSlide].image}
+              src={slideImages[currentSlide]}
               alt={slides[currentSlide].title}
               fill
               className="object-cover transform transition-transform scale-110"
@@ -424,7 +443,7 @@ export default function HeroSection() {
               className="my-3 sm:my-6"
             >
               <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold leading-tight">
-                {slides[currentSlide].title.split(' ').map((word, i) => (
+                {slides[currentSlide].title.split(' ').map((word: string, i: number) => (
                   <motion.span
                     key={i}
                     initial={{ opacity: 0, x: -20 }}
@@ -472,7 +491,7 @@ export default function HeroSection() {
                           transform hover:scale-105 transition-all duration-300
                           shadow-lg hover:shadow-blue-500/50"
               >
-                Jelajahi Lebih Lanjut
+                {t('hero.exploreButton')}
               </button>
             </motion.div>
           </div>
@@ -489,7 +508,7 @@ export default function HeroSection() {
       {/* Navigation - Improved with direct section links and mobile responsiveness */}
       <div className={`absolute bottom-8 left-4 sm:left-20 right-4 sm:right-20 ${isMobile ? 'flex flex-col gap-3' : 'flex justify-between'} items-center z-20`}>
         <div className={`flex ${isMobile ? 'gap-2 overflow-x-auto no-scrollbar' : 'gap-6'} w-full`}>
-          {slides.map((slide, index) => (
+          {slides.map((slide: Slide, index: number) => (
             <button
               key={index}
               onClick={() => handleUserInteraction(index)}
@@ -544,7 +563,7 @@ export default function HeroSection() {
           <button
             onClick={() => setIsPlaying(!isPlaying)}
             className="absolute inset-0 flex items-center justify-center text-white hover:text-yellow-500 transition-colors focus:outline-none"
-            aria-label={isPlaying ? "Jeda slideshow" : "Putar slideshow"}
+            aria-label={isPlaying ? t('hero.pauseSlideshow') : t('hero.playSlideshow')}
           >
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </button>
@@ -562,7 +581,7 @@ export default function HeroSection() {
             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
-            <span>Geser</span>
+            <span>{t('hero.swipe')}</span>
             <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
             </svg>

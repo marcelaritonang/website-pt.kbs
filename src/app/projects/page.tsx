@@ -463,16 +463,7 @@ export default function ProjectsPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Back to Home Button - Fixed Position */}
-      <div className="fixed top-4 left-4 z-50">
-        <Link 
-          href="/" 
-          className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 flex items-center justify-center transition-colors"
-          aria-label="Kembali ke Beranda"
-        >
-          <ArrowLeft className="h-6 w-6 text-[#153969]" />
-        </Link>
-      </div>
+      
 
       {/* Hero Section */}
       <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
