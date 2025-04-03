@@ -8,7 +8,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
 // Helper function to convert translation value to string
-const asString = (value: any): string => {
+const asString = (value: unknown): string => {
   if (value === null || value === undefined) return '';
   return String(value);
 };

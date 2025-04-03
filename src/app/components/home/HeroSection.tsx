@@ -7,7 +7,7 @@ import { useLanguage } from '../../context/LanguageContext'
 import { useRouter } from 'next/navigation'
 
 // Helper function to safely convert translation to string
-const asString = (value: any): string => {
+const asString = (value: unknown): string => {
   if (value === null || value === undefined) return '';
   return String(value);
 };
