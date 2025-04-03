@@ -10,14 +10,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
 // Interface for data structures
-interface Achievement {
-  id: number;
-  year: number;
-  title: string;
-  description: string;
-  image: string;
-  achievements: string[];
-}
+
 
 interface Certificate {
   id: number;
@@ -26,15 +19,6 @@ interface Certificate {
   image: string;
 }
 
-interface ProjectItem {
-  id: number;
-  title: string;
-  subBidang: string;
-  lokasi: string;
-  pemberiTugas: string;
-  noTanggal: string;
-  image: string;
-}
 
 export default function CompanyHistoryPage() {
   const router = useRouter();
