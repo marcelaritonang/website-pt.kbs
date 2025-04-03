@@ -6,6 +6,12 @@ import Image from 'next/image'
 import { useLanguage } from '../../context/LanguageContext'
 import { useRouter } from 'next/navigation'
 
+// Helper function to safely convert translation to string
+const asString = (value: any): string => {
+  if (value === null || value === undefined) return '';
+  return String(value);
+};
+
 // Pemetaan slide ke URL yang sesuai
 const slideToUrl = {
   0: "/about/profile",                    // PT Karya Bangun Semesta -> About/Profile
@@ -33,27 +39,27 @@ export default function HeroSection() {
   const router = useRouter();
   const { t, language } = useLanguage();
   
-  // Definisi slide statis 
+  // Definisi slide statis dengan konversi ke string
   const slides: Slide[] = [
     {
-      category: t('hero.slides.0.category'),
-      title: t('hero.slides.0.title'),
-      description: t('hero.slides.0.description')
+      category: asString(t('hero.slides.0.category')),
+      title: asString(t('hero.slides.0.title')),
+      description: asString(t('hero.slides.0.description'))
     },
     {
-      category: t('hero.slides.1.category'),
-      title: t('hero.slides.1.title'),
-      description: t('hero.slides.1.description')
+      category: asString(t('hero.slides.1.category')),
+      title: asString(t('hero.slides.1.title')),
+      description: asString(t('hero.slides.1.description'))
     },
     {
-      category: t('hero.slides.2.category'),
-      title: t('hero.slides.2.title'),
-      description: t('hero.slides.2.description')
+      category: asString(t('hero.slides.2.category')),
+      title: asString(t('hero.slides.2.title')),
+      description: asString(t('hero.slides.2.description'))
     },
     {
-      category: t('hero.slides.3.category'),
-      title: t('hero.slides.3.title'),
-      description: t('hero.slides.3.description')
+      category: asString(t('hero.slides.3.category')),
+      title: asString(t('hero.slides.3.title')),
+      description: asString(t('hero.slides.3.description'))
     }
   ];
   
@@ -365,6 +371,12 @@ export default function HeroSection() {
     );
   };
 
+  // Convert translations to strings for button labels
+  const pauseSlideshowText = asString(t('hero.pauseSlideshow'));
+  const playSlideshowText = asString(t('hero.playSlideshow'));
+  const swipeText = asString(t('hero.swipe'));
+  const exploreButtonText = asString(t('hero.exploreButton'));
+
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
       {/* Color Overlay */}
@@ -491,7 +503,7 @@ export default function HeroSection() {
                           transform hover:scale-105 transition-all duration-300
                           shadow-lg hover:shadow-blue-500/50"
               >
-                {t('hero.exploreButton')}
+                {exploreButtonText}
               </button>
             </motion.div>
           </div>
@@ -563,7 +575,7 @@ export default function HeroSection() {
           <button
             onClick={() => setIsPlaying(!isPlaying)}
             className="absolute inset-0 flex items-center justify-center text-white hover:text-yellow-500 transition-colors focus:outline-none"
-            aria-label={isPlaying ? t('hero.pauseSlideshow') : t('hero.playSlideshow')}
+            aria-label={isPlaying ? pauseSlideshowText : playSlideshowText}
           >
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </button>
@@ -581,7 +593,7 @@ export default function HeroSection() {
             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
-            <span>{t('hero.swipe')}</span>
+            <span>{swipeText}</span>
             <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
             </svg>

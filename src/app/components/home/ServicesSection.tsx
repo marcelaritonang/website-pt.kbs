@@ -7,6 +7,12 @@ import { Building2, Hammer, Factory, Settings, ChevronLeft, ChevronRight } from 
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
+// Helper function to convert translation value to string
+const asString = (value: any): string => {
+  if (value === null || value === undefined) return '';
+  return String(value);
+};
+
 // Definisikan tipe untuk project
 interface Project {
   title: string;
@@ -112,13 +118,19 @@ const ServicesSection: React.FC = () => {
       const descriptionKey = `${baseKey}.description`;
       
       return {
-        title: t(titleKey),
-        description: t(descriptionKey)
+        title: asString(t(titleKey)),
+        description: asString(t(descriptionKey))
       };
     });
   };
 
   const projects = getTranslatedProjects();
+  
+  // Pre-convert text values that we need
+  const sectionTitle = asString(t('services.sectionTitle'));
+  const sectionSubtitle = asString(t('services.sectionSubtitle'));
+  const featuredProjectsTitle = asString(t('services.featuredProjects'));
+  const consultButtonText = asString(t('services.consultButton'));
   
   return (
     <section className="relative min-h-screen flex items-center py-10 md:py-20 overflow-hidden">
@@ -172,7 +184,7 @@ const ServicesSection: React.FC = () => {
             transition={{ duration: 0.6 }}
             className={`text-xs md:text-sm font-semibold transition-colors duration-700 ${isDark ? 'text-blue-400' : 'text-[#153969]'} tracking-wider uppercase mb-2 md:mb-3`}
           >
-            {t('services.sectionTitle')}
+            {sectionTitle}
           </motion.h2>
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
@@ -180,7 +192,7 @@ const ServicesSection: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className={`text-2xl md:text-4xl lg:text-5xl font-bold transition-colors duration-700 ${isDark ? 'text-white' : 'text-gray-900'} mb-4 md:mb-6`}
           >
-            {t('services.sectionSubtitle')}
+            {sectionSubtitle}
           </motion.h3>
         </div>
 
@@ -197,7 +209,7 @@ const ServicesSection: React.FC = () => {
             <ChevronLeft className={`w-5 h-5 transition-colors duration-700 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
           </button>
           <span className={`text-sm font-medium transition-colors duration-700 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-            {t(activeService.titleKey)}
+            {asString(t(activeService.titleKey))}
           </span>
           <button 
             onClick={handleNextService}
@@ -225,7 +237,7 @@ const ServicesSection: React.FC = () => {
                     ? isDark ? 'text-blue-400' : 'text-[#153969]' 
                     : isDark ? 'text-gray-400 group-hover:text-blue-400' : 'text-gray-500 group-hover:text-[#153969]'
                 }`}>
-                  {t(service.titleKey)}
+                  {asString(t(service.titleKey))}
                 </span>
                 {activeService.id === service.id && (
                   <motion.div
@@ -256,7 +268,7 @@ const ServicesSection: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <ServiceIcon className="w-4 h-4 transition-colors duration-500" />
                     <span className="text-xs font-medium whitespace-nowrap transition-colors duration-500">
-                      {t(service.titleKey)}
+                      {asString(t(service.titleKey))}
                     </span>
                   </div>
                 </button>
@@ -285,7 +297,7 @@ const ServicesSection: React.FC = () => {
               >
                 <Image
                   src={activeService.image}
-                  alt={t(activeService.titleKey)}
+                  alt={asString(t(activeService.titleKey))}
                   fill
                   className="object-cover"
                 />
@@ -303,11 +315,11 @@ const ServicesSection: React.FC = () => {
                     {React.createElement(activeService.icon, { className: "w-4 h-4 md:w-6 md:h-6 text-white" })}
                   </div>
                   <h4 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
-                    {t(activeService.titleKey)}
+                    {asString(t(activeService.titleKey))}
                   </h4>
                 </div>
                 <p className="text-sm md:text-base lg:text-lg text-white/90 max-w-2xl line-clamp-2 md:line-clamp-none">
-                  {t(activeService.descriptionKey)}
+                  {asString(t(activeService.descriptionKey))}
                 </p>
               </motion.div>
             </div>
@@ -315,7 +327,7 @@ const ServicesSection: React.FC = () => {
             {/* Projects List */}
             <div className="lg:col-span-5 space-y-4 md:space-y-6">
               <h5 className={`text-lg md:text-xl font-semibold transition-colors duration-700 ${isDark ? 'text-white' : 'text-gray-900'} mb-4 md:mb-8`}>
-                {t('services.featuredProjects')}
+                {featuredProjectsTitle}
               </h5>
               {projects.map((project, index) => (
                 <motion.div
@@ -351,7 +363,7 @@ const ServicesSection: React.FC = () => {
                     : 'bg-[#153969] hover:bg-[#1e4d8d] hover:shadow-[#153969]/20'
                 } text-white px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl transition-all duration-500 shadow-md md:shadow-lg text-sm md:text-base`}
               >
-                {t('services.consultButton')}
+                {consultButtonText}
               </motion.button>
             </div>
           </motion.div>
