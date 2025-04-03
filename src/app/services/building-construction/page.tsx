@@ -8,11 +8,6 @@ import { CheckCircle, ArrowRight, Clock, Shield, Award, Users, ChevronDown, Chev
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
-// Helper function to convert translation value to string
-const asString = (value: unknown): string => {
-  if (value === null || value === undefined) return '';
-  return String(value);
-};
 
 export default function ConstructionBuilding() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
