@@ -8,7 +8,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
 // Utility function to safely get string from translation
-function asString(value: any): string {
+function asString(value: unknown): string {
   if (value === null || value === undefined) return '';
   return String(value);
 }
@@ -23,6 +23,7 @@ interface ServiceCategoryItem {
 }
 
 const ServiceSection: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { t } = useLanguage();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
