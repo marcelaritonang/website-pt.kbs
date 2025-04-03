@@ -281,13 +281,18 @@ const translations = {
 };
 
 // Type definitions
-type Language = 'en' | 'id';
-type TranslationKey = string;
+export type Language = 'en' | 'id';
+export type TranslationKey = string;
+
+// Define recursive type for the translations object
+export type TranslationObject = {
+  [key: string]: string | string[] | TranslationObject | Array<TranslationObject>;
+};
 
 interface LanguageContextType {
   language: Language;
   changeLanguage: (lang: Language) => void;
-  t: (key: TranslationKey) => string;
+  t: (key: TranslationKey) => string | TranslationObject;
 }
 
 // Create context
@@ -316,19 +321,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
   
   // Translation function
-  const t = (key: TranslationKey): string | any => {
+  const t = (key: TranslationKey): string | TranslationObject => {
     const keys = key.split('.');
-    let result: any = translations[language];
+    let result: TranslationObject | string = translations[language] as TranslationObject;
     
     for (const k of keys) {
-      if (result && result[k] !== undefined) {
-        result = result[k];
+      if (typeof result === 'object' && result !== null && k in result) {
+        result = result[k] as TranslationObject | string;
       } else {
         // Fallback to English if translation not found
-        let enResult: any = translations['en'];
+        let enResult: TranslationObject | string = translations['en'] as TranslationObject;
         for (const enK of keys) {
-          if (enResult && enResult[enK] !== undefined) {
-            enResult = enResult[enK];
+          if (typeof enResult === 'object' && enResult !== null && enK in enResult) {
+            enResult = enResult[enK] as TranslationObject | string;
           } else {
             return key; // Fallback to key if not found in English either
           }
@@ -340,8 +345,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return result;
   };
   
+  // Create context value object
+  const contextValue: LanguageContextType = {
+    language,
+    changeLanguage,
+    t
+  };
+  
   return (
-    <LanguageContext.Provider value={{ language, changeLanguage, t }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );

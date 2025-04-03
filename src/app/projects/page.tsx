@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Calendar, MapPin, Building, Filter, X, ExternalLink, Home, ArrowLeft } from 'lucide-react';
+import { Search, Calendar, MapPin, Building, Filter, X, ExternalLink, Home } from 'lucide-react';
 
 // Define interfaces for TypeScript
 interface Project {

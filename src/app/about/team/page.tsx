@@ -4,14 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, ChevronDown, ChevronUp, Building2, Users, Clock, ArrowLeft } from 'lucide-react';
-
-// Office location
-const officeLocation = {
-  name: "Kantor Pusat Jakarta",
-  address: "Jl. Raya Jatiwaringin No.06 2, RT.2/RW.13, Cipinang Melayu, Kec. Makasar, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13620"
-};
+import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const StrukturOrganisasi = () => {
+  const { language } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [showFullStructure, setShowFullStructure] = useState(false);
   
   // Animation variants
@@ -20,29 +19,104 @@ const StrukturOrganisasi = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
   };
 
+  // Multilingual content
+  const content = {
+    en: {
+      backToHome: "Back to Home",
+      pageTitle: "Organization Structure",
+      pageSubtitle: "Get to know more closely the highly dedicated professionals with extensive experience in providing the best construction solutions.",
+      organizationTitle: "Company Organization Structure",
+      organizationSubtitle: "We have an organizational structure designed to provide the best service and ensure the quality of each project.",
+      showMore: "Show All Teams",
+      showLess: "Show Less",
+      companyValues: "Company Values",
+      valuesSubtitle: "Core values that shape our work culture and approach to every project.",
+      value1Title: "Integrity",
+      value1Description: "We are committed to the highest ethical standards, transparency, and honesty in every aspect of our work.",
+      value2Title: "Quality",
+      value2Description: "We always strive to exceed expectations by producing high-quality work and focusing on details.",
+      value3Title: "Innovation",
+      value3Description: "We continue to develop new methods and approaches to deliver more effective and efficient solutions.",
+      performance: "Our Performance",
+      performanceSubtitle: "We are committed to providing the best service in every project",
+      projectsCompleted: "Projects Completed",
+      clientSatisfaction: "Client Satisfaction",
+      technicalSupport: "Technical Support",
+      officeLocation: "Office Location",
+      officeSubtitle: "Meet our team at headquarters or contact us for more information.",
+      officeName: "Jakarta Headquarters",
+      contactUs: "Contact Us",
+      teamTitles: {
+        productionTitle: "Production Division",
+        operationalTitle: "Operational Division",
+        supportTitle: "Support",
+      }
+    },
+    id: {
+      backToHome: "Kembali ke Beranda",
+      pageTitle: "Struktur Organisasi",
+      pageSubtitle: "Mengenal lebih dekat para profesional yang berdedikasi tinggi dan berpengalaman luas dalam memberikan solusi konstruksi terbaik.",
+      organizationTitle: "Struktur Organisasi Perusahaan",
+      organizationSubtitle: "Kami memiliki struktur organisasi yang dirancang untuk memberikan layanan terbaik dan memastikan kualitas setiap proyek.",
+      showMore: "Tampilkan Semua Tim",
+      showLess: "Tampilkan Lebih Sedikit",
+      companyValues: "Nilai-Nilai Perusahaan",
+      valuesSubtitle: "Nilai-nilai inti yang membentuk budaya kerja dan pendekatan kami terhadap setiap proyek.",
+      value1Title: "Integritas",
+      value1Description: "Kami berkomitmen pada standar etika tertinggi, transparansi, dan kejujuran dalam setiap aspek pekerjaan kami.",
+      value2Title: "Kualitas",
+      value2Description: "Kami selalu berupaya melampaui ekspektasi dengan menghasilkan pekerjaan berkualitas tinggi dan fokus pada detail.",
+      value3Title: "Inovasi",
+      value3Description: "Kami terus mengembangkan metode dan pendekatan baru untuk menghadirkan solusi yang lebih efektif dan efisien.",
+      performance: "Performa Kami",
+      performanceSubtitle: "Kami berkomitmen untuk memberikan pelayanan terbaik dalam setiap proyek",
+      projectsCompleted: "Proyek Selesai",
+      clientSatisfaction: "Kepuasan Client",
+      technicalSupport: "Dukungan Teknis",
+      officeLocation: "Lokasi Kantor",
+      officeSubtitle: "Temui tim kami di kantor pusat atau hubungi kami untuk informasi lebih lanjut.",
+      officeName: "Kantor Pusat Jakarta",
+      contactUs: "Hubungi Kami",
+      teamTitles: {
+        productionTitle: "Divisi Produksi",
+        operationalTitle: "Divisi Operasional",
+        supportTitle: "Support",
+      }
+    }
+  };
+
+  // Get current content based on language
+  const currentContent = language === 'en' ? content.en : content.id;
+
+  // Office location
+  const officeLocation = {
+    name: currentContent.officeName,
+    address: "Jl. Raya Jatiwaringin No.06 2, RT.2/RW.13, Cipinang Melayu, Kec. Makasar, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13620"
+  };
+
   // Stats
   const stats = [
     {
       value: "15+",
-      label: "Proyek Selesai ",
+      label: language === 'en' ? "Projects Completed" : "Proyek Selesai",
       icon: Building2
     },
     {
       value: "100%",
-      label: "Kepuasan Client",
+      label: language === 'en' ? "Client Satisfaction" : "Kepuasan Client",
       icon: Users
     },
     {
       value: "24/7",
-      label: "Dukungan Teknis",
+      label: language === 'en' ? "Technical Support" : "Dukungan Teknis",
       icon: Clock
     }
   ];
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className={`${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} min-h-screen transition-colors duration-300`}>
       {/* Hero section */}
-      <div className="relative bg-[#153969] text-white py-20 overflow-hidden">
+      <div className={`relative ${isDark ? 'bg-[#153969]/80' : 'bg-[#153969]'} text-white py-20 overflow-hidden transition-colors duration-300`}>
         <div className="absolute inset-0 opacity-20 pattern-grid"></div>
         <div className="container mx-auto px-4 md:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -51,10 +125,10 @@ const StrukturOrganisasi = () => {
               animate="visible"
               variants={fadeIn}
             >
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">Struktur Organisasi</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">{currentContent.pageTitle}</h1>
               <div className="w-20 h-1 bg-white mx-auto mb-6"></div>
               <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto">
-                Mengenal lebih dekat para profesional yang berdedikasi tinggi dan berpengalaman luas dalam memberikan solusi konstruksi terbaik.
+                {currentContent.pageSubtitle}
               </p>
             </motion.div>
           </div>
@@ -62,10 +136,10 @@ const StrukturOrganisasi = () => {
       </div>
 
       {/* Tombol Kembali ke Beranda */}
-      <div className="container mx-auto px-4 md:px-8 py-4">
-        <Link href="/" className="inline-flex items-center text-[#153969] hover:underline">
+      <div className={`container mx-auto px-4 md:px-8 py-4 ${isDark ? 'text-white' : 'text-black'} transition-colors duration-300`}>
+        <Link href="/" className={`inline-flex items-center ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-[#153969] hover:text-[#0f2a4d]'} hover:underline transition-colors duration-300`}>
           <ArrowLeft className="mr-2 h-5 w-5" />
-          Kembali ke Beranda
+          {currentContent.backToHome}
         </Link>
       </div>
 
@@ -79,16 +153,16 @@ const StrukturOrganisasi = () => {
             variants={fadeIn}
             className="max-w-5xl mx-auto text-center mb-8"
           >
-            <h2 className="text-3xl font-bold text-[#153969] mb-4">Struktur Organisasi Perusahaan</h2>
+            <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-[#153969]'} mb-4 transition-colors duration-300`}>{currentContent.organizationTitle}</h2>
             <div className="w-20 h-1 bg-[#153969] mx-auto mb-6"></div>
-            <p className="text-gray-700 mb-8">
-              Kami memiliki struktur organisasi yang dirancang untuk memberikan layanan terbaik dan memastikan kualitas setiap proyek.
+            <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} mb-8 transition-colors duration-300`}>
+              {currentContent.organizationSubtitle}
             </p>
           </motion.div>
           
           <div className="max-w-5xl mx-auto">
             {/* Text-based organizational chart - Responsive version */}
-            <div className="bg-white rounded-lg shadow-md p-4 md:p-8">
+            <div className={`${isDark ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md p-4 md:p-8 transition-colors duration-300`}>
               <div className="flex flex-col items-center text-center">
                 {/* Level 1 - Komisaris Utama */}
                 <div className="w-full max-w-64 px-4 py-3 mb-4 md:mb-8 bg-[#153969] text-white rounded-lg font-bold">
@@ -96,7 +170,7 @@ const StrukturOrganisasi = () => {
                   <div className="mt-1 text-sm font-normal">KOMISARIS UTAMA</div>
                 </div>
                 
-                <div className="w-0.5 h-4 md:h-8 bg-gray-300"></div>
+                <div className={`w-0.5 h-4 md:h-8 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} transition-colors duration-300`}></div>
                 
                 {/* Level 2 - Direktur Utama & Legal */}
                 <div className="flex flex-col md:flex-row items-center justify-center w-full mb-4 md:mb-8 gap-4">
@@ -104,15 +178,15 @@ const StrukturOrganisasi = () => {
                     Andre Sukanto
                     <div className="mt-1 text-sm font-normal">Direktur Utama</div>
                   </div>
-                  <div className="h-4 w-0.5 md:h-0.5 md:w-8 bg-gray-300 block md:hidden"></div>
-                  <div className="hidden md:block w-32 h-0.5 bg-gray-300"></div>
+                  <div className={`h-4 w-0.5 md:h-0.5 md:w-8 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} block md:hidden transition-colors duration-300`}></div>
+                  <div className={`hidden md:block w-32 h-0.5 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} transition-colors duration-300`}></div>
                   <div className="w-full max-w-64 px-4 py-3 bg-[#153969] text-white rounded-lg font-bold">
                     Rolas Budiman S.
                     <div className="mt-1 text-sm font-normal">Legal</div>
                   </div>
                 </div>
                 
-                <div className="w-0.5 h-4 md:h-8 bg-gray-300"></div>
+                <div className={`w-0.5 h-4 md:h-8 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} transition-colors duration-300`}></div>
                 
                 {/* Level 3 - Direktur Operasional */}
                 <div className="w-full max-w-64 px-4 py-3 mb-4 md:mb-8 bg-[#153969] text-white rounded-lg font-bold">
@@ -120,7 +194,7 @@ const StrukturOrganisasi = () => {
                   <div className="mt-1 text-sm font-normal">Direktur Operasional</div>
                 </div>
                 
-                <div className="w-0.5 h-4 md:h-8 bg-gray-300"></div>
+                <div className={`w-0.5 h-4 md:h-8 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} transition-colors duration-300`}></div>
                 
                 {/* Level 4 - General Manager */}
                 <div className="w-full max-w-64 px-4 py-3 mb-4 md:mb-8 bg-[#153969] text-white rounded-lg font-bold">
@@ -128,7 +202,7 @@ const StrukturOrganisasi = () => {
                   <div className="mt-1 text-sm font-normal">General Manager</div>
                 </div>
                 
-                <div className="w-0.5 h-4 md:h-8 bg-gray-300"></div>
+                <div className={`w-0.5 h-4 md:h-8 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} transition-colors duration-300`}></div>
                 
                 {/* Level 5 - Managers */}
                 <div className="flex flex-col md:flex-row justify-center w-full mb-4 md:mb-8 gap-4">
@@ -148,70 +222,70 @@ const StrukturOrganisasi = () => {
                 
                 {showFullStructure && (
                   <>
-                    <div className="w-full max-w-5xl border-t border-dashed border-gray-300 pt-4 md:pt-8 mt-4"></div>
+                    <div className={`w-full max-w-5xl border-t border-dashed ${isDark ? 'border-gray-600' : 'border-gray-300'} pt-4 md:pt-8 mt-4 transition-colors duration-300`}></div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 md:mt-8 w-full">
                       {/* Produksi Team */}
                       <div className="text-center">
-                        <h3 className="text-lg font-bold text-[#153969] mb-4">Divisi Produksi</h3>
+                        <h3 className={`text-lg font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'} mb-4 transition-colors duration-300`}>{currentContent.teamTitles.productionTitle}</h3>
                         <div className="space-y-2">
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Fatah Yasin</div>
-                            <div className="text-sm text-gray-600">Design</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Design</div>
                           </div>
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Rinaldi</div>
-                            <div className="text-sm text-gray-600">QC Mesin</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>QC Mesin</div>
                           </div>
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Sabarno</div>
-                            <div className="text-sm text-gray-600">QC Produksi</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>QC Produksi</div>
                           </div>
                         </div>
                       </div>
                       
                       {/* Operasional Team */}
                       <div className="text-center">
-                        <h3 className="text-lg font-bold text-[#153969] mb-4">Divisi Operasional</h3>
+                        <h3 className={`text-lg font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'} mb-4 transition-colors duration-300`}>{currentContent.teamTitles.operationalTitle}</h3>
                         <div className="space-y-2">
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Paulina</div>
-                            <div className="text-sm text-gray-600">Pajak</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Pajak</div>
                           </div>
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Akunting</div>
-                            <div className="text-sm text-gray-600">QC Mesin</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>QC Mesin</div>
                           </div>
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Rinaldi</div>
-                            <div className="text-sm text-gray-600">QC Mesin</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>QC Mesin</div>
                           </div>
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Paulina</div>
-                            <div className="text-sm text-gray-600">Pembukuan</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Pembukuan</div>
                           </div>
                         </div>
                       </div>
                       
                       {/* Support Team */}
                       <div className="text-center">
-                        <h3 className="text-lg font-bold text-[#153969] mb-4">Support</h3>
+                        <h3 className={`text-lg font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'} mb-4 transition-colors duration-300`}>{currentContent.teamTitles.supportTitle}</h3>
                         <div className="space-y-2">
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Hotlen</div>
-                            <div className="text-sm text-gray-600">Gudang</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Gudang</div>
                           </div>
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Sarah</div>
-                            <div className="text-sm text-gray-600">Admin</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Admin</div>
                           </div>
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Sudung</div>
-                            <div className="text-sm text-gray-600">Driver</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Driver</div>
                           </div>
-                          <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                          <div className={`px-4 py-2 ${isDark ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg transition-colors duration-300`}>
                             <div className="font-medium">Simon</div>
-                            <div className="text-sm text-gray-600">Kurir</div>
+                            <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Kurir</div>
                           </div>
                         </div>
                       </div>
@@ -221,9 +295,13 @@ const StrukturOrganisasi = () => {
                 
                 <button 
                   onClick={() => setShowFullStructure(!showFullStructure)}
-                  className="flex items-center gap-2 mt-6 md:mt-8 px-6 py-3 bg-white text-[#153969] rounded-md font-medium border border-[#153969] hover:bg-[#153969] hover:text-white transition-colors"
+                  className={`flex items-center gap-2 mt-6 md:mt-8 px-6 py-3 ${
+                    isDark 
+                      ? 'bg-gray-800 text-blue-400 border-blue-400 hover:bg-blue-900/30' 
+                      : 'bg-white text-[#153969] border-[#153969] hover:bg-[#153969] hover:text-white'
+                  } rounded-md font-medium border transition-colors duration-300`}
                 >
-                  {showFullStructure ? 'Tampilkan Lebih Sedikit' : 'Tampilkan Semua Tim'}
+                  {showFullStructure ? currentContent.showLess : currentContent.showMore}
                   {showFullStructure ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </button>
               </div>
@@ -233,7 +311,7 @@ const StrukturOrganisasi = () => {
       </section>
 
       {/* Company Values Section */}
-      <section className="py-12 md:py-16 bg-gray-50">
+      <section className={`py-12 md:py-16 ${isDark ? 'bg-gray-800/50' : 'bg-gray-50'} transition-colors duration-300`}>
         <div className="container mx-auto px-4 md:px-8">
           <motion.div 
             initial="hidden"
@@ -242,10 +320,10 @@ const StrukturOrganisasi = () => {
             variants={fadeIn}
             className="max-w-4xl mx-auto text-center mb-8 md:mb-12"
           >
-            <h2 className="text-3xl font-bold text-[#153969] mb-4">Nilai-Nilai Perusahaan</h2>
+            <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-[#153969]'} mb-4 transition-colors duration-300`}>{currentContent.companyValues}</h2>
             <div className="w-16 h-1 bg-[#153969] mx-auto mb-6"></div>
-            <p className="text-gray-700">
-              Nilai-nilai inti yang membentuk budaya kerja dan pendekatan kami terhadap setiap proyek.
+            <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+              {currentContent.valuesSubtitle}
             </p>
           </motion.div>
 
@@ -255,12 +333,12 @@ const StrukturOrganisasi = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeIn}
-              className="bg-white p-6 rounded-lg shadow-sm border-t-4 border-[#153969]"
+              className={`${isDark ? 'bg-gray-700' : 'bg-white'} p-6 rounded-lg shadow-sm border-t-4 border-[#153969] transition-colors duration-300`}
             >
               <div className="text-[#153969] text-4xl font-bold mb-3">01</div>
-              <h3 className="text-xl font-bold text-[#153969] mb-3">Integritas</h3>
-              <p className="text-gray-700">
-                Kami berkomitmen pada standar etika tertinggi, transparansi, dan kejujuran dalam setiap aspek pekerjaan kami.
+              <h3 className={`text-xl font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'} mb-3 transition-colors duration-300`}>{currentContent.value1Title}</h3>
+              <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                {currentContent.value1Description}
               </p>
             </motion.div>
 
@@ -269,12 +347,12 @@ const StrukturOrganisasi = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeIn}
-              className="bg-white p-6 rounded-lg shadow-sm border-t-4 border-[#153969]"
+              className={`${isDark ? 'bg-gray-700' : 'bg-white'} p-6 rounded-lg shadow-sm border-t-4 border-[#153969] transition-colors duration-300`}
             >
               <div className="text-[#153969] text-4xl font-bold mb-3">02</div>
-              <h3 className="text-xl font-bold text-[#153969] mb-3">Kualitas</h3>
-              <p className="text-gray-700">
-                Kami selalu berupaya melampaui ekspektasi dengan menghasilkan pekerjaan berkualitas tinggi dan fokus pada detail.
+              <h3 className={`text-xl font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'} mb-3 transition-colors duration-300`}>{currentContent.value2Title}</h3>
+              <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                {currentContent.value2Description}
               </p>
             </motion.div>
 
@@ -283,12 +361,12 @@ const StrukturOrganisasi = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeIn}
-              className="bg-white p-6 rounded-lg shadow-sm border-t-4 border-[#153969]"
+              className={`${isDark ? 'bg-gray-700' : 'bg-white'} p-6 rounded-lg shadow-sm border-t-4 border-[#153969] transition-colors duration-300`}
             >
               <div className="text-[#153969] text-4xl font-bold mb-3">03</div>
-              <h3 className="text-xl font-bold text-[#153969] mb-3">Inovasi</h3>
-              <p className="text-gray-700">
-                Kami terus mengembangkan metode dan pendekatan baru untuk menghadirkan solusi yang lebih efektif dan efisien.
+              <h3 className={`text-xl font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'} mb-3 transition-colors duration-300`}>{currentContent.value3Title}</h3>
+              <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                {currentContent.value3Description}
               </p>
             </motion.div>
           </div>
@@ -296,7 +374,7 @@ const StrukturOrganisasi = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 md:py-16 bg-[#153969] text-white">
+      <section className={`py-12 md:py-16 ${isDark ? 'bg-[#153969]/70' : 'bg-[#153969]'} text-white transition-colors duration-300`}>
         <div className="container mx-auto px-4 md:px-8">
           <motion.div
             initial="hidden"
@@ -305,10 +383,10 @@ const StrukturOrganisasi = () => {
             variants={fadeIn}
             className="max-w-4xl mx-auto text-center mb-8 md:mb-12"
           >
-            <h2 className="text-3xl font-bold mb-4">Performa Kami</h2>
+            <h2 className="text-3xl font-bold mb-4">{currentContent.performance}</h2>
             <div className="w-16 h-1 bg-white mx-auto mb-6"></div>
             <p className="text-lg opacity-90">
-              Kami berkomitmen untuk memberikan pelayanan terbaik dalam setiap proyek
+              {currentContent.performanceSubtitle}
             </p>
           </motion.div>
 
@@ -341,29 +419,30 @@ const StrukturOrganisasi = () => {
             variants={fadeIn}
             className="max-w-4xl mx-auto text-center mb-8 md:mb-12"
           >
-            <h2 className="text-3xl font-bold text-[#153969] mb-4">Lokasi Kantor</h2>
+            <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-[#153969]'} mb-4 transition-colors duration-300`}>{currentContent.officeLocation}</h2>
             <div className="w-16 h-1 bg-[#153969] mx-auto mb-6"></div>
-            <p className="text-gray-700">
-              Temui tim kami di kantor pusat atau hubungi kami untuk informasi lebih lanjut.
+            <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+              {currentContent.officeSubtitle}
             </p>
           </motion.div>
 
-          <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+          <div className={`max-w-5xl mx-auto ${isDark ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md overflow-hidden transition-colors duration-300`}>
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="p-6 md:p-8">
-                <h3 className="text-xl font-bold text-[#153969] mb-4">{officeLocation.name}</h3>
-                <div className="space-y-4 text-gray-700">
+                <h3 className={`text-xl font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'} mb-4 transition-colors duration-300`}>{officeLocation.name}</h3>
+                <div className={`space-y-4 ${isDark ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
                   <div className="flex items-start">
-                    <MapPin className="h-5 w-5 text-[#153969] mr-3 flex-shrink-0 mt-0.5" />
+                    <MapPin className={`h-5 w-5 ${isDark ? 'text-blue-400' : 'text-[#153969]'} mr-3 flex-shrink-0 mt-0.5 transition-colors duration-300`} />
                     <p>{officeLocation.address}</p>
                   </div>
                   <div className="flex items-center">
-                    <Phone className="h-5 w-5 text-[#153969] mr-3 flex-shrink-0" />
+                    <Phone className={`h-5 w-5 ${isDark ? 'text-blue-400' : 'text-[#153969]'} mr-3 flex-shrink-0 transition-colors duration-300`} />
                     <p>+6281218127503</p>
                   </div>
                   <div className="flex items-center">
-                    <Mail className="h-5 w-5 text-[#153969] mr-3 flex-shrink-0" />
+                    <Mail className={`h-5 w-5 ${isDark ? 'text-blue-400' : 'text-[#153969]'} mr-3 flex-shrink-0 transition-colors duration-300`} />
                     <p className="break-words">karyabangunsemestas@gmail.com</p>
+                    
                   </div>
                 </div>
                 <div className="mt-6">
@@ -371,9 +450,13 @@ const StrukturOrganisasi = () => {
                     href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-6 py-3 bg-[#153969] text-white rounded-md font-medium hover:bg-[#0f2a4d] transition-colors"
+                    className={`inline-flex items-center px-6 py-3 ${
+                      isDark 
+                        ? 'bg-[#153969]/80 hover:bg-[#153969]' 
+                        : 'bg-[#153969] hover:bg-[#0f2a4d]'
+                    } text-white rounded-md font-medium transition-colors duration-300 shadow-md`}
                   >
-                    Hubungi Kami
+                    {currentContent.contactUs}
                   </a>
                 </div>
               </div>
@@ -397,7 +480,11 @@ const StrukturOrganisasi = () => {
       <div className="fixed bottom-6 right-6 md:hidden z-50">
         <Link 
           href="/" 
-          className="flex items-center justify-center w-12 h-12 bg-[#153969] text-white rounded-full shadow-lg hover:bg-[#0f2a4d] transition-colors"
+          className={`flex items-center justify-center w-12 h-12 rounded-full ${
+            isDark 
+              ? 'bg-[#153969]/80 hover:bg-[#153969]' 
+              : 'bg-[#153969] hover:bg-[#0f2a4d]'
+          } text-white shadow-lg transition-colors duration-300`}
         >
           <ArrowLeft className="h-6 w-6" />
         </Link>
@@ -414,3 +501,4 @@ const StrukturOrganisasi = () => {
 };
 
 export default StrukturOrganisasi;
+                    
