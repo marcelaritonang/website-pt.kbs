@@ -4,6 +4,12 @@ import { EyeIcon, BookmarkIcon, CheckIcon, } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
+// Helper function to convert translation value to string
+const asString = (value: unknown): string => {
+  if (value === null || value === undefined) return '';
+  return String(value);
+};
+
 const AnimatedIsometric = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -204,9 +210,12 @@ const VisionMissionSection = () => {
   };
 
   // Split text into words for animation with proper typing
-  const splitText = (text: string): ReactElement[] => {
-    if (!text) return []; // Guard against undefined text
-    return text.split(' ').map((word: string, i: number) => (
+  const splitText = (text: unknown): ReactElement[] => {
+    // Convert to string first
+    const textString = asString(text);
+    if (!textString) return []; // Guard against empty string
+    
+    return textString.split(' ').map((word: string, i: number) => (
       <motion.span
         key={i}
         variants={textVariants}
