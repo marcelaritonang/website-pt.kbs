@@ -4,15 +4,9 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { CheckCircle, ArrowRight, Clock, Shield, Award, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, ArrowRight, Clock, Shield, Award, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
-
-// Helper function to convert translation value to string
-const asString = (value: unknown): string => {
-  if (value === null || value === undefined) return '';
-  return String(value);
-};
 
 export default function InfrastructureDevelopment() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
