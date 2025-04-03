@@ -11,7 +11,7 @@ import { useTheme } from '../../context/ThemeContext';
 
 export default function ConstructionBuilding() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const { t, language } = useLanguage();
+  const {language } = useLanguage();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
