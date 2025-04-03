@@ -8,7 +8,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
 const LocationSection = () => {
-  const { t, language } = useLanguage();
+  const {language } = useLanguage();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
