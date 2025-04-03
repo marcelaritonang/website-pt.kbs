@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   output: 'export',
   images: {
     unoptimized: true,
-    domains: ['karyabangunsemesta.co', 'www.karyabangunsemesta.com'],
+    domains: ['karyabangunsemesta.com', 'www.karyabangunsemesta.com'],
   },
   assetPrefix: '/',
   trailingSlash: true,
