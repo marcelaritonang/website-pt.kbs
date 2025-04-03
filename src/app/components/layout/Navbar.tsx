@@ -8,6 +8,12 @@ import { useTheme } from '../../context/ThemeContext';
 import { ChevronDown, Menu, X, Globe, Moon, Sun } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
+// Helper function to convert translation value to string
+const asString = (value: unknown): string => {
+  if (value === null || value === undefined) return '';
+  return String(value);
+};
+
 // Tipe data untuk item navigasi
 interface NavItem {
   name: string;
@@ -47,138 +53,138 @@ export default function Navbar() {
   // Data navigasi dengan terjemahan
   const navItems: NavLinkItem[] = [
     {
-      name: t('nav.home'),
+      name: asString(t('nav.home')),
       href: '/',
       hasDropdown: false
     },
     {
-      name: t('nav.whoWeAre'),
+      name: asString(t('nav.whoWeAre')),
       href: '/about',
       hasDropdown: true,
       sections: [
         {
-          title: t('nav.aboutUs'),
+          title: asString(t('nav.aboutUs')),
           items: [
             { 
-              name: t('nav.companyProfile'), 
+              name: asString(t('nav.companyProfile')), 
               href: '/about/profile',
-              description: t('nav.companyProfileDesc')
+              description: asString(t('nav.companyProfileDesc'))
             },
             { 
-              name: t('nav.ourHistory'), 
+              name: asString(t('nav.ourHistory')), 
               href: '/about/history',
-              description: t('nav.ourHistoryDesc')
+              description: asString(t('nav.ourHistoryDesc'))
             },
             { 
-              name: t('nav.certifications'), 
+              name: asString(t('nav.certifications')), 
               href: '/about/iso',
-              description: t('nav.certificationsDesc')
+              description: asString(t('nav.certificationsDesc'))
             },
             { 
-              name: t('nav.ourTeam'), 
+              name: asString(t('nav.ourTeam')), 
               href: '/about/team',
-              description: t('nav.ourTeamDesc')
+              description: asString(t('nav.ourTeamDesc'))
             }
           ]
         }
       ]
     },
     {
-      name: t('nav.services'),
+      name: asString(t('nav.services')),
       href: '/services',
       hasDropdown: true,
       sections: [
         {
-          title: t('nav.constructionServices'),
+          title: asString(t('nav.constructionServices')),
           items: [
             { 
-              name: t('nav.buildingConstruction'), 
+              name: asString(t('nav.buildingConstruction')), 
               href: '/services/building-construction',
-              description: t('nav.buildingConstructionDesc')
+              description: asString(t('nav.buildingConstructionDesc'))
             },
             { 
-              name: t('nav.infrastructureDevelopment'), 
+              name: asString(t('nav.infrastructureDevelopment')), 
               href: '/services/infrastructure',
-              description: t('nav.infrastructureDesc')
+              description: asString(t('nav.infrastructureDesc'))
             },
             { 
-              name: t('nav.projectManagement'), 
+              name: asString(t('nav.projectManagement')), 
               href: '/services/project-management',
-              description: t('nav.projectManagementDesc')
+              description: asString(t('nav.projectManagementDesc'))
             }
           ]
         },
         {
-          title: t('nav.heavyEquipment'),
+          title: asString(t('nav.heavyEquipment')),
           items: [
             { 
-              name: t('nav.equipmentRental'), 
+              name: asString(t('nav.equipmentRental')), 
               href: '/services/equipment-rental',
-              description: t('nav.equipmentRentalDesc') 
+              description: asString(t('nav.equipmentRentalDesc')) 
             },
             { 
-              name: t('nav.operatorServices'), 
+              name: asString(t('nav.operatorServices')), 
               href: '/services/equipment-operators',
-              description: t('nav.operatorServicesDesc')
+              description: asString(t('nav.operatorServicesDesc'))
             },
             { 
-              name: t('nav.maintenance'), 
+              name: asString(t('nav.maintenance')), 
               href: '/services/equipment-maintenance',
-              description: t('nav.maintenanceDesc')
+              description: asString(t('nav.maintenanceDesc'))
             }
           ]
         }
       ]
     },
     {
-      name: t('nav.projects'),
+      name: asString(t('nav.projects')),
       href: '/projects',
       hasDropdown: false
     },
     {
-      name: t('nav.resources'),
+      name: asString(t('nav.resources')),
       href: '/resources',
       hasDropdown: true,
       sections: [
         {
-          title: t('nav.resources'),
+          title: asString(t('nav.resources')),
           items: [
             { 
-              name: t('nav.toolsResources'), 
+              name: asString(t('nav.toolsResources')), 
               href: '/resources',
-              description: t('nav.toolsResourcesDesc')
+              description: asString(t('nav.toolsResourcesDesc'))
             },
             { 
-              name: t('nav.codeOfEthics'), 
+              name: asString(t('nav.codeOfEthics')), 
               href: '/ethics',
-              description: t('nav.codeOfEthicsDesc')
+              description: asString(t('nav.codeOfEthicsDesc'))
             },
             { 
-              name: t('nav.privacyPolicy'), 
+              name: asString(t('nav.privacyPolicy')), 
               href: '/privacy',
-              description: t('nav.privacyPolicyDesc')
+              description: asString(t('nav.privacyPolicyDesc'))
             }
           ]
         },
         {
-          title: t('nav.industryInsights'),
+          title: asString(t('nav.industryInsights')),
           items: [
             { 
-              name: t('nav.blog'), 
+              name: asString(t('nav.blog')), 
               href: '/blog',
-              description: t('nav.blogDesc')
+              description: asString(t('nav.blogDesc'))
             }
           ]
         }
       ]
     },
     {
-      name: t('nav.careers'),
+      name: asString(t('nav.careers')),
       href: '/karir',
       hasDropdown: false
     },
     {
-      name: t('nav.contact'),
+      name: asString(t('nav.contact')),
       href: '/contact',
       hasDropdown: false
     }
@@ -420,7 +426,7 @@ export default function Navbar() {
                     : 'bg-white/20 text-white border border-white/50'
                 }`}
               >
-                {t('nav.getQuote')}
+                {asString(t('nav.getQuote'))}
               </a>
             </div>
           </div>
@@ -550,7 +556,7 @@ export default function Navbar() {
                 rel="noopener noreferrer"
                 className="block w-full py-2 bg-[#153969] text-white rounded-md text-center font-medium"
               >
-                {t('nav.getQuote')}
+                {asString(t('nav.getQuote'))}
               </a>
             </div>
           </div>
@@ -558,4 +564,4 @@ export default function Navbar() {
       )}
     </header>
   );
-}
+} 
