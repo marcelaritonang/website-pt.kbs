@@ -246,7 +246,12 @@ const BlogPage = () => {
   
   // Pilih kategori dan tutup menu dropdown (mobile)
   const selectCategory = (category: string) => {
-    setActiveCategory(category);
+    // Use getCategoryEquivalent to normalize the selected category
+    const normalizedCategory = language === 'en' 
+      ? getCategoryEquivalent(category, 'en') 
+      : getCategoryEquivalent(category, 'id');
+    
+    setActiveCategory(normalizedCategory);
     setShowCategoryMenu(false);
   };
 
