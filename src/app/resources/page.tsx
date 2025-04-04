@@ -132,13 +132,13 @@ export default function ResourcesPage() {
         {/* Wave Separator */}
         <div className="absolute -bottom-px left-0 right-0 w-full overflow-hidden">
           <svg
-            className={`w-full h-[100px] ${isDark ? 'fill-gray-900' : 'fill-white'} transition-colors duration-300`}
+            className="w-full h-[100px]"
             viewBox="0 0 1440 100"
             preserveAspectRatio="none"
           >
             <path
               d="M0,0 C320,80 440,60 720,40 C960,20 1200,80 1440,80 L1440,100 L0,100 Z"
-              fill="currentColor"
+              className={isDark ? 'fill-gray-900' : 'fill-white'}
             />
           </svg>
         </div>
