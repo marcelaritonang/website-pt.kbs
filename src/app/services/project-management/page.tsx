@@ -9,11 +9,6 @@ import CountUp from 'react-countup';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
-// Helper function to convert translation value to string
-const asString = (value: unknown): string => {
-  if (value === null || value === undefined) return '';
-  return String(value);
-};
 
 export default function ProjectManagement() {
   const [activeSection, setActiveSection] = useState<string | null>(null);

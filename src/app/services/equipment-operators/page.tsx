@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, CheckCircle, ArrowRight, Briefcase, Shield, HardHat, ChevronDown, ClipboardCheck, MessageCircle } from 'lucide-react';
+import { Users, CheckCircle, ArrowRight, HardHat, ChevronDown, ClipboardCheck, MessageCircle } from 'lucide-react';
 import CountUp from 'react-countup';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
