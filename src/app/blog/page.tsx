@@ -208,7 +208,9 @@ const BlogPage = () => {
       'Teknologi': 'Technology'
     };
     
-    return targetLang === 'en' ? categoryMap[category] || category : Object.keys(categoryMap).find(key => categoryMap[key] === category) || category;
+    return targetLang === 'en' 
+      ? categoryMap[category] || category 
+      : Object.keys(categoryMap).find(key => categoryMap[key] === category) || category;
   };
 
   // Function to get category value based on language
