@@ -174,7 +174,7 @@ export default function InfrastructureDevelopment() {
             {/* Service 1 */}
             <motion.div 
               variants={fadeInUp}
-              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-t-4 transition-colors duration-300`}
+              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl  transform hover:scale-105 border-t-4 transition-colors duration-300`}
             >
               <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-4 transition-colors duration-300`}>
                 {language === 'en' ? "Roads & Bridges" : "Jalan & Jembatan"}
@@ -209,7 +209,7 @@ export default function InfrastructureDevelopment() {
             {/* Service 2 */}
             <motion.div 
               variants={fadeInUp}
-              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-t-4 transition-colors duration-300`}
+              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl  transform hover:scale-105 border-t-4 transition-colors duration-300`}
             >
               <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-4 transition-colors duration-300`}>
                 {language === 'en' ? "Drainage & Irrigation" : "Drainase & Irigasi"}
@@ -244,7 +244,7 @@ export default function InfrastructureDevelopment() {
             {/* Service 3 */}
             <motion.div 
               variants={fadeInUp}
-              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-t-4 transition-colors duration-300`}
+              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl  transform hover:scale-105 border-t-4 transition-colors duration-300`}
             >
               <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-4 transition-colors duration-300`}>
                 {language === 'en' ? "Industrial Areas" : "Kawasan Industri"}
@@ -288,7 +288,7 @@ export default function InfrastructureDevelopment() {
             {/* Service 4 */}
             <motion.div 
               variants={fadeInUp}
-              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-t-4 transition-colors duration-300`}
+              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl  transform hover:scale-105 border-t-4 transition-colors duration-300`}
             >
               <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-4 transition-colors duration-300`}>
                 {language === 'en' ? "Ports & Airports" : "Pelabuhan & Bandara"}
@@ -323,7 +323,7 @@ export default function InfrastructureDevelopment() {
             {/* Service 5 */}
             <motion.div 
               variants={fadeInUp}
-              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-t-4 transition-colors duration-300`}
+              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl transform hover:scale-105 border-t-4 transition-colors duration-300`}
             >
               <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-4 transition-colors duration-300`}>
                 {language === 'en' ? "Energy & Utilities" : "Energi & Utilitas"}
@@ -358,7 +358,7 @@ export default function InfrastructureDevelopment() {
             {/* Service 6 */}
             <motion.div 
               variants={fadeInUp}
-              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-t-4 transition-colors duration-300`}
+              className={`${isDark ? 'bg-gray-700 border-blue-500' : 'bg-white border-[#153969]'} rounded-xl shadow-lg p-8 hover:shadow-2xl  transform hover:scale-105 border-t-4 transition-colors duration-300`}
             >
               <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-4 transition-colors duration-300`}>
                 {language === 'en' ? "Public Buildings" : "Bangunan Publik"}
