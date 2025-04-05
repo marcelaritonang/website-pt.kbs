@@ -33,7 +33,7 @@ const StatsSection = () => {
   const currentContent = language === 'en' ? content.en : content.id;
 
   return (
-    <section className={`min-h-[70vh] md:min-h-screen ${isDark ? 'bg-gray-900' : 'bg-[#f8fafc]'} flex items-center py-10 md:py-0 relative overflow-hidden`}>
+    <section id="stats-section" className={`min-h-[70vh] md:min-h-screen ${isDark ? 'bg-gray-900' : 'bg-[#f8fafc]'} flex items-center py-10 md:py-0 relative overflow-hidden`}>
       {/* Enhanced background patterns */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Abstract patterns */}

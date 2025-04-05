@@ -41,12 +41,15 @@ const initialFormData: FormData = {
 const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
       setTimeout(() => {
         setStep(1);
         setFormData(initialFormData);
+        setSubmitError(null);
       }, 300);
     }
   }, [isOpen]);
@@ -74,14 +77,65 @@ const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) =>
 
   const handleSubmit = async () => {
     try {
-      console.log('Form Data:', formData);
-      setFormData(initialFormData);
-      setStep(1);
-      onClose();
-      alert('Terima kasih! Tim kami akan segera menghubungi Anda.');
+      setIsSubmitting(true);
+      setSubmitError(null);
+      
+      // Format data untuk backend
+      const fullName = `${formData.firstName} ${formData.lastName}`;
+      const projectTypeValue = formData.projectTypes.join(', ');
+      
+      // Build project details
+      const projectDetailsText = `
+        Jenis Proyek: ${projectTypeValue}
+        Lokasi: ${formData.location}
+        Luas Area: ${formData.area} m²
+        Estimasi Waktu: ${formData.timeframe}
+        Detail Proyek: ${formData.description}
+        Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
+      `;
+
+      // Data untuk dikirim ke API
+      const submitData = {
+        name: fullName,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company || 'Tidak disebutkan',
+        projectType: projectTypeValue,
+        projectDetails: projectDetailsText,
+        subject: `Konsultasi Proyek ${projectTypeValue}` // Untuk kompatibilitas dengan API
+      };
+
+      // Kirim ke API menggunakan fetch
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-kbs-web.vercel.app';
+      
+      const response = await fetch(`${apiUrl}/api/project-consultation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submitData),
+      });
+
+      const data = await response.json();
+      
+      console.log('Form submission response:', data);
+      
+      if (data.success) {
+        // Reset form
+        setFormData(initialFormData);
+        setStep(1);
+        onClose();
+        
+        // Tampilkan notifikasi
+        alert('Terima kasih! Permintaan konsultasi Anda berhasil dikirim. Tim kami akan segera menghubungi Anda.');
+      } else {
+        throw new Error(data.message || 'Terjadi kesalahan saat mengirim permintaan.');
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('Terjadi kesalahan. Silakan coba lagi.');
+      setSubmitError('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -141,6 +195,13 @@ const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) =>
 
             {/* Content Area */}
             <div className="p-6 overflow-auto max-h-[calc(100%-80px)]">
+              {/* Error Message */}
+              {submitError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                  {submitError}
+                </div>
+              )}
+              
               <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div
@@ -347,7 +408,7 @@ const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) =>
                       </div>
 
                       <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                           Nama Perusahaan
                         </label>
                         <input
@@ -405,12 +466,12 @@ const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) =>
 
                     <button
                       onClick={handleSubmit}
-                      disabled={!formData.firstName || !formData.lastName || !formData.email || !formData.phone}
+                      disabled={!formData.firstName || !formData.lastName || !formData.email || !formData.phone || isSubmitting}
                       className="w-full py-4 bg-[#1E4D2B] text-white rounded-xl font-medium
                                disabled:opacity-50 disabled:cursor-not-allowed
                                hover:bg-[#153969] transition-colors"
                     >
-                      Kirim Permintaan Konsultasi
+                      {isSubmitting ? 'Mengirim...' : 'Kirim Permintaan Konsultasi'}
                     </button>
 
                     <p className="text-sm text-gray-500 text-center">

@@ -103,6 +103,21 @@ const ServicesSection: React.FC = () => {
     }
   };
 
+  // Function to scroll to stats section
+  const scrollToStatsSection = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const statsSection = document.getElementById('stats-section');
+    if (statsSection) {
+      // Adding a small delay to ensure all DOM elements are processed
+      setTimeout(() => {
+        statsSection.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 50);
+    }
+  };
+
   const selectService = (service: Service, index: number) => {
     setActiveService(service);
     setActiveIndex(index);
@@ -354,9 +369,11 @@ const ServicesSection: React.FC = () => {
                 </motion.div>
               ))}
 
+              {/* Konsultasi Button with Smooth Scroll */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={scrollToStatsSection}
                 className={`mt-6 md:mt-8 w-full ${
                   isDark 
                     ? 'bg-[#153969] hover:bg-[#1e4d8d] hover:shadow-[#153969]/20' 
@@ -396,4 +413,4 @@ const ServicesSection: React.FC = () => {
   );
 };
 
-export default ServicesSection;
+export default ServicesSection; 
