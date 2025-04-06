@@ -100,7 +100,7 @@ const translations = {
       blogDesc: "Construction trends and updates",
       careers: "Careers",
       contact: "Contact",
-      getQuote: "Get Quote"
+      getQuote: "Get Information"
     },
     visionMission: {
       title: "Vision & Mission",

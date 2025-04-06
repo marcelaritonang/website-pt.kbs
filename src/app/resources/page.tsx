@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Wrench, FileText, Download, ExternalLink, BookOpen, Calculator } from 'lucide-react';
+import { FileText, Download, ExternalLink, BookOpen } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+
 export default function ResourcesPage() {
   // Get language and theme from context
   const { language } = useLanguage();
@@ -25,7 +26,7 @@ export default function ResourcesPage() {
       description: "Informasi lengkap tentang layanan konstruksi kami",
       description_en: "Complete information about our construction services",
       icon: <FileText className="w-10 h-10" />,
-      link: "#",
+      link: "../../../documents/katalog-layanan.pdf",
       type: "PDF (2.5 MB)"
     },
     {
@@ -34,7 +35,7 @@ export default function ResourcesPage() {
       description: "Profil perusahaan dan portofolio proyek",
       description_en: "Company profile and project portfolio",
       icon: <BookOpen className="w-10 h-10" />,
-      link: "#",
+      link: "../../../documents/KBS-Profil-Perusahaan.pdf",
       type: "PDF (3.8 MB)"
     },
     {
@@ -43,41 +44,8 @@ export default function ResourcesPage() {
       description: "Standar keselamatan, kesehatan kerja, dan lingkungan",
       description_en: "Health, safety, and environmental standards",
       icon: <FileText className="w-10 h-10" />,
-      link: "#",
+      link: "../../../documents/Standar K3L.pdf",
       type: "PDF (1.2 MB)"
-    }
-  ];
-
-  const tools = [
-    {
-      title: "Kalkulator Estimasi Biaya",
-      title_en: "Cost Estimation Calculator",
-      description: "Alat untuk menghitung estimasi biaya proyek konstruksi dasar",
-      description_en: "Tool for calculating basic construction project cost estimates",
-      icon: <Calculator className="w-10 h-10" />,
-      link: "#",
-      type: "Online Tool",
-      type_en: "Online Tool"
-    },
-    {
-      title: "Checklist Persiapan Proyek",
-      title_en: "Project Preparation Checklist",
-      description: "Daftar periksa untuk persiapan proyek konstruksi",
-      description_en: "Checklist for construction project preparation",
-      icon: <FileText className="w-10 h-10" />,
-      link: "#",
-      type: "Excel (0.5 MB)",
-      type_en: "Excel (0.5 MB)"
-    },
-    {
-      title: "Template Pelaporan Proyek",
-      title_en: "Project Reporting Template",
-      description: "Template untuk pelaporan kemajuan proyek",
-      description_en: "Template for project progress reporting",
-      icon: <FileText className="w-10 h-10" />,
-      link: "#",
-      type: "Word (0.3 MB)",
-      type_en: "Word (0.3 MB)"
     }
   ];
 
@@ -88,7 +56,7 @@ export default function ResourcesPage() {
       description: "Kumpulan peraturan pemerintah terkait industri konstruksi",
       description_en: "Collection of government regulations related to the construction industry",
       icon: <ExternalLink className="w-10 h-10" />,
-      link: "https://www.pu.go.id/",
+      link: "https://peraturan.bpk.go.id/Details/137561/pp-no-22-tahun-2020",
       type: "External Link",
       type_en: "External Link"
     },
@@ -98,7 +66,7 @@ export default function ResourcesPage() {
       description: "Standar Nasional Indonesia untuk konstruksi bangunan",
       description_en: "Indonesian National Standards for building construction",
       icon: <ExternalLink className="w-10 h-10" />,
-      link: "https://www.bsn.go.id/",
+      link: "https://simantu.pu.go.id/personal/img-post/adminkms/post/20210323115046__F__Rumah_BerSNI_Puskim.pdf",
       type: "External Link",
       type_en: "External Link"
     }
@@ -115,7 +83,7 @@ export default function ResourcesPage() {
             transition={{ duration: 0.6 }}
             className="text-4xl font-bold text-white mt-8 mb-4"
           >
-            {language === 'en' ? "Tools & Resources" : "Tools & Resources"}
+            {language === 'en' ? "Resources" : "Resources"}
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -124,8 +92,8 @@ export default function ResourcesPage() {
             className="text-xl text-gray-200 max-w-2xl mx-auto"
           >
             {language === 'en' 
-              ? "Access documents, tools, and resources for your construction project needs" 
-              : "Akses dokumen, tools, dan sumber daya untuk kebutuhan proyek konstruksi Anda"}
+              ? "Access documents and resources for your construction project needs" 
+              : "Akses dokumen dan sumber daya untuk kebutuhan proyek konstruksi Anda"}
           </motion.p>
         </div>
         
@@ -187,66 +155,6 @@ export default function ResourcesPage() {
                         >
                           <Download className="w-4 h-4 mr-1" />
                           {language === 'en' ? "Download" : "Download"}
-                        </motion.a>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Tools Section */}
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            className="mb-16"
-          >
-            <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-8 flex items-center transition-colors duration-300`}>
-              <Wrench className={`w-6 h-6 mr-2 ${isDark ? 'text-blue-400' : 'text-[#1E4D2B]'} transition-colors duration-300`} />
-              {language === 'en' ? "Tools and Templates" : "Tools dan Template"}
-            </h2>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tools.map((tool, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-                  className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg border p-6 ${isDark ? 'shadow-none' : 'shadow-sm'} transition-all`}
-                >
-                  <div className="flex items-start">
-                    <div className={`flex-shrink-0 ${isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-[#1E4D2B]/10 text-[#1E4D2B]'} p-3 rounded-lg mr-4 transition-colors duration-300`}>
-                      {tool.icon}
-                    </div>
-                    <div>
-                      <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'} mb-2 transition-colors duration-300`}>
-                        {language === 'en' ? tool.title_en : tool.title}
-                      </h3>
-                      <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-sm mb-4 transition-colors duration-300`}>
-                        {language === 'en' ? tool.description_en : tool.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
-                          {language === 'en' ? tool.type_en || tool.type : tool.type}
-                        </span>
-                        <motion.a
-                          href={tool.link}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className={`inline-flex items-center text-sm font-medium ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-[#1E4D2B] hover:text-[#153969]'} transition-colors duration-300`}
-                        >
-                          {tool.type === "Online Tool" ? (
-                            <>
-                              <ExternalLink className="w-4 h-4 mr-1" />
-                              {language === 'en' ? "Access Tool" : "Akses Tool"}
-                            </>
-                          ) : (
-                            <>
-                              <Download className="w-4 h-4 mr-1" />
-                              {language === 'en' ? "Download" : "Download"}
-                            </>
-                          )}
                         </motion.a>
                       </div>
                     </div>

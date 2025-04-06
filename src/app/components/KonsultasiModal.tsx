@@ -38,10 +38,11 @@ const initialFormData: FormData = {
   newsletter: false
 };
 
-// API endpoint configuration
-// Change to true to use direct API, false to use fallback (localStorage)
-const USE_DIRECT_API = true;
+// Configuration
 const API_URL = 'https://backend-kbs-website.vercel.app/api/project-consultation';
+
+const USE_DIRECT_API = true;
+const DEBUG = true; // Enable console logs
 
 const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
@@ -95,6 +96,7 @@ const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) =>
         status: 'pending'
       });
       localStorage.setItem('projectRequests', JSON.stringify(savedRequests));
+      if (DEBUG) console.log('Saved to localStorage:', id);
       return true;
     } catch (error) {
       console.error('Error saving to localStorage:', error);
@@ -107,6 +109,23 @@ const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) =>
       setIsSubmitting(true);
       setSubmitError(null);
       
+      // Basic validation
+      if (!formData.firstName || !formData.lastName) {
+        throw new Error('Nama depan dan belakang harus diisi');
+      }
+      
+      if (!formData.email) {
+        throw new Error('Email harus diisi');
+      }
+      
+      if (!formData.projectTypes.length) {
+        throw new Error('Pilih minimal satu jenis proyek');
+      }
+      
+      if (!formData.description) {
+        throw new Error('Detail proyek harus diisi');
+      }
+      
       // Format data untuk pesan
       const fullName = `${formData.firstName} ${formData.lastName}`;
       const projectTypeValue = formData.projectTypes.map(type => {
@@ -117,9 +136,9 @@ const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) =>
       // Build project details
       const projectDetailsText = `
 Jenis Proyek: ${projectTypeValue}
-Lokasi: ${formData.location}
-Luas Area: ${formData.area} m²
-Estimasi Waktu: ${formData.timeframe}
+Lokasi: ${formData.location || 'Tidak diisi'}
+Luas Area: ${formData.area || 'Tidak diisi'} m²
+Estimasi Waktu: ${formData.timeframe || 'Tidak diisi'}
 Detail Proyek: ${formData.description}
 Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
       `;
@@ -128,17 +147,19 @@ Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
       const payload = {
         name: fullName,
         email: formData.email,
-        phone: formData.phone,
-        company: formData.company,
+        phone: formData.phone || 'Tidak diisi',
+        company: formData.company || 'Tidak diisi',
         projectType: projectTypeValue,
         projectDetails: projectDetailsText,
         subject: `[Konsultasi Proyek] Permintaan dari ${fullName}`
       };
 
-      console.log('Preparing to send data:', payload);
+      if (DEBUG) console.log('Preparing to send data:', payload);
       
       if (USE_DIRECT_API) {
         try {
+          if (DEBUG) console.log('Sending to API:', API_URL);
+          
           // Use absolute URL for API
           const response = await fetch(API_URL, {
             method: 'POST',
@@ -150,7 +171,7 @@ Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
 
           // Get raw response for debugging
           const responseText = await response.text();
-          console.log('Raw API response:', responseText);
+          if (DEBUG) console.log('Raw API response:', responseText);
 
           let result;
           try {
@@ -173,17 +194,17 @@ Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
             return;
           }
 
-          if (!response.ok) {
+          if (!response.ok || !result.success) {
             throw new Error(result?.message || `Server error: ${response.status}`);
           }
 
-          console.log('API response:', result);
+          if (DEBUG) console.log('API response:', result);
           setSubmitSuccess(true);
         } catch (apiError) {
           console.error('API call failed:', apiError);
           
           // Fallback to localStorage if API fails
-          console.log('Using localStorage fallback due to API error');
+          if (DEBUG) console.log('Using localStorage fallback due to API error');
           const saved = saveToLocalStorage(payload);
           
           if (!saved) {
@@ -195,7 +216,7 @@ Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
         }
       } else {
         // Directly use localStorage fallback (for testing)
-        console.log('Using localStorage storage (API disabled)');
+        if (DEBUG) console.log('Using localStorage storage (API disabled)');
         
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -209,7 +230,7 @@ Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
       }
       
       // Log success and reset form data
-      console.log('Form data processed successfully');
+      if (DEBUG) console.log('Form data processed successfully');
       setFormData(initialFormData);
       
     } catch (err) {
@@ -451,7 +472,7 @@ Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Deskripsi Proyek
+                            Deskripsi Proyek*
                           </label>
                           <textarea
                             rows={4}
@@ -467,7 +488,7 @@ Newsletter: ${formData.newsletter ? 'Ya' : 'Tidak'}
 
                       <button
                         onClick={handleNext}
-                        disabled={!formData.location || !formData.description}
+                        disabled={!formData.description}
                         className="w-full py-4 bg-[#1E4D2B] text-white rounded-xl font-medium
                                  disabled:opacity-50 disabled:cursor-not-allowed
                                  hover:bg-[#153969] transition-colors"
