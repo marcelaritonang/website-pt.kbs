@@ -84,7 +84,7 @@ const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) =>
   const handleNext = () => setStep(prev => prev + 1);
 
   // Local storage fallback (for when API is unavailable)
-  const saveToLocalStorage = (data: any) => {
+  const saveToLocalStorage = (data: unknown) => {
     try {
       // Generate unique ID based on timestamp
       const id = `project_request_${new Date().getTime()}`;
