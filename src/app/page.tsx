@@ -26,7 +26,7 @@ export default function Home() {
       <BlogNewsSection />
 
       <StatsSection />
-      
+      {/* <ContactSection /> */}
 
     </main>
   )
