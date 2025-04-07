@@ -36,7 +36,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="id" className={inter.className}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="favicon.ico" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
         <ThemeProvider>
