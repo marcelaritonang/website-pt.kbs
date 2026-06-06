@@ -178,12 +178,32 @@ export default function EquipmentBookingPage() {
         return;
       }
 
+      // Save order to localStorage for invoice page
+      const user = JSON.parse(localStorage.getItem('kbs_user') || '{}');
+      const days = calculateDays();
+      const orderData = {
+        id: data.booking?.id || Math.floor(Math.random() * 9000) + 1000,
+        date: new Date().toISOString(),
+        customer: {
+          name: user.name || 'Customer',
+          email: user.email || '',
+          phone: user.phone || '-',
+          address: '-',
+        },
+        items: [{
+          name: selectedEquipment?.name || '',
+          qty: days,
+          unit: language === 'id' ? 'hari' : 'days',
+          price: selectedEquipment?.price || 0,
+        }],
+        status: 'pending',
+      };
+      localStorage.setItem('kbs_last_order', JSON.stringify(orderData));
+
       setBookingSuccess(true);
       setTimeout(() => {
-        setSelectedEquipment(null);
-        setBookingSuccess(false);
-        setBookingDates({ start: '', end: '' });
-      }, 3000);
+        router.push('/platform/invoice/');
+      }, 2000);
 
     } catch {
       setBookingError(language === 'id' ? 'Gagal terhubung ke server' : 'Connection failed');

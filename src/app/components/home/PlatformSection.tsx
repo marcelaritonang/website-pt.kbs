@@ -44,6 +44,16 @@ const PlatformSection = () => {
       price: language === 'id' ? 'Gratis untuk Member' : 'Free for Members',
       badge: language === 'id' ? 'Real-time' : 'Real-time',
     },
+    {
+      title: language === 'id' ? 'Konsultasi Gratis' : 'Free Consultation',
+      description: language === 'id'
+        ? 'Konsultasi langsung dengan tim ahli kami untuk perencanaan proyek, estimasi biaya, dan pemilihan material yang tepat. Tanpa biaya, tanpa kewajiban.'
+        : 'Consult directly with our expert team for project planning, cost estimation, and material selection. No cost, no obligation.',
+      image: '/images/equipment/operator-1.jpg',
+      href: '/contact',
+      price: language === 'id' ? 'Gratis / Free' : 'Free',
+      badge: language === 'id' ? 'Tim Ahli' : 'Expert Team',
+    },
   ];
 
   return (
@@ -58,17 +68,17 @@ const PlatformSection = () => {
           className="text-center mb-16"
         >
           <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            {language === 'id' ? 'Produk & Layanan Digital' : 'Products & Digital Services'}
+            {language === 'id' ? 'Layanan Kami' : 'Our Services'}
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
             {language === 'id'
-              ? 'Sewa alat berat, beli material bangunan, dan pantau proyek — semua dalam satu platform.'
-              : 'Rent heavy equipment, buy building materials, and monitor projects — all in one platform.'}
+              ? 'Solusi lengkap untuk kebutuhan konstruksi Anda — dari perencanaan hingga pelaksanaan.'
+              : 'Complete solutions for your construction needs — from planning to execution.'}
           </p>
         </motion.div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => (
             <motion.div
               key={index}
@@ -128,15 +138,12 @@ const PlatformSection = () => {
           className="text-center mt-12"
         >
           <Link
-            href="/platform/login"
+            href="/contact"
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl"
           >
-            {language === 'id' ? 'Daftar Gratis & Mulai Sekarang' : 'Sign Up Free & Get Started'}
+            {language === 'id' ? 'Hubungi Tim Kami' : 'Contact Our Team'}
             <ArrowRight className="w-5 h-5" />
           </Link>
-          <p className={`mt-3 text-sm ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
-            {language === 'id' ? 'Tanpa biaya pendaftaran • Akses semua layanan' : 'No registration fee • Access all services'}
-          </p>
         </motion.div>
       </div>
     </section>
