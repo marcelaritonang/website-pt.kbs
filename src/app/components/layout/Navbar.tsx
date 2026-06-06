@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '../../context/ThemeContext';
-import { ChevronDown, Menu, X, Globe, Moon, Sun } from 'lucide-react';
+import { ChevronDown, Menu, X, Globe, Moon, Sun, LogIn } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 // Helper function to convert translation value to string
@@ -142,6 +142,33 @@ export default function Navbar() {
       hasDropdown: false
     },
     {
+      name: asString(t('nav.platform')),
+      href: '/platform',
+      hasDropdown: true,
+      sections: [
+        {
+          title: asString(t('nav.platformDigital')),
+          items: [
+            {
+              name: asString(t('nav.equipmentBooking')),
+              href: '/platform/equipment-booking',
+              description: asString(t('nav.equipmentBookingDesc'))
+            },
+            {
+              name: asString(t('nav.projectTracking')),
+              href: '/platform/project-tracking',
+              description: asString(t('nav.projectTrackingDesc'))
+            },
+            {
+              name: asString(t('nav.materialStore')),
+              href: '/platform/material-store',
+              description: asString(t('nav.materialStoreDesc'))
+            }
+          ]
+        }
+      ]
+    },
+    {
       name: asString(t('nav.resources')),
       href: '/resources',
       hasDropdown: true,
@@ -149,18 +176,18 @@ export default function Navbar() {
         {
           title: asString(t('nav.resources')),
           items: [
-            { 
-              name: asString(t('nav.toolsResources')), 
+            {
+              name: asString(t('nav.toolsResources')),
               href: '/resources',
               description: asString(t('nav.toolsResourcesDesc'))
             },
-            { 
-              name: asString(t('nav.codeOfEthics')), 
+            {
+              name: asString(t('nav.codeOfEthics')),
               href: '/ethics',
               description: asString(t('nav.codeOfEthicsDesc'))
             },
-            { 
-              name: asString(t('nav.privacyPolicy')), 
+            {
+              name: asString(t('nav.privacyPolicy')),
               href: '/privacy',
               description: asString(t('nav.privacyPolicyDesc'))
             }
@@ -169,8 +196,8 @@ export default function Navbar() {
         {
           title: asString(t('nav.industryInsights')),
           items: [
-            { 
-              name: asString(t('nav.blog')), 
+            {
+              name: asString(t('nav.blog')),
               href: '/blog',
               description: asString(t('nav.blogDesc'))
             }
@@ -414,6 +441,21 @@ export default function Navbar() {
                   <Moon className="h-5 w-5" />
                 )}
               </button>
+
+              {/* Login Button */}
+              <Link
+                href="/platform/login"
+                className={`ml-2 flex items-center gap-1 px-4 py-2 rounded-md font-medium text-sm ${
+                  isScrolled || !isDarkPage
+                    ? isDark
+                      ? 'text-blue-400 border border-blue-400 hover:bg-blue-400/10'
+                      : 'text-[#153969] border border-[#153969] hover:bg-[#153969]/5'
+                    : 'text-white border border-white/50 hover:bg-white/10'
+                }`}
+              >
+                <LogIn className="h-4 w-4" />
+                {asString(t('nav.login'))}
+              </Link>
 
               {/* Get Quote Button */}
               <a

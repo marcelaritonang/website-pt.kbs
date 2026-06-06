@@ -4,9 +4,19 @@ export default {
       whoWeAre: "Who We Are",
       services: "Services",
       projects: "Projects",
+      platform: "Platform",
+      platformDigital: "Digital Platform",
+      equipmentBooking: "Equipment Booking",
+      equipmentBookingDesc: "Book heavy equipment & dump trucks online",
+      projectTracking: "Project Tracking",
+      projectTrackingDesc: "Monitor project progress in real-time",
+      materialStore: "Material Store",
+      materialStoreDesc: "Construction material marketplace",
       resources: "Resources",
       careers: "Careers",
       contact: "Contact",
-      getQuote: "Get Quote"
+      getQuote: "Get Quote",
+      login: "Login",
+      signUp: "Sign Up"
     }
   };
