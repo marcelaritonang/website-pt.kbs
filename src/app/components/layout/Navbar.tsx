@@ -142,6 +142,11 @@ export default function Navbar() {
       hasDropdown: false
     },
     {
+      name: asString(t('nav.rabCalculator')),
+      href: '/kalkulator-rab',
+      hasDropdown: false
+    },
+    {
       name: asString(t('nav.platform')),
       href: '/platform',
       hasDropdown: true,
@@ -149,6 +154,11 @@ export default function Navbar() {
         {
           title: asString(t('nav.platformDigital')),
           items: [
+            {
+              name: asString(t('nav.rabCalculator')),
+              href: '/kalkulator-rab',
+              description: asString(t('nav.rabCalculatorDesc'))
+            },
             {
               name: asString(t('nav.equipmentBooking')),
               href: '/platform/equipment-booking',
