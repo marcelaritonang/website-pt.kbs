@@ -12,6 +12,8 @@ export default {
       projectTrackingDesc: "Monitor project progress in real-time",
       materialStore: "Material Store",
       materialStoreDesc: "Construction material marketplace",
+      rabCalculator: "RAB Calculator",
+      rabCalculatorDesc: "Estimate your construction project costs",
       resources: "Resources",
       careers: "Careers",
       contact: "Contact",

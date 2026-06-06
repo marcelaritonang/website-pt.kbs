@@ -12,6 +12,8 @@ export default {
       projectTrackingDesc: "Pantau progress proyek real-time",
       materialStore: "Material Store",
       materialStoreDesc: "Marketplace material bangunan",
+      rabCalculator: "Kalkulator RAB",
+      rabCalculatorDesc: "Estimasi biaya proyek konstruksi Anda",
       resources: "Sumber Daya",
       careers: "Karir",
       contact: "Kontak",
