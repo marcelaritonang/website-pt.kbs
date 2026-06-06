@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Truck, MapPin, Star, Search, Phone } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
@@ -193,11 +194,14 @@ export default function EquipmentBookingPage() {
                 isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               }`}
             >
-              {/* Image Placeholder */}
-              <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Truck className={`w-16 h-16 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
-                </div>
+              {/* Image */}
+              <div className="relative h-48 overflow-hidden">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
                 {/* Availability Badge */}
                 <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium ${
                   item.available

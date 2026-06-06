@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Search, ShoppingCart, Star, Minus, Plus, Truck, Shield, CreditCard, Package } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
@@ -279,11 +280,14 @@ export default function MaterialStorePage() {
                 isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               }`}
             >
-              {/* Image Placeholder */}
-              <div className="relative h-40 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Package className={`w-12 h-12 ${isDark ? 'text-gray-500' : 'text-gray-300'}`} />
-                </div>
+              {/* Image */}
+              <div className="relative h-40 overflow-hidden">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
               </div>
 
               {/* Content */}
