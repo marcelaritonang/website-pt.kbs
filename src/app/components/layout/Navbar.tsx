@@ -296,8 +296,8 @@ export default function Navbar() {
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center">
-            <div className="flex space-x-6">
+          <div className="hidden lg:flex items-center">
+            <div className="flex space-x-1 xl:space-x-3">
               {navItems.map((item, index) => (
                 <div key={index} className="relative group">
                   {item.hasDropdown ? (
@@ -305,7 +305,7 @@ export default function Navbar() {
                       {/* Dropdown trigger */}
                       <button
                         onClick={() => toggleDropdown(index)}
-                        className={`flex items-center px-2 py-1 font-medium text-sm ${
+                        className={`flex items-center whitespace-nowrap px-1.5 xl:px-2 py-1 font-medium text-xs xl:text-sm ${
                           isScrolled || !isDarkPage
                             ? isLinkActive(item.href) 
                               ? isDark 
@@ -385,7 +385,7 @@ export default function Navbar() {
                   ) : (
                     <Link
                       href={item.href}
-                      className={`px-2 py-1 font-medium text-sm ${
+                      className={`whitespace-nowrap px-1.5 xl:px-2 py-1 font-medium text-xs xl:text-sm ${
                         isScrolled || !isDarkPage
                           ? isLinkActive(item.href) 
                             ? isDark 
@@ -407,7 +407,7 @@ export default function Navbar() {
             </div>
             
             {/* Right Controls */}
-            <div className="flex items-center ml-6 space-x-2">
+            <div className="flex items-center ml-3 xl:ml-6 space-x-1 xl:space-x-2">
               {/* Language Switcher */}
               <button 
                 onClick={toggleLanguage}
@@ -445,7 +445,7 @@ export default function Navbar() {
               {/* Login Button */}
               <Link
                 href="/platform/login"
-                className={`ml-2 flex items-center gap-1 px-4 py-2 rounded-md font-medium text-sm ${
+                className={`ml-1 flex items-center gap-1 whitespace-nowrap px-2 xl:px-3 py-1.5 rounded-md font-medium text-xs xl:text-sm ${
                   isScrolled || !isDarkPage
                     ? isDark
                       ? 'text-blue-400 border border-blue-400 hover:bg-blue-400/10'
@@ -462,7 +462,7 @@ export default function Navbar() {
                 href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`ml-2 px-6 py-2 rounded-md font-medium ${
+                className={`ml-1 whitespace-nowrap px-3 xl:px-5 py-1.5 rounded-md font-medium text-xs xl:text-sm ${
                   isScrolled || !isDarkPage
                     ? 'bg-[#153969] text-white shadow-md'
                     : 'bg-white/20 text-white border border-white/50'
@@ -474,7 +474,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Controls */}
-          <div className="md:hidden flex items-center space-x-2">
+          <div className="lg:hidden flex items-center space-x-2">
             {/* Language Switcher */}
             <button 
               onClick={toggleLanguage}
@@ -530,7 +530,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className={`md:hidden shadow-lg ${
+        <div className={`lg:hidden shadow-lg ${
           isDark ? 'bg-gray-900' : 'bg-white'
         }`}>
           <div className="pt-2 pb-4">
