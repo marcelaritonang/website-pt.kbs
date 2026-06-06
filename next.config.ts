@@ -4,7 +4,16 @@ const nextConfig: NextConfig = {
   output: 'export',
   images: {
     unoptimized: true,
-    domains: ['karyabangunsemesta.com', 'www.karyabangunsemesta.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'karyabangunsemesta.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.karyabangunsemesta.com',
+      },
+    ],
   },
   assetPrefix: '/',
   trailingSlash: true,
