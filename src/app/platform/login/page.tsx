@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Building2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Building2, Loader2, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -11,9 +12,13 @@ export default function LoginPage() {
   const { theme } = useTheme();
   const { language } = useLanguage();
   const isDark = theme === 'dark';
+  const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -22,13 +27,54 @@ export default function LoginPage() {
     phone: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle authentication
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const endpoint = isLogin ? '/api/auth/login/' : '/api/auth/register/';
+      const body = isLogin
+        ? { email: formData.email, password: formData.password }
+        : formData;
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Terjadi kesalahan');
+        return;
+      }
+
+      // Save token & user data
+      localStorage.setItem('kbs_token', data.token);
+      localStorage.setItem('kbs_user', JSON.stringify(data.user));
+
+      setSuccess(isLogin
+        ? (language === 'id' ? 'Login berhasil! Mengalihkan...' : 'Login successful! Redirecting...')
+        : (language === 'id' ? 'Registrasi berhasil! Mengalihkan...' : 'Registration successful! Redirecting...')
+      );
+
+      setTimeout(() => {
+        router.push('/platform/');
+      }, 1500);
+
+    } catch {
+      setError(language === 'id' ? 'Gagal terhubung ke server' : 'Failed to connect to server');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError('');
   };
 
   return (
@@ -58,6 +104,21 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm font-medium">
+            {error}
+          </div>
+        )}
+
+        {/* Success Message */}
+        {success && (
+          <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm font-medium flex items-center gap-2">
+            <CheckCircle className="w-4 h-4" />
+            {success}
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Sign Up Fields */}
@@ -65,13 +126,14 @@ export default function LoginPage() {
             <>
               <div>
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {language === 'id' ? 'Nama Lengkap' : 'Full Name'}
+                  {language === 'id' ? 'Nama Lengkap' : 'Full Name'} *
                 </label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
+                  required={!isLogin}
                   className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-[#153969] focus:border-transparent outline-none transition ${
                     isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                   }`}
@@ -116,7 +178,7 @@ export default function LoginPage() {
           {/* Email */}
           <div>
             <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Email
+              Email *
             </label>
             <div className="relative">
               <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
@@ -125,6 +187,7 @@ export default function LoginPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                required
                 className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 focus:ring-[#153969] focus:border-transparent outline-none transition ${
                   isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                 }`}
@@ -136,7 +199,7 @@ export default function LoginPage() {
           {/* Password */}
           <div>
             <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Password
+              Password *
             </label>
             <div className="relative">
               <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
@@ -145,6 +208,8 @@ export default function LoginPage() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                required
+                minLength={6}
                 className={`w-full pl-10 pr-12 py-3 rounded-lg border focus:ring-2 focus:ring-[#153969] focus:border-transparent outline-none transition ${
                   isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                 }`}
@@ -172,13 +237,23 @@ export default function LoginPage() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 py-3 bg-[#153969] text-white rounded-lg font-medium hover:bg-[#1e4d8a] transition"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 py-3 bg-[#153969] text-white rounded-lg font-medium hover:bg-[#1e4d8a] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLogin
-              ? (language === 'id' ? 'Masuk' : 'Sign In')
-              : (language === 'id' ? 'Daftar' : 'Sign Up')
-            }
-            <ArrowRight className="h-4 w-4" />
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {language === 'id' ? 'Memproses...' : 'Processing...'}
+              </>
+            ) : (
+              <>
+                {isLogin
+                  ? (language === 'id' ? 'Masuk' : 'Sign In')
+                  : (language === 'id' ? 'Daftar' : 'Sign Up')
+                }
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
           </button>
         </form>
 
@@ -215,7 +290,7 @@ export default function LoginPage() {
           }
           {' '}
           <button
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => { setIsLogin(!isLogin); setError(''); setSuccess(''); }}
             className="text-[#153969] font-medium hover:underline"
           >
             {isLogin

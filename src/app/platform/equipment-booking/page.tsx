@@ -2,17 +2,38 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Truck, MapPin, Star, Search, Phone } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Star, Search, Phone, Calendar, X, Loader2, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+
+interface Equipment {
+  id: number;
+  name: string;
+  category: string;
+  image: string;
+  price: number;
+  unit: string;
+  rating: number;
+  reviews: number;
+  available: boolean;
+  specs: Record<string, string>;
+  location: string;
+}
 
 export default function EquipmentBookingPage() {
   const { theme } = useTheme();
   const { language } = useLanguage();
   const isDark = theme === 'dark';
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
+  const [bookingDates, setBookingDates] = useState({ start: '', end: '' });
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingError, setBookingError] = useState('');
 
   const categories = [
     { id: 'all', name: language === 'id' ? 'Semua' : 'All' },
@@ -23,7 +44,7 @@ export default function EquipmentBookingPage() {
     { id: 'roller', name: 'Roller' },
   ];
 
-  const equipment = [
+  const equipment: Equipment[] = [
     {
       id: 1,
       name: 'Excavator CAT 320D',
@@ -114,6 +135,63 @@ export default function EquipmentBookingPage() {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
   };
 
+  const calculateDays = () => {
+    if (!bookingDates.start || !bookingDates.end) return 0;
+    const start = new Date(bookingDates.start);
+    const end = new Date(bookingDates.end);
+    return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+  };
+
+  const handleBooking = async () => {
+    const token = localStorage.getItem('kbs_token');
+    if (!token) {
+      router.push('/platform/login/');
+      return;
+    }
+
+    if (!bookingDates.start || !bookingDates.end) {
+      setBookingError(language === 'id' ? 'Pilih tanggal mulai dan selesai' : 'Select start and end date');
+      return;
+    }
+
+    setBookingLoading(true);
+    setBookingError('');
+
+    try {
+      const res = await fetch('/api/equipment/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          equipment_id: selectedEquipment?.id,
+          start_date: bookingDates.start,
+          end_date: bookingDates.end,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setBookingError(data.error || 'Booking gagal');
+        return;
+      }
+
+      setBookingSuccess(true);
+      setTimeout(() => {
+        setSelectedEquipment(null);
+        setBookingSuccess(false);
+        setBookingDates({ start: '', end: '' });
+      }, 3000);
+
+    } catch {
+      setBookingError(language === 'id' ? 'Gagal terhubung ke server' : 'Connection failed');
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
   return (
     <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Hero */}
@@ -190,7 +268,7 @@ export default function EquipmentBookingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
-              className={`rounded-2xl overflow-hidden border transition hover:shadow-lg ${
+              className={`group rounded-2xl overflow-hidden border transition hover:shadow-lg ${
                 isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               }`}
             >
@@ -262,6 +340,7 @@ export default function EquipmentBookingPage() {
                   </div>
                   <button
                     disabled={!item.available}
+                    onClick={() => { setSelectedEquipment(item); setBookingError(''); setBookingSuccess(false); }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                       item.available
                         ? 'bg-[#153969] text-white hover:bg-[#1e4d8a]'
@@ -301,6 +380,137 @@ export default function EquipmentBookingPage() {
           </a>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      <AnimatePresence>
+        {selectedEquipment && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+            onClick={() => setSelectedEquipment(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className={`w-full max-w-md rounded-2xl p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}
+            >
+              {bookingSuccess ? (
+                <div className="text-center py-8">
+                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {language === 'id' ? 'Booking Berhasil!' : 'Booking Successful!'}
+                  </h3>
+                  <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {language === 'id'
+                      ? 'Tim kami akan menghubungi Anda untuk konfirmasi.'
+                      : 'Our team will contact you for confirmation.'}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Modal Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      {language === 'id' ? 'Booking Alat Berat' : 'Book Equipment'}
+                    </h3>
+                    <button onClick={() => setSelectedEquipment(null)} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Equipment Info */}
+                  <div className={`p-4 rounded-lg mb-4 ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <Image src={selectedEquipment.image} alt={selectedEquipment.name} fill className="object-cover" />
+                      </div>
+                      <div>
+                        <p className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedEquipment.name}</p>
+                        <p className="text-[#153969] font-semibold">{formatPrice(selectedEquipment.price)}{selectedEquipment.unit}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Date Selection */}
+                  <div className="space-y-4 mb-4">
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <Calendar className="inline w-4 h-4 mr-1" />
+                        {language === 'id' ? 'Tanggal Mulai' : 'Start Date'}
+                      </label>
+                      <input
+                        type="date"
+                        value={bookingDates.start}
+                        onChange={e => setBookingDates({ ...bookingDates, start: e.target.value })}
+                        min={new Date().toISOString().split('T')[0]}
+                        className={`w-full px-4 py-3 rounded-lg border outline-none focus:ring-2 focus:ring-[#153969] ${
+                          isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <Calendar className="inline w-4 h-4 mr-1" />
+                        {language === 'id' ? 'Tanggal Selesai' : 'End Date'}
+                      </label>
+                      <input
+                        type="date"
+                        value={bookingDates.end}
+                        onChange={e => setBookingDates({ ...bookingDates, end: e.target.value })}
+                        min={bookingDates.start || new Date().toISOString().split('T')[0]}
+                        className={`w-full px-4 py-3 rounded-lg border outline-none focus:ring-2 focus:ring-[#153969] ${
+                          isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Total Price */}
+                  {calculateDays() > 0 && (
+                    <div className={`p-4 rounded-lg mb-4 ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+                      <div className="flex justify-between items-center">
+                        <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                          {calculateDays()} {language === 'id' ? 'hari' : 'days'} × {formatPrice(selectedEquipment.price)}
+                        </span>
+                        <span className="text-lg font-bold text-[#153969]">
+                          {formatPrice(calculateDays() * selectedEquipment.price)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Error */}
+                  {bookingError && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+                      {bookingError}
+                    </div>
+                  )}
+
+                  {/* Submit */}
+                  <button
+                    onClick={handleBooking}
+                    disabled={bookingLoading}
+                    className="w-full py-3 bg-[#153969] text-white rounded-lg font-medium hover:bg-[#1e4d8a] transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {bookingLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {language === 'id' ? 'Memproses...' : 'Processing...'}
+                      </>
+                    ) : (
+                      language === 'id' ? 'Konfirmasi Booking' : 'Confirm Booking'
+                    )}
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

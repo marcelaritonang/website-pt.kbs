@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Search, ShoppingCart, Star, Minus, Plus, Truck, Shield, CreditCard, Package } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, ShoppingCart, Star, Minus, Plus, Truck, Shield, CreditCard, Package, X, Loader2, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -12,9 +12,15 @@ export default function MaterialStorePage() {
   const { theme } = useTheme();
   const { language } = useLanguage();
   const isDark = theme === 'dark';
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<{id: number, qty: number}[]>([]);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
+  const [shippingAddress, setShippingAddress] = useState('');
 
   const categories = [
     { id: 'all', name: language === 'id' ? 'Semua' : 'All' },
@@ -161,6 +167,60 @@ export default function MaterialStorePage() {
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+  const totalPrice = cart.reduce((sum, item) => {
+    const material = materials.find(m => m.id === item.id);
+    return sum + (material ? material.price * item.qty : 0);
+  }, 0);
+
+  const handleCheckout = async () => {
+    const token = localStorage.getItem('kbs_token');
+    if (!token) {
+      router.push('/platform/login/');
+      return;
+    }
+
+    if (!shippingAddress.trim()) {
+      setCheckoutError(language === 'id' ? 'Alamat pengiriman wajib diisi' : 'Shipping address is required');
+      return;
+    }
+
+    setCheckoutLoading(true);
+    setCheckoutError('');
+
+    try {
+      const res = await fetch('/api/materials/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          items: cart,
+          shipping_address: shippingAddress,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setCheckoutError(data.error || 'Checkout gagal');
+        return;
+      }
+
+      setCheckoutSuccess(true);
+      setTimeout(() => {
+        setShowCheckout(false);
+        setCheckoutSuccess(false);
+        setCart([]);
+        setShippingAddress('');
+      }, 3000);
+
+    } catch {
+      setCheckoutError(language === 'id' ? 'Gagal terhubung ke server' : 'Connection failed');
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -203,8 +263,8 @@ export default function MaterialStorePage() {
       {/* Floating Cart */}
       {totalItems > 0 && (
         <div className="fixed bottom-6 right-6 z-50">
-          <Link
-            href="/platform/login"
+          <button
+            onClick={() => setShowCheckout(true)}
             className="flex items-center gap-3 px-6 py-3 bg-[#153969] text-white rounded-full shadow-lg hover:bg-[#1e4d8a] transition"
           >
             <div className="relative">
@@ -214,9 +274,9 @@ export default function MaterialStorePage() {
               </span>
             </div>
             <span className="font-medium">
-              {language === 'id' ? 'Lihat Keranjang' : 'View Cart'}
+              {formatPrice(totalPrice)}
             </span>
-          </Link>
+          </button>
         </div>
       )}
 
@@ -286,7 +346,7 @@ export default function MaterialStorePage() {
                   src={item.image}
                   alt={item.name}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover"
                 />
               </div>
 
@@ -353,6 +413,131 @@ export default function MaterialStorePage() {
           ))}
         </div>
       </section>
+
+      {/* Checkout Modal */}
+      <AnimatePresence>
+        {showCheckout && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowCheckout(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className={`w-full max-w-lg rounded-2xl p-6 max-h-[90vh] overflow-y-auto ${isDark ? 'bg-gray-800' : 'bg-white'}`}
+            >
+              {checkoutSuccess ? (
+                <div className="text-center py-8">
+                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {language === 'id' ? 'Order Berhasil!' : 'Order Successful!'}
+                  </h3>
+                  <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {language === 'id'
+                      ? 'Pesanan Anda sedang diproses. Tim kami akan menghubungi untuk konfirmasi pengiriman.'
+                      : 'Your order is being processed. Our team will contact you for delivery confirmation.'}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      <ShoppingCart className="inline w-5 h-5 mr-2" />
+                      {language === 'id' ? 'Checkout' : 'Checkout'}
+                    </h3>
+                    <button onClick={() => setShowCheckout(false)} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Cart Items */}
+                  <div className="space-y-3 mb-4">
+                    {cart.map(cartItem => {
+                      const material = materials.find(m => m.id === cartItem.id);
+                      if (!material) return null;
+                      return (
+                        <div key={cartItem.id} className={`flex items-center gap-3 p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                          <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
+                            <Image src={material.image} alt={material.name} fill className="object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                              {material.name}
+                            </p>
+                            <p className="text-xs text-gray-500">{cartItem.qty} × {formatPrice(material.price)}</p>
+                          </div>
+                          <p className="text-sm font-bold text-[#153969]">
+                            {formatPrice(material.price * cartItem.qty)}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Total */}
+                  <div className={`p-4 rounded-lg mb-4 ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+                    <div className="flex justify-between items-center">
+                      <span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Total ({totalItems} {language === 'id' ? 'item' : 'items'})
+                      </span>
+                      <span className="text-xl font-bold text-[#153969]">
+                        {formatPrice(totalPrice)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Shipping Address */}
+                  <div className="mb-4">
+                    <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {language === 'id' ? 'Alamat Pengiriman' : 'Shipping Address'} *
+                    </label>
+                    <textarea
+                      value={shippingAddress}
+                      onChange={e => { setShippingAddress(e.target.value); setCheckoutError(''); }}
+                      rows={3}
+                      placeholder={language === 'id' ? 'Masukkan alamat lengkap pengiriman...' : 'Enter complete shipping address...'}
+                      className={`w-full px-4 py-3 rounded-lg border outline-none focus:ring-2 focus:ring-[#153969] resize-none ${
+                        isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Error */}
+                  {checkoutError && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+                      {checkoutError}
+                    </div>
+                  )}
+
+                  {/* Submit */}
+                  <button
+                    onClick={handleCheckout}
+                    disabled={checkoutLoading}
+                    className="w-full py-3 bg-[#153969] text-white rounded-lg font-medium hover:bg-[#1e4d8a] transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {checkoutLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {language === 'id' ? 'Memproses...' : 'Processing...'}
+                      </>
+                    ) : (
+                      <>
+                        {language === 'id' ? 'Bayar Sekarang' : 'Pay Now'} — {formatPrice(totalPrice)}
+                      </>
+                    )}
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
