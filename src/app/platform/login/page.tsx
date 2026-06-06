@@ -257,12 +257,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Demo Info */}
-        <div className={`mt-6 p-3 rounded-lg text-xs ${isDark ? 'bg-gray-700 text-gray-400' : 'bg-blue-50 text-gray-600'}`}>
-          <p className="font-medium mb-1">Demo Mode:</p>
-          <p>Email: demo@karyabangunsemesta.com</p>
-          <p>Password: demo123</p>
-        </div>
 
         {/* Toggle Login/Register */}
         <p className={`mt-6 text-center text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
