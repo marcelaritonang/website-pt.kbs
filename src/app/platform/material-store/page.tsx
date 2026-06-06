@@ -207,13 +207,34 @@ export default function MaterialStorePage() {
         return;
       }
 
+      // Save order to localStorage for invoice page
+      const user = JSON.parse(localStorage.getItem('kbs_user') || '{}');
+      const orderData = {
+        id: data.order?.id || Math.floor(Math.random() * 9000) + 1000,
+        date: new Date().toISOString(),
+        customer: {
+          name: user.name || 'Customer',
+          email: user.email || '',
+          phone: user.phone || '-',
+          address: shippingAddress,
+        },
+        items: cart.map(c => {
+          const m = materials.find(mat => mat.id === c.id);
+          return {
+            name: m?.name || '',
+            qty: c.qty,
+            unit: m?.unit || '',
+            price: m?.price || 0,
+          };
+        }),
+        status: 'pending',
+      };
+      localStorage.setItem('kbs_last_order', JSON.stringify(orderData));
+
       setCheckoutSuccess(true);
       setTimeout(() => {
-        setShowCheckout(false);
-        setCheckoutSuccess(false);
-        setCart([]);
-        setShippingAddress('');
-      }, 3000);
+        router.push('/platform/invoice/');
+      }, 2000);
 
     } catch {
       setCheckoutError(language === 'id' ? 'Gagal terhubung ke server' : 'Connection failed');
