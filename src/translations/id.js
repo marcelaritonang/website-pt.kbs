@@ -4,9 +4,19 @@ export default {
       whoWeAre: "Tentang Kami",
       services: "Layanan",
       projects: "Proyek",
+      platform: "Platform",
+      platformDigital: "Platform Digital",
+      equipmentBooking: "Sewa Alat Berat",
+      equipmentBookingDesc: "Booking alat berat & dump truck secara online",
+      projectTracking: "Tracking Proyek",
+      projectTrackingDesc: "Pantau progress proyek real-time",
+      materialStore: "Material Store",
+      materialStoreDesc: "Marketplace material bangunan",
       resources: "Sumber Daya",
       careers: "Karir",
       contact: "Kontak",
-      getQuote: "Dapatkan Penawaran"
+      getQuote: "Dapatkan Penawaran",
+      login: "Masuk",
+      signUp: "Daftar"
     }
   };
