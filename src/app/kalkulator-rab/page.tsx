@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { Calculator, Building2, MapPin, Layers, Sparkles, Clock, TrendingUp, ArrowRight, Download, MessageCircle, BarChart3, Info } from 'lucide-react';
 
 // Types
 type BuildingType = 'rumah' | 'ruko' | 'gudang' | 'kantor' | 'workshop';
@@ -92,6 +93,18 @@ const breakdownItems = [
   { label: 'Lain-lain', labelEn: 'Miscellaneous', percentage: 3 },
 ];
 
+const breakdownColors = [
+  'bg-blue-600',
+  'bg-blue-500',
+  'bg-blue-400',
+  'bg-cyan-500',
+  'bg-amber-500',
+  'bg-teal-500',
+  'bg-indigo-400',
+  'bg-orange-400',
+  'bg-gray-400',
+];
+
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -99,6 +112,12 @@ function formatCurrency(amount: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
+}
+
+function formatCompact(amount: number): string {
+  if (amount >= 1000000000) return `Rp ${(amount / 1000000000).toFixed(1)}M`;
+  if (amount >= 1000000) return `Rp ${(amount / 1000000).toFixed(0)} Jt`;
+  return formatCurrency(amount);
 }
 
 function getDuration(area: number): { id: string; en: string } {
@@ -121,66 +140,64 @@ export default function KalkulatorRABPage() {
   const [quality, setQuality] = useState<Quality>('standar');
   const [region, setRegion] = useState<Region>('jakarta');
   const [result, setResult] = useState<CalculationResult | null>(null);
-
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  };
-
-  const stagger = {
-    visible: { transition: { staggerChildren: 0.1 } },
-  };
+  const [isCalculating, setIsCalculating] = useState(false);
 
   // Calculate RAB
   function calculateRAB() {
-    const basePrice = basePrices[buildingType];
-    const qMul = qualityMultiplier[quality];
-    const rMul = regionalMultiplier[region];
-    const fMul = floorMultiplier[floors];
+    setIsCalculating(true);
 
-    const pricePerM2 = basePrice * qMul * rMul * fMul;
-    const totalCost = pricePerM2 * area;
+    // Small delay for UX feedback
+    setTimeout(() => {
+      const basePrice = basePrices[buildingType];
+      const qMul = qualityMultiplier[quality];
+      const rMul = regionalMultiplier[region];
+      const fMul = floorMultiplier[floors];
 
-    const breakdown = breakdownItems.map((item) => ({
-      ...item,
-      amount: Math.round((totalCost * item.percentage) / 100),
-    }));
+      const pricePerM2 = basePrice * qMul * rMul * fMul;
+      const totalCost = pricePerM2 * area;
 
-    const duration = getDuration(area);
+      const breakdown = breakdownItems.map((item) => ({
+        ...item,
+        amount: Math.round((totalCost * item.percentage) / 100),
+      }));
 
-    // Get comparison with 3 other regions
-    const otherRegions = (Object.keys(regionalMultiplier) as Region[])
-      .filter((r) => r !== region)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3);
+      const duration = getDuration(area);
 
-    const comparison = otherRegions.map((r) => ({
-      region: r,
-      regionLabel: regionLabels[r],
-      cost: Math.round(basePrice * qMul * regionalMultiplier[r] * fMul * area),
-    }));
+      // Get comparison with all regions sorted
+      const comparison = (Object.keys(regionalMultiplier) as Region[])
+        .filter((r) => r !== region)
+        .map((r) => ({
+          region: r,
+          regionLabel: regionLabels[r],
+          cost: Math.round(basePrice * qMul * regionalMultiplier[r] * fMul * area),
+        }))
+        .sort((a, b) => b.cost - a.cost)
+        .slice(0, 4);
 
-    setResult({
-      totalCost: Math.round(totalCost),
-      pricePerM2: Math.round(pricePerM2),
-      breakdown,
-      duration: duration.id,
-      durationEn: duration.en,
-      comparison,
-    });
+      setResult({
+        totalCost: Math.round(totalCost),
+        pricePerM2: Math.round(pricePerM2),
+        breakdown,
+        duration: duration.id,
+        durationEn: duration.en,
+        comparison,
+      });
+
+      setIsCalculating(false);
+    }, 400);
   }
 
   return (
-    <main className={`min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-300`}>
-      {/* Hero Section - matches other pages */}
+    <main className={`min-h-screen ${isDark ? 'bg-gray-950 text-white' : 'bg-slate-50 text-gray-900'} transition-colors duration-300`}>
+      {/* Hero Section */}
       <section className="relative h-[40vh] md:h-[45vh] overflow-hidden">
-        <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-[#0a1f3d] via-[#153969] to-[#1e4d8a]' : 'bg-gradient-to-br from-[#0a1f3d] via-[#153969] to-[#1e4d8a]'}`} />
-        {/* Decorative pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-72 h-72 border border-white/30 rounded-full" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 border border-white/20 rounded-full" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/10 rounded-full" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a1f3d] via-[#153969] to-[#1e4d8a]" />
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+        {/* Decorative elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl" />
         </div>
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -189,9 +206,9 @@ export default function KalkulatorRABPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6"
+                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-5"
               >
-                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <Calculator className="w-4 h-4 text-green-400" />
                 <span className="text-white/90 text-sm font-medium">
                   {isEn ? 'Free Tool — No Registration Required' : 'Gratis — Tanpa Registrasi'}
                 </span>
@@ -199,51 +216,69 @@ export default function KalkulatorRABPage() {
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
+                transition={{ duration: 0.7 }}
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight"
               >
-                {isEn ? 'Construction Budget Calculator' : 'Kalkulator RAB Konstruksi'}
+                {isEn ? 'Construction Budget' : 'Kalkulator RAB'}
+                <br />
+                <span className="text-blue-300">
+                  {isEn ? 'Calculator (RAB)' : 'Konstruksi'}
+                </span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-lg md:text-xl text-white/80 max-w-2xl"
+                transition={{ duration: 0.7, delay: 0.15 }}
+                className="text-base md:text-lg text-white/70 max-w-xl"
               >
                 {isEn
-                  ? 'Estimate your construction costs across various regions in Indonesia with accurate regional pricing data.'
-                  : 'Hitung estimasi biaya pembangunan di berbagai daerah Indonesia dengan data harga regional yang akurat.'}
+                  ? 'Get instant cost estimates for your construction project with accurate regional pricing across Indonesia.'
+                  : 'Dapatkan estimasi biaya instan untuk proyek konstruksi Anda dengan data harga regional di seluruh Indonesia.'}
               </motion.p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Calculator Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Input Form */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            className={`rounded-lg p-6 md:p-8 border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm`}
-          >
-            <h2 className={`text-xl font-semibold mb-6 ${isDark ? 'text-white' : 'text-[#153969]'}`}>
-              {isEn ? 'Project Details' : 'Detail Proyek'}
-            </h2>
+      {/* Main Content */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 -mt-10 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-            <div className="space-y-5">
+          {/* Input Form - 2 columns */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className={`lg:col-span-2 rounded-2xl p-6 md:p-8 border ${
+              isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+            } shadow-lg shadow-black/5`}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className={`p-2.5 rounded-xl ${isDark ? 'bg-blue-500/10' : 'bg-[#153969]/10'}`}>
+                <Calculator className={`w-5 h-5 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
+              </div>
+              <div>
+                <h2 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {isEn ? 'Project Details' : 'Detail Proyek'}
+                </h2>
+                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                  {isEn ? 'Configure your project specs' : 'Atur spesifikasi proyek Anda'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
               {/* Building Type */}
               <div>
-                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label className={`flex items-center gap-1.5 text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <Building2 className="w-3.5 h-3.5" />
                   {isEn ? 'Building Type' : 'Tipe Bangunan'}
                 </label>
                 <select
                   value={buildingType}
                   onChange={(e) => setBuildingType(e.target.value as BuildingType)}
-                  className={`w-full rounded-md border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969] ${
-                    isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                  className={`w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969]/50 transition-all ${
+                    isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900 hover:border-gray-300'
                   }`}
                 >
                   {(Object.keys(buildingTypeLabels) as BuildingType[]).map((type) => (
@@ -254,70 +289,81 @@ export default function KalkulatorRABPage() {
                 </select>
               </div>
 
-              {/* Area */}
-              <div>
-                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {isEn ? 'Building Area (m²)' : 'Luas Bangunan (m²)'}
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  value={area}
-                  onChange={(e) => setArea(Math.max(1, parseInt(e.target.value) || 1))}
-                  className={`w-full rounded-md border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969] ${
-                    isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                  }`}
-                />
-              </div>
-
-              {/* Floors */}
-              <div>
-                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {isEn ? 'Number of Floors' : 'Jumlah Lantai'}
-                </label>
-                <select
-                  value={floors}
-                  onChange={(e) => setFloors(parseInt(e.target.value))}
-                  className={`w-full rounded-md border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969] ${
-                    isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                  }`}
-                >
-                  <option value={1}>1 {isEn ? 'Floor' : 'Lantai'}</option>
-                  <option value={2}>2 {isEn ? 'Floors' : 'Lantai'}</option>
-                  <option value={3}>3 {isEn ? 'Floors' : 'Lantai'}</option>
-                </select>
+              {/* Area & Floors - 2 column grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={`flex items-center gap-1.5 text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <Layers className="w-3.5 h-3.5" />
+                    {isEn ? 'Area (m²)' : 'Luas (m²)'}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={10000}
+                    value={area}
+                    onChange={(e) => setArea(Math.max(1, Math.min(10000, parseInt(e.target.value) || 1)))}
+                    className={`w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969]/50 transition-all ${
+                      isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900 hover:border-gray-300'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`flex items-center gap-1.5 text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <Building2 className="w-3.5 h-3.5" />
+                    {isEn ? 'Floors' : 'Lantai'}
+                  </label>
+                  <select
+                    value={floors}
+                    onChange={(e) => setFloors(parseInt(e.target.value))}
+                    className={`w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969]/50 transition-all ${
+                      isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900 hover:border-gray-300'
+                    }`}
+                  >
+                    <option value={1}>1 {isEn ? 'Floor' : 'Lantai'}</option>
+                    <option value={2}>2 {isEn ? 'Floors' : 'Lantai'}</option>
+                    <option value={3}>3 {isEn ? 'Floors' : 'Lantai'}</option>
+                  </select>
+                </div>
               </div>
 
               {/* Quality */}
               <div>
-                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label className={`flex items-center gap-1.5 text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <Sparkles className="w-3.5 h-3.5" />
                   {isEn ? 'Quality' : 'Kualitas'}
                 </label>
-                <select
-                  value={quality}
-                  onChange={(e) => setQuality(e.target.value as Quality)}
-                  className={`w-full rounded-md border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969] ${
-                    isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                  }`}
-                >
+                <div className="grid grid-cols-3 gap-2">
                   {(Object.keys(qualityLabels) as Quality[]).map((q) => (
-                    <option key={q} value={q}>
+                    <button
+                      key={q}
+                      onClick={() => setQuality(q)}
+                      className={`py-2.5 px-3 rounded-xl text-sm font-medium border transition-all ${
+                        quality === q
+                          ? isDark
+                            ? 'bg-blue-500/20 border-blue-500 text-blue-400'
+                            : 'bg-[#153969]/10 border-[#153969] text-[#153969]'
+                          : isDark
+                            ? 'bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-600'
+                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'
+                      }`}
+                    >
                       {isEn ? qualityLabels[q].en : qualityLabels[q].id}
-                    </option>
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
 
               {/* Region */}
               <div>
-                <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label className={`flex items-center gap-1.5 text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <MapPin className="w-3.5 h-3.5" />
                   {isEn ? 'Region' : 'Daerah'}
                 </label>
                 <select
                   value={region}
                   onChange={(e) => setRegion(e.target.value as Region)}
-                  className={`w-full rounded-md border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969] ${
-                    isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                  className={`w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#153969]/50 transition-all ${
+                    isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900 hover:border-gray-300'
                   }`}
                 >
                   {(Object.keys(regionLabels) as Region[]).map((r) => (
@@ -331,166 +377,265 @@ export default function KalkulatorRABPage() {
               {/* Calculate Button */}
               <button
                 onClick={calculateRAB}
-                className="w-full bg-[#153969] hover:bg-[#1e4d8a] text-white font-medium py-3 px-6 rounded-md transition-colors duration-200 mt-2"
+                disabled={isCalculating}
+                className={`w-full flex items-center justify-center gap-2 bg-[#153969] hover:bg-[#1e4d8a] text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 mt-3 shadow-lg shadow-[#153969]/20 ${
+                  isCalculating ? 'opacity-70 cursor-wait' : 'hover:shadow-xl hover:shadow-[#153969]/30 hover:-translate-y-0.5'
+                }`}
               >
-                {isEn ? 'Calculate RAB' : 'Hitung RAB'}
+                {isCalculating ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Calculator className="w-4 h-4" />
+                )}
+                {isCalculating
+                  ? (isEn ? 'Calculating...' : 'Menghitung...')
+                  : (isEn ? 'Calculate RAB' : 'Hitung RAB')}
               </button>
             </div>
           </motion.div>
 
-          {/* Result Section */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-            className="space-y-6"
-          >
-            {result ? (
-              <>
-                {/* Total Cost Card */}
+          {/* Result Section - 3 columns */}
+          <div className="lg:col-span-3 space-y-6">
+            <AnimatePresence mode="wait">
+              {result ? (
                 <motion.div
-                  variants={fadeIn}
-                  className={`rounded-lg p-6 border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm`}
+                  key="results"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
+                  className="space-y-5"
                 >
-                  <h3 className={`text-sm font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {isEn ? 'Estimated Total Cost' : 'Estimasi Total Biaya'}
-                  </h3>
-                  <p className="text-2xl md:text-3xl font-bold text-[#153969] dark:text-blue-400">
-                    {formatCurrency(result.totalCost)}
-                  </p>
-                  <div className={`mt-3 flex flex-wrap gap-4 text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <span>
-                      {isEn ? `Price per m² in ${regionLabels[region]}` : `Harga per m² di ${regionLabels[region]}`}: <strong>{formatCurrency(result.pricePerM2)}</strong>
-                    </span>
-                    <span>
-                      {isEn ? 'Estimated Duration' : 'Estimasi Durasi'}: <strong>{isEn ? result.durationEn : result.duration}</strong>
-                    </span>
+                  {/* Summary Stats Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {/* Total Cost */}
+                    <div className={`rounded-2xl p-5 border ${
+                      isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+                    } shadow-lg shadow-black/5`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={`p-1.5 rounded-lg ${isDark ? 'bg-green-500/10' : 'bg-green-50'}`}>
+                          <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+                        </div>
+                        <span className={`text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {isEn ? 'Total Estimate' : 'Total Estimasi'}
+                        </span>
+                      </div>
+                      <p className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {formatCompact(result.totalCost)}
+                      </p>
+                      <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {formatCurrency(result.totalCost)}
+                      </p>
+                    </div>
+
+                    {/* Price per m2 */}
+                    <div className={`rounded-2xl p-5 border ${
+                      isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+                    } shadow-lg shadow-black/5`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={`p-1.5 rounded-lg ${isDark ? 'bg-blue-500/10' : 'bg-blue-50'}`}>
+                          <BarChart3 className="w-3.5 h-3.5 text-blue-600" />
+                        </div>
+                        <span className={`text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {isEn ? 'Per m²' : 'Per m²'}
+                        </span>
+                      </div>
+                      <p className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {formatCompact(result.pricePerM2)}
+                      </p>
+                      <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {regionLabels[region]}
+                      </p>
+                    </div>
+
+                    {/* Duration */}
+                    <div className={`rounded-2xl p-5 border ${
+                      isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+                    } shadow-lg shadow-black/5`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={`p-1.5 rounded-lg ${isDark ? 'bg-amber-500/10' : 'bg-amber-50'}`}>
+                          <Clock className="w-3.5 h-3.5 text-amber-600" />
+                        </div>
+                        <span className={`text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {isEn ? 'Duration' : 'Durasi'}
+                        </span>
+                      </div>
+                      <p className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {isEn ? result.durationEn : result.duration}
+                      </p>
+                      <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {area} m² · {floors} {isEn ? 'floor' : 'lantai'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Cost Breakdown - Visual Bars */}
+                  <div className={`rounded-2xl p-6 border ${
+                    isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+                  } shadow-lg shadow-black/5`}>
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className={`text-base font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {isEn ? 'Cost Breakdown' : 'Rincian Biaya'}
+                      </h3>
+                      <span className={`text-xs px-2.5 py-1 rounded-full ${isDark ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
+                        9 {isEn ? 'components' : 'komponen'}
+                      </span>
+                    </div>
+
+                    {/* Stacked bar visualization */}
+                    <div className="flex h-3 rounded-full overflow-hidden mb-5">
+                      {result.breakdown.map((item, index) => (
+                        <div
+                          key={index}
+                          className={`${breakdownColors[index]} transition-all duration-500`}
+                          style={{ width: `${item.percentage}%` }}
+                          title={`${isEn ? item.labelEn : item.label}: ${item.percentage}%`}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Breakdown items */}
+                    <div className="space-y-3">
+                      {result.breakdown.map((item, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${breakdownColors[index]}`} />
+                          <span className={`text-sm flex-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                            {isEn ? item.labelEn : item.label}
+                          </span>
+                          <span className={`text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {item.percentage}%
+                          </span>
+                          <span className={`text-sm font-medium tabular-nums ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                            {formatCurrency(item.amount)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Regional Comparison */}
+                  <div className={`rounded-2xl p-6 border ${
+                    isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+                  } shadow-lg shadow-black/5`}>
+                    <h3 className={`text-base font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      {isEn ? 'Regional Comparison' : 'Perbandingan Regional'}
+                    </h3>
+
+                    <div className="space-y-3">
+                      {/* Selected region - highlighted */}
+                      <div className={`flex items-center justify-between p-3 rounded-xl ${
+                        isDark ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-[#153969]/5 border border-[#153969]/10'
+                      }`}>
+                        <div className="flex items-center gap-2">
+                          <MapPin className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
+                          <span className={`text-sm font-semibold ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
+                            {regionLabels[region]}
+                          </span>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-blue-500/20 text-blue-300' : 'bg-[#153969]/10 text-[#153969]'}`}>
+                            {isEn ? 'Selected' : 'Dipilih'}
+                          </span>
+                        </div>
+                        <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          {formatCurrency(result.totalCost)}
+                        </span>
+                      </div>
+
+                      {/* Other regions */}
+                      {result.comparison.map((item, index) => {
+                        const diff = ((item.cost - result.totalCost) / result.totalCost * 100).toFixed(0);
+                        const isMore = item.cost > result.totalCost;
+                        return (
+                          <div key={index} className={`flex items-center justify-between p-3 rounded-xl ${
+                            isDark ? 'bg-gray-800/50' : 'bg-gray-50'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              <MapPin className={`w-4 h-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+                              <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                {item.regionLabel}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className={`text-xs font-medium ${isMore ? 'text-red-500' : 'text-green-500'}`}>
+                                {isMore ? '+' : ''}{diff}%
+                              </span>
+                              <span className={`text-sm font-medium tabular-nums ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                                {formatCurrency(item.cost)}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* CTA Section */}
+                  <div className={`rounded-2xl p-6 border ${
+                    isDark ? 'bg-gradient-to-br from-blue-900/30 to-gray-900 border-blue-800/30' : 'bg-gradient-to-br from-[#153969]/5 to-white border-[#153969]/10'
+                  }`}>
+                    <div className="flex items-start gap-3 mb-4">
+                      <Info className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
+                      <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {isEn
+                          ? 'This is an initial estimate. For a detailed & accurate RAB, consult with our estimator team — it\'s free.'
+                          : 'Ini adalah estimasi awal. Untuk RAB detail & akurat, konsultasi dengan tim estimator kami — gratis.'}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <a
+                        href="https://wa.me/6281218127503?text=Halo%2C%20saya%20ingin%20konsultasi%20RAB%20detail%20untuk%20proyek%20saya."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 bg-[#153969] hover:bg-[#1e4d8a] text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 shadow-lg shadow-[#153969]/20 hover:shadow-xl hover:-translate-y-0.5"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        {isEn ? 'Free Consultation' : 'Konsultasi Gratis'}
+                        <ArrowRight className="w-4 h-4" />
+                      </a>
+                      <button
+                        onClick={() => alert(isEn ? 'PDF download feature coming soon!' : 'Fitur download PDF akan segera hadir!')}
+                        className={`flex items-center justify-center gap-2 font-medium py-3 px-5 rounded-xl border transition-all duration-200 ${
+                          isDark
+                            ? 'border-gray-700 text-gray-300 hover:bg-gray-800'
+                            : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Download className="w-4 h-4" />
+                        PDF
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
-
-                {/* Breakdown Table */}
+              ) : (
                 <motion.div
-                  variants={fadeIn}
-                  className={`rounded-lg p-6 border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm`}
+                  key="empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={`rounded-2xl p-10 md:p-14 border text-center ${
+                    isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+                  } shadow-lg shadow-black/5`}
                 >
-                  <h3 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-[#153969]'}`}>
-                    {isEn ? 'Cost Breakdown' : 'Rincian Biaya'}
-                  </h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                          <th className="text-left py-2 font-medium">{isEn ? 'Component' : 'Komponen'}</th>
-                          <th className="text-center py-2 font-medium">%</th>
-                          <th className="text-right py-2 font-medium">{isEn ? 'Amount' : 'Jumlah'}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {result.breakdown.map((item, index) => (
-                          <tr key={index} className={`border-b ${isDark ? 'border-gray-700/50' : 'border-gray-100'}`}>
-                            <td className="py-2">{isEn ? item.labelEn : item.label}</td>
-                            <td className="py-2 text-center">{item.percentage}%</td>
-                            <td className="py-2 text-right">{formatCurrency(item.amount)}</td>
-                          </tr>
-                        ))}
-                        <tr className="font-semibold">
-                          <td className="py-2">Total</td>
-                          <td className="py-2 text-center">100%</td>
-                          <td className="py-2 text-right">{formatCurrency(result.totalCost)}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <div className={`inline-flex p-5 rounded-2xl mb-5 ${isDark ? 'bg-gray-800' : 'bg-slate-100'}`}>
+                    <Calculator className={`w-10 h-10 ${isDark ? 'text-gray-600' : 'text-gray-300'}`} />
                   </div>
-                </motion.div>
-
-                {/* Regional Comparison */}
-                <motion.div
-                  variants={fadeIn}
-                  className={`rounded-lg p-6 border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm`}
-                >
-                  <h3 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-[#153969]'}`}>
-                    {isEn ? 'Regional Price Comparison' : 'Perbandingan Harga Regional'}
+                  <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {isEn ? 'Configure your project' : 'Konfigurasi proyek Anda'}
                   </h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                          <th className="text-left py-2 font-medium">{isEn ? 'Region' : 'Daerah'}</th>
-                          <th className="text-right py-2 font-medium">{isEn ? 'Estimated Cost' : 'Estimasi Biaya'}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className={`border-b ${isDark ? 'border-gray-700/50' : 'border-gray-100'} font-medium`}>
-                          <td className="py-2">{regionLabels[region]} ({isEn ? 'selected' : 'dipilih'})</td>
-                          <td className="py-2 text-right">{formatCurrency(result.totalCost)}</td>
-                        </tr>
-                        {result.comparison.map((item, index) => (
-                          <tr key={index} className={`border-b ${isDark ? 'border-gray-700/50' : 'border-gray-100'}`}>
-                            <td className="py-2">{item.regionLabel}</td>
-                            <td className="py-2 text-right">{formatCurrency(item.cost)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </motion.div>
-
-                {/* Disclaimer and CTAs */}
-                <motion.div
-                  variants={fadeIn}
-                  className={`rounded-lg p-6 border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}
-                >
-                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} mb-5`}>
+                  <p className={`text-sm max-w-sm mx-auto ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                     {isEn
-                      ? 'Disclaimer: This estimate is an approximation. Actual prices may differ depending on field conditions and detailed specifications.'
-                      : 'Disclaimer: Estimasi ini bersifat perkiraan. Harga aktual dapat berbeda tergantung kondisi lapangan dan spesifikasi detail.'}
+                      ? 'Fill in the building type, area, quality, and region to get an instant cost estimate.'
+                      : 'Isi tipe bangunan, luas, kualitas, dan daerah untuk mendapatkan estimasi biaya instan.'}
                   </p>
-
-                  <div className="space-y-3">
-                    <a
-                      href="https://wa.me/6281218127503?text=Halo%2C%20saya%20ingin%20konsultasi%20RAB%20detail%20untuk%20proyek%20saya."
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full text-center bg-[#153969] hover:bg-[#1e4d8a] text-white font-medium py-3 px-6 rounded-md transition-colors duration-200"
-                    >
-                      {isEn
-                        ? 'Want a detailed & accurate RAB? Free consultation with our estimator team'
-                        : 'Ingin RAB detail & akurat? Konsultasi gratis dengan tim estimator kami'}
-                    </a>
-                    <button
-                      onClick={() => alert(isEn ? 'PDF download feature coming soon!' : 'Fitur download PDF akan segera hadir!')}
-                      className={`block w-full text-center font-medium py-3 px-6 rounded-md border transition-colors duration-200 ${
-                        isDark
-                          ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                          : 'border-gray-300 text-[#153969] hover:bg-gray-100'
-                      }`}
-                    >
-                      {isEn ? 'Download PDF RAB' : 'Download PDF RAB'}
-                    </button>
+                  <div className={`mt-6 flex items-center justify-center gap-6 text-xs ${isDark ? 'text-gray-600' : 'text-gray-300'}`}>
+                    <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> 5 {isEn ? 'types' : 'tipe'}</span>
+                    <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> 10 {isEn ? 'regions' : 'daerah'}</span>
+                    <span className="flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> 3 {isEn ? 'qualities' : 'kualitas'}</span>
                   </div>
                 </motion.div>
-              </>
-            ) : (
-              <motion.div
-                variants={fadeIn}
-                className={`rounded-lg p-8 border text-center ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm`}
-              >
-                <div className={`text-4xl mb-4 ${isDark ? 'text-gray-600' : 'text-gray-300'}`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25v-.008zm2.25-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm2.25-2.25h.008v.008H15v-.008zm0 2.25h.008v.008H15v-.008zM9.75 3v2.25M14.25 3v2.25M3.75 7.5h16.5M3.75 7.5v11.25A2.25 2.25 0 006 21h12a2.25 2.25 0 002.25-2.25V7.5" />
-                  </svg>
-                </div>
-                <h3 className={`text-lg font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {isEn ? 'Fill in the form to see the estimate' : 'Isi formulir untuk melihat estimasi'}
-                </h3>
-                <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                  {isEn
-                    ? 'Select building type, area, and other details, then click "Calculate RAB".'
-                    : 'Pilih tipe bangunan, luas, dan detail lainnya, lalu klik "Hitung RAB".'}
-                </p>
-              </motion.div>
-            )}
-          </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </section>
     </main>
