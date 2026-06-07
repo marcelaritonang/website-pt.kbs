@@ -172,33 +172,55 @@ export default function KalkulatorRABPage() {
   }
 
   return (
-    <main className={`min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} transition-colors duration-300`}>
-      {/* Hero Section */}
-      <section className={`${isDark ? 'bg-blue-900' : 'bg-[#153969]'} pt-20 pb-16 relative transition-colors duration-300`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
-          >
-            {isEn ? 'Free Construction Budget Calculator' : 'Kalkulator RAB Gratis'}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto"
-          >
-            {isEn
-              ? 'Estimate your construction costs across various regions in Indonesia. Free, no registration required.'
-              : 'Hitung estimasi biaya pembangunan di berbagai daerah Indonesia. Gratis, tanpa registrasi.'}
-          </motion.p>
+    <main className={`min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-300`}>
+      {/* Hero Section - matches other pages */}
+      <section className="relative h-[40vh] md:h-[45vh] overflow-hidden">
+        <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-[#0a1f3d] via-[#153969] to-[#1e4d8a]' : 'bg-gradient-to-br from-[#0a1f3d] via-[#153969] to-[#1e4d8a]'}`} />
+        {/* Decorative pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-72 h-72 border border-white/30 rounded-full" />
+          <div className="absolute bottom-10 right-10 w-96 h-96 border border-white/20 rounded-full" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/10 rounded-full" />
+        </div>
+        <div className="absolute inset-0 flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div className="max-w-3xl">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6"
+              >
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <span className="text-white/90 text-sm font-medium">
+                  {isEn ? 'Free Tool — No Registration Required' : 'Gratis — Tanpa Registrasi'}
+                </span>
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
+              >
+                {isEn ? 'Construction Budget Calculator' : 'Kalkulator RAB Konstruksi'}
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-lg md:text-xl text-white/80 max-w-2xl"
+              >
+                {isEn
+                  ? 'Estimate your construction costs across various regions in Indonesia with accurate regional pricing data.'
+                  : 'Hitung estimasi biaya pembangunan di berbagai daerah Indonesia dengan data harga regional yang akurat.'}
+              </motion.p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Calculator Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Input Form */}
           <motion.div

@@ -48,16 +48,12 @@ export default function ContactPage() {
     setErrorMessage('');
     
     try {
-      // Log data yang akan dikirim untuk debugging
-      console.log('Sending form data:', formData);
-      
       // Menambahkan timeout control
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 detik timeout
-      
+
       // Gunakan backend URL yang dapat dikonfigurasi melalui environment variable
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend-kbs-website.vercel.app';
-      console.log('Using backend URL:', backendUrl);
       
       const response = await fetch(`${backendUrl}/api/contact`, {
         method: 'POST',

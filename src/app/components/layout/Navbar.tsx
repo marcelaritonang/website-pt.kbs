@@ -53,11 +53,6 @@ export default function Navbar() {
   // Data navigasi dengan terjemahan
   const navItems: NavLinkItem[] = [
     {
-      name: asString(t('nav.home')),
-      href: '/',
-      hasDropdown: false
-    },
-    {
       name: asString(t('nav.whoWeAre')),
       href: '/about',
       hasDropdown: true,
