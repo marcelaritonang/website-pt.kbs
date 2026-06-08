@@ -19,38 +19,44 @@ interface CalculationResult {
   comparison: { region: string; regionLabel: string; cost: number; diff: number }[];
 }
 
-// Pricing data based on regional contractor averages
+// Pricing data based on AHSP (Analisa Harga Satuan Pekerjaan) & market rates 2024
+// Reference: Permen PUPR, harga borongan kontraktor Jabodetabek & kota besar
+// Harga dasar = harga per m² untuk kualitas standar di wilayah non-Jakarta
 const basePrices: Record<BuildingType, number> = {
-  rumah: 3500000,
-  ruko: 4200000,
-  gudang: 2800000,
-  kantor: 5000000,
-  workshop: 3000000,
+  rumah: 4200000,    // Rumah tinggal: Rp 4.2jt/m² (standar, luar Jakarta)
+  ruko: 4800000,     // Ruko 2-3 lantai: Rp 4.8jt/m²
+  gudang: 3500000,   // Gudang/pabrik: Rp 3.5jt/m² (struktur baja ringan)
+  kantor: 5800000,   // Kantor: Rp 5.8jt/m² (standar finishing)
+  workshop: 3800000, // Workshop/bengkel: Rp 3.8jt/m²
 };
 
+// Multiplier kualitas berdasarkan tingkat material & finishing
 const qualityMultiplier: Record<Quality, number> = {
-  standar: 1.0,
-  menengah: 1.3,
-  premium: 1.8,
+  standar: 1.0,   // Material lokal (bata merah, keramik 40x40, cat ekonomi)
+  menengah: 1.45, // Material branded (hebel, keramik 60x60, cat Dulux/Nippon)
+  premium: 2.1,   // Material impor/premium (granit, aluminium, custom millwork)
 };
 
+// Indeks kemahalan konstruksi (IKK) relatif antar kota
+// Referensi: BPS Indeks Kemahalan Konstruksi & survey kontraktor 2024
 const regionalMultiplier: Record<Region, number> = {
-  jakarta: 1.25,
-  bogor: 1.0,
-  depok: 1.05,
-  tangerang: 1.1,
-  bekasi: 1.05,
-  bandung: 0.95,
-  surabaya: 1.0,
-  semarang: 0.9,
-  yogyakarta: 0.85,
-  medan: 0.95,
+  jakarta: 1.20,     // Tertinggi: upah buruh & material transport mahal
+  bogor: 1.0,        // Baseline
+  depok: 1.05,       // Dekat Jakarta, sedikit lebih mahal
+  tangerang: 1.08,   // Kawasan industri, akses material baik
+  bekasi: 1.05,      // Mirip Depok
+  bandung: 0.92,     // Upah buruh lebih rendah
+  surabaya: 0.98,    // Kota besar tapi biaya hidup lebih rendah dari Jakarta
+  semarang: 0.88,    // Biaya hidup & upah lebih rendah
+  yogyakarta: 0.85,  // Terendah: upah buruh paling kompetitif
+  medan: 0.95,       // Transport material agak mahal (Sumatra)
 };
 
+// Biaya tambahan per lantai (pondasi lebih kuat, struktur kolom, scaffolding)
 const floorMultiplier: Record<number, number> = {
   1: 1.0,
-  2: 1.15,
-  3: 1.25,
+  2: 1.20,  // +20% untuk struktur 2 lantai
+  3: 1.35,  // +35% untuk struktur 3 lantai
 };
 
 const regionLabels: Record<Region, string> = {
@@ -75,21 +81,21 @@ const buildingTypeLabels: Record<BuildingType, { id: string; en: string }> = {
 };
 
 const qualityLabels: Record<Quality, { id: string; en: string; desc: string; descEn: string }> = {
-  standar: { id: 'Standar', en: 'Standard', desc: 'Material lokal, finishing dasar', descEn: 'Local material, basic finishing' },
-  menengah: { id: 'Menengah', en: 'Medium', desc: 'Material branded, finishing rapi', descEn: 'Branded material, clean finishing' },
-  premium: { id: 'Premium', en: 'Premium', desc: 'Material impor, custom design', descEn: 'Imported material, custom design' },
+  standar: { id: 'Standar', en: 'Standard', desc: 'Bata merah, keramik 40x40, kusen kayu, cat ekonomi', descEn: 'Red brick, 40x40 tiles, wood frames, economy paint' },
+  menengah: { id: 'Menengah', en: 'Medium', desc: 'Hebel/batako, keramik 60x60, kusen aluminium, cat Dulux', descEn: 'AAC block, 60x60 tiles, aluminum frames, Dulux paint' },
+  premium: { id: 'Premium', en: 'Premium', desc: 'Hebel + panel, granit/marmer, kusen UPVC, custom design', descEn: 'AAC + panel, granite/marble, UPVC frames, custom design' },
 };
 
+// Breakdown berdasarkan proporsi umum RAB konstruksi Indonesia (SNI/Permen PUPR)
 const breakdownItems = [
-  { label: 'Pondasi & Struktur', labelEn: 'Foundation & Structure', percentage: 25 },
-  { label: 'Dinding & Plester', labelEn: 'Walls & Plastering', percentage: 20 },
-  { label: 'Atap & Rangka', labelEn: 'Roof & Framework', percentage: 15 },
-  { label: 'Lantai & Keramik', labelEn: 'Flooring & Tiles', percentage: 12 },
-  { label: 'Instalasi Listrik', labelEn: 'Electrical', percentage: 8 },
-  { label: 'Instalasi Plumbing', labelEn: 'Plumbing', percentage: 7 },
-  { label: 'Pintu & Jendela', labelEn: 'Doors & Windows', percentage: 5 },
-  { label: 'Cat & Finishing', labelEn: 'Paint & Finishing', percentage: 5 },
-  { label: 'Lain-lain', labelEn: 'Miscellaneous', percentage: 3 },
+  { label: 'Pondasi & Struktur', labelEn: 'Foundation & Structure', percentage: 30 },
+  { label: 'Dinding & Plester', labelEn: 'Walls & Plastering', percentage: 18 },
+  { label: 'Atap & Rangka', labelEn: 'Roof & Framework', percentage: 13 },
+  { label: 'Lantai', labelEn: 'Flooring', percentage: 10 },
+  { label: 'Instalasi ME (Listrik & Plumbing)', labelEn: 'MEP (Electrical & Plumbing)', percentage: 12 },
+  { label: 'Pintu, Jendela & Kusen', labelEn: 'Doors, Windows & Frames', percentage: 7 },
+  { label: 'Pengecatan & Finishing', labelEn: 'Paint & Finishing', percentage: 6 },
+  { label: 'Pekerjaan Persiapan & Lain-lain', labelEn: 'Site Prep & Miscellaneous', percentage: 4 },
 ];
 
 function formatCurrency(amount: number): string {
@@ -563,8 +569,8 @@ export default function KalkulatorRABPage() {
           <div className={`mt-8 text-center text-xs ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
             <p>
               {isEn
-                ? 'Estimates are for reference only and based on average market prices. Actual project costs depend on detailed specifications, site conditions, and contractor availability.'
-                : 'Estimasi hanya sebagai referensi dan berdasarkan harga rata-rata pasar. Biaya aktual tergantung pada spesifikasi detail, kondisi lokasi, dan ketersediaan kontraktor.'}
+                ? 'Estimates based on 2024 contractor rates and BPS Construction Cost Index (IKK). Actual costs depend on site conditions, material availability, and contractor pricing. Does not include land cost, permits, or furniture.'
+                : 'Estimasi berdasarkan harga borongan kontraktor 2024 dan Indeks Kemahalan Konstruksi (IKK) BPS. Biaya aktual tergantung kondisi lokasi, ketersediaan material, dan penawaran kontraktor. Belum termasuk biaya tanah, IMB/PBG, dan furniture.'}
             </p>
           </div>
         </div>
