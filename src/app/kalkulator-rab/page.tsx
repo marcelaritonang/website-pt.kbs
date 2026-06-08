@@ -5,6 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import {
+  Building2, Store, Warehouse, Briefcase, Wrench,
+  MapPin, Ruler, Layers, Sparkles, Calculator,
+  Download, Share2, Bookmark, MessageCircle,
+  TrendingUp, TrendingDown, Minus, Clock,
+  ChevronRight, X, CheckCircle2, BarChart3,
+} from 'lucide-react';
+import {
   calculateRAB,
   validateRABInput,
   DEFAULT_PRICING,
@@ -25,6 +32,32 @@ interface SavedScenario {
   result: RABResult;
   createdAt: string;
 }
+
+const BUILDING_ICONS: Record<BuildingType, React.ReactNode> = {
+  rumah: <Building2 className="w-5 h-5" />,
+  ruko: <Store className="w-5 h-5" />,
+  gudang: <Warehouse className="w-5 h-5" />,
+  kantor: <Briefcase className="w-5 h-5" />,
+  workshop: <Wrench className="w-5 h-5" />,
+};
+
+const QUALITY_COLORS: Record<Quality, { gradient: string; badge: string; ring: string }> = {
+  standar: {
+    gradient: 'from-amber-600 to-amber-700',
+    badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+    ring: 'ring-amber-500/30',
+  },
+  menengah: {
+    gradient: 'from-slate-400 to-slate-500',
+    badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800/50 dark:text-slate-300',
+    ring: 'ring-slate-400/30',
+  },
+  premium: {
+    gradient: 'from-yellow-400 to-yellow-600',
+    badge: 'bg-yellow-50 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+    ring: 'ring-yellow-400/30',
+  },
+};
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('id-ID', {
@@ -49,6 +82,28 @@ function getSessionId(): string {
     sessionStorage.setItem('rab_session_id', sid);
   }
   return sid;
+}
+
+// Animated counter component
+function AnimatedNumber({ value, duration = 1000 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const increment = value / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= value) {
+        setDisplay(value);
+        clearInterval(timer);
+      } else {
+        setDisplay(Math.round(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [value, duration]);
+
+  return <>{formatCurrency(display)}</>;
 }
 
 export default function KalkulatorRABPage() {
@@ -83,6 +138,9 @@ export default function KalkulatorRABPage() {
   const [leadSubmitting, setLeadSubmitting] = useState(false);
   const [leadSuccess, setLeadSuccess] = useState(false);
 
+  // Copied link feedback
+  const [copied, setCopied] = useState(false);
+
   // Load pricing from API on mount
   useEffect(() => {
     fetch('/api/rab/pricing')
@@ -90,9 +148,7 @@ export default function KalkulatorRABPage() {
       .then((data) => {
         if (data.pricing) setPricing(data.pricing);
       })
-      .catch(() => {
-        // Fallback to defaults silently
-      });
+      .catch(() => {});
   }, []);
 
   // Load saved scenarios from localStorage
@@ -100,9 +156,7 @@ export default function KalkulatorRABPage() {
     try {
       const saved = localStorage.getItem('rab_scenarios');
       if (saved) setSavedScenarios(JSON.parse(saved));
-    } catch {
-      // Ignore parse errors
-    }
+    } catch {}
   }, []);
 
   // Load from URL params (share link)
@@ -139,7 +193,6 @@ export default function KalkulatorRABPage() {
     setIsCalculating(true);
     setResult(null);
 
-    // Try API first, fallback to local calculation
     try {
       const res = await fetch('/api/rab/calculate', {
         method: 'POST',
@@ -153,9 +206,7 @@ export default function KalkulatorRABPage() {
         setIsCalculating(false);
         return;
       }
-    } catch {
-      // API failed, calculate locally
-    }
+    } catch {}
 
     // Local fallback
     const localResult = calculateRAB(input, pricing);
@@ -172,7 +223,7 @@ export default function KalkulatorRABPage() {
       result,
       createdAt: new Date().toISOString(),
     };
-    const updated = [scenario, ...savedScenarios].slice(0, 5); // Max 5 saved
+    const updated = [scenario, ...savedScenarios].slice(0, 5);
     saveScenarios(updated);
   }
 
@@ -205,6 +256,8 @@ export default function KalkulatorRABPage() {
 
   function handleCopyLink() {
     navigator.clipboard.writeText(getShareLink());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   function handlePrintPDF() {
@@ -331,46 +384,113 @@ export default function KalkulatorRABPage() {
         setLeadSuccess(false);
         setLeadForm({ name: '', phone: '', email: '', company: '', message: '' });
       }, 2000);
-    } catch {
-      // Silently handle - WA link is fallback
-    }
+    } catch {}
     setLeadSubmitting(false);
   }
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-[#f8f9fa]'}`}>
-      {/* Header */}
-      <div className={`${isDark ? 'bg-gray-800' : 'bg-white'} border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} pt-24 md:pt-28 pb-6`}>
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div>
-              <h1 className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                {isEn ? 'RAB Calculator' : 'Kalkulator RAB'}
+    <div className={`min-h-screen ${isDark ? 'bg-[#0a1628]' : 'bg-[#f8fafc]'}`}>
+
+      {/* ========== HERO SECTION ========== */}
+      <section className="relative overflow-hidden pt-20 pb-12 md:pt-28 md:pb-16">
+        {/* Background */}
+        <div className="absolute inset-0">
+          <div className={`absolute inset-0 ${isDark
+            ? 'bg-gradient-to-br from-[#0a1628] via-[#112240] to-[#153969]'
+            : 'bg-gradient-to-br from-[#153969] via-[#1e4d8a] to-[#2563eb]'
+          }`} />
+          {/* Decorative elements */}
+          <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-white/5 blur-3xl" />
+          <div className="absolute bottom-0 left-20 w-96 h-96 rounded-full bg-blue-500/10 blur-3xl" />
+          {/* Grid pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }} />
+          {/* Floating shapes */}
+          <motion.div
+            animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-32 right-[20%] w-16 h-16 border border-white/10 rotate-45 rounded-sm hidden md:block"
+          />
+          <motion.div
+            animate={{ y: [0, 10, 0], rotate: [45, 40, 45] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute bottom-20 left-[15%] w-12 h-12 border border-white/10 rotate-45 rounded-sm hidden md:block"
+          />
+        </div>
+
+        {/* Content */}
+        <div className="relative container mx-auto px-4 md:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-xs font-medium mb-6">
+                <Calculator className="w-3.5 h-3.5" />
+                {isEn ? 'Construction Cost Estimator' : 'Estimasi Biaya Konstruksi'}
+              </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                {isEn ? 'Calculate Your' : 'Hitung'}{' '}
+                <span className="bg-gradient-to-r from-white via-blue-100 to-blue-200 text-transparent bg-clip-text">
+                  {isEn ? 'Construction Budget' : 'Anggaran Konstruksi'}
+                </span>
               </h1>
-              <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+              <p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto">
                 {isEn
-                  ? 'Estimate construction costs based on current market rates across regions in Indonesia.'
-                  : 'Estimasi biaya konstruksi berdasarkan harga pasar terkini di berbagai wilayah Indonesia.'}
+                  ? 'Get instant estimates based on current market rates and regional construction indices across Indonesia.'
+                  : 'Dapatkan estimasi instan berdasarkan harga pasar terkini dan indeks biaya konstruksi regional di Indonesia.'}
               </p>
-            </div>
-            {/* Saved scenarios button */}
-            {savedScenarios.length > 0 && (
-              <button
-                onClick={() => setShowScenarios(!showScenarios)}
-                className={`text-xs px-3 py-2 rounded-md border ${
-                  isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                📋 {isEn ? `${savedScenarios.length} Saved` : `${savedScenarios.length} Tersimpan`}
-              </button>
-            )}
+            </motion.div>
+
+            {/* Quick stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex items-center justify-center gap-6 md:gap-10 mt-8"
+            >
+              {[
+                { label: isEn ? 'Building Types' : 'Tipe Bangunan', value: '5' },
+                { label: isEn ? 'Regions' : 'Wilayah', value: '10' },
+                { label: isEn ? 'Updated' : 'Data Terkini', value: '2024' },
+              ].map((stat, i) => (
+                <div key={i} className="text-center">
+                  <p className="text-xl md:text-2xl font-bold text-white">{stat.value}</p>
+                  <p className="text-xs text-white/50">{stat.label}</p>
+                </div>
+              ))}
+            </motion.div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 md:px-8 py-6">
+      {/* ========== MAIN CONTENT ========== */}
+      <section className="relative container mx-auto px-4 md:px-8 -mt-4 pb-16">
         <div className="max-w-6xl mx-auto">
+
+          {/* Saved Scenarios Badge */}
+          {savedScenarios.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-end mb-4"
+            >
+              <button
+                onClick={() => setShowScenarios(!showScenarios)}
+                className={`inline-flex items-center gap-2 text-xs px-3 py-2 rounded-lg border transition-all ${
+                  isDark
+                    ? 'bg-gray-800/80 border-gray-700 text-gray-300 hover:bg-gray-700/80'
+                    : 'bg-white/80 border-gray-200 text-gray-600 hover:bg-white'
+                } backdrop-blur-sm`}
+              >
+                <Bookmark className="w-3.5 h-3.5" />
+                {isEn ? `${savedScenarios.length} Saved` : `${savedScenarios.length} Tersimpan`}
+              </button>
+            </motion.div>
+          )}
 
           {/* Saved Scenarios Panel */}
           <AnimatePresence>
@@ -381,7 +501,7 @@ export default function KalkulatorRABPage() {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden mb-6"
               >
-                <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-4`}>
+                <div className={`rounded-xl ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} border backdrop-blur-xl p-4`}>
                   <h3 className={`text-sm font-medium mb-3 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                     {isEn ? 'Saved Scenarios' : 'Skenario Tersimpan'}
                   </h3>
@@ -389,23 +509,27 @@ export default function KalkulatorRABPage() {
                     {savedScenarios.map((s) => (
                       <div
                         key={s.id}
-                        className={`p-3 rounded-md border ${isDark ? 'border-gray-600 hover:border-gray-500' : 'border-gray-200 hover:border-gray-300'} cursor-pointer group`}
                         onClick={() => handleLoadScenario(s)}
+                        className={`p-3 rounded-lg border cursor-pointer group transition-all ${
+                          isDark
+                            ? 'border-gray-700 hover:border-blue-500/50 hover:bg-gray-700/50'
+                            : 'border-gray-200 hover:border-[#153969]/30 hover:bg-[#153969]/5'
+                        }`}
                       >
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                            <p className={`text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                               {formatShort(s.result.totalCost)}
                             </p>
                             <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                              {isEn ? BUILDING_TYPE_LABELS[s.input.buildingType].en : BUILDING_TYPE_LABELS[s.input.buildingType].id} • {s.input.area}m² • {REGION_LABELS[s.input.region]}
+                              {isEn ? BUILDING_TYPE_LABELS[s.input.buildingType].en : BUILDING_TYPE_LABELS[s.input.buildingType].id} • {s.input.area}m²
                             </p>
                           </div>
                           <button
                             onClick={(e) => { e.stopPropagation(); handleDeleteScenario(s.id); }}
-                            className="opacity-0 group-hover:opacity-100 text-xs text-red-400 hover:text-red-500 p-1"
+                            className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-400 p-1 transition-opacity"
                           >
-                            ✕
+                            <X className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
@@ -418,159 +542,199 @@ export default function KalkulatorRABPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            {/* Form Panel */}
-            <div className="lg:col-span-4">
-              <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-5 lg:sticky lg:top-24`}>
-                <div className="space-y-4">
-                  {/* Building Type */}
-                  <div>
-                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {isEn ? 'Building Type' : 'Tipe Bangunan'}
-                    </label>
-                    <select
-                      value={buildingType}
-                      onChange={(e) => setBuildingType(e.target.value as BuildingType)}
-                      className={`w-full rounded-md border px-3 py-2.5 text-sm ${
-                        isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-[#153969]/50 focus:border-[#153969]`}
-                    >
-                      {(Object.keys(BUILDING_TYPE_LABELS) as BuildingType[]).map((type) => (
-                        <option key={type} value={type}>
-                          {isEn ? BUILDING_TYPE_LABELS[type].en : BUILDING_TYPE_LABELS[type].id}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Area & Floors */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {isEn ? 'Area (m²)' : 'Luas (m²)'}
-                      </label>
-                      <input
-                        type="number"
-                        min={20}
-                        max={5000}
-                        value={area}
-                        onChange={(e) => {
-                          setArea(parseInt(e.target.value) || 0);
-                          setValidationError(null);
-                        }}
-                        className={`w-full rounded-md border px-3 py-2.5 text-sm ${
-                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        } focus:outline-none focus:ring-2 focus:ring-[#153969]/50 focus:border-[#153969]`}
-                      />
-                    </div>
-                    <div>
-                      <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {isEn ? 'Floors' : 'Jumlah Lantai'}
-                      </label>
-                      <select
-                        value={floors}
-                        onChange={(e) => setFloors(parseInt(e.target.value))}
-                        className={`w-full rounded-md border px-3 py-2.5 text-sm ${
-                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        } focus:outline-none focus:ring-2 focus:ring-[#153969]/50 focus:border-[#153969]`}
+            {/* ========== FORM PANEL ========== */}
+            <div className="lg:col-span-5">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className={`rounded-2xl ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} border backdrop-blur-xl p-6 lg:sticky lg:top-24 shadow-lg shadow-black/5`}
+              >
+                {/* Building Type — Icon Grid */}
+                <div className="mb-5">
+                  <label className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-3 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <Building2 className="w-3.5 h-3.5" />
+                    {isEn ? 'Building Type' : 'Tipe Bangunan'}
+                  </label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {(Object.keys(BUILDING_TYPE_LABELS) as BuildingType[]).map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => setBuildingType(type)}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all ${
+                          buildingType === type
+                            ? isDark
+                              ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                              : 'border-[#153969] bg-[#153969]/10 text-[#153969]'
+                            : isDark
+                              ? 'border-gray-700 text-gray-400 hover:border-gray-600 hover:bg-gray-700/50'
+                              : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                        }`}
                       >
-                        <option value={1}>1 {isEn ? 'Floor' : 'Lantai'}</option>
-                        <option value={2}>2 {isEn ? 'Floors' : 'Lantai'}</option>
-                        <option value={3}>3 {isEn ? 'Floors' : 'Lantai'}</option>
-                      </select>
-                    </div>
+                        {BUILDING_ICONS[type]}
+                        <span className="text-[10px] font-medium leading-tight text-center">
+                          {isEn ? BUILDING_TYPE_LABELS[type].en.split(' ')[0] : BUILDING_TYPE_LABELS[type].id.split(' ')[0]}
+                        </span>
+                      </button>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Quality */}
+                {/* Area & Floors */}
+                <div className="grid grid-cols-2 gap-4 mb-5">
                   <div>
-                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {isEn ? 'Quality Level' : 'Tingkat Kualitas'}
+                    <label className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <Ruler className="w-3.5 h-3.5" />
+                      {isEn ? 'Area (m²)' : 'Luas (m²)'}
                     </label>
-                    <div className="space-y-2">
-                      {(Object.keys(QUALITY_LABELS) as Quality[]).map((q) => (
-                        <label
-                          key={q}
-                          className={`flex items-start gap-3 p-2.5 rounded-md border cursor-pointer transition-colors ${
-                            quality === q
-                              ? isDark ? 'border-blue-500 bg-blue-900/20' : 'border-[#153969] bg-[#153969]/5'
-                              : isDark ? 'border-gray-700 hover:border-gray-600' : 'border-gray-200 hover:border-gray-300'
+                    <input
+                      type="number"
+                      min={20}
+                      max={5000}
+                      value={area}
+                      onChange={(e) => {
+                        setArea(parseInt(e.target.value) || 0);
+                        setValidationError(null);
+                      }}
+                      className={`w-full rounded-xl border px-4 py-3 text-sm font-medium ${
+                        isDark
+                          ? 'bg-gray-900/50 border-gray-700 text-white focus:border-blue-500'
+                          : 'bg-white border-gray-200 text-gray-900 focus:border-[#153969]'
+                      } focus:outline-none focus:ring-2 focus:ring-[#153969]/20 transition-all`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <Layers className="w-3.5 h-3.5" />
+                      {isEn ? 'Floors' : 'Lantai'}
+                    </label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3].map((f) => (
+                        <button
+                          key={f}
+                          onClick={() => setFloors(f)}
+                          className={`flex-1 py-3 rounded-xl border text-sm font-medium transition-all ${
+                            floors === f
+                              ? isDark
+                                ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                                : 'border-[#153969] bg-[#153969]/10 text-[#153969]'
+                              : isDark
+                                ? 'border-gray-700 text-gray-400 hover:border-gray-600'
+                                : 'border-gray-200 text-gray-500 hover:border-gray-300'
                           }`}
                         >
-                          <input
-                            type="radio"
-                            name="quality"
-                            value={q}
-                            checked={quality === q}
-                            onChange={(e) => setQuality(e.target.value as Quality)}
-                            className="mt-0.5 accent-[#153969]"
-                          />
-                          <div>
-                            <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                              {isEn ? QUALITY_LABELS[q].en : QUALITY_LABELS[q].id}
-                            </p>
-                            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                              {isEn ? QUALITY_LABELS[q].descEn : QUALITY_LABELS[q].desc}
-                            </p>
-                          </div>
-                        </label>
+                          {f}
+                        </button>
                       ))}
                     </div>
                   </div>
-
-                  {/* Region */}
-                  <div>
-                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {isEn ? 'Project Location' : 'Lokasi Proyek'}
-                    </label>
-                    <select
-                      value={region}
-                      onChange={(e) => setRegion(e.target.value as Region)}
-                      className={`w-full rounded-md border px-3 py-2.5 text-sm ${
-                        isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-[#153969]/50 focus:border-[#153969]`}
-                    >
-                      {(Object.keys(REGION_LABELS) as Region[]).map((r) => (
-                        <option key={r} value={r}>
-                          {REGION_LABELS[r]}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Validation Error */}
-                  {validationError && (
-                    <p className="text-xs text-red-500 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-md">
-                      ⚠️ {validationError}
-                    </p>
-                  )}
-
-                  {/* Calculate Button */}
-                  <button
-                    onClick={handleCalculate}
-                    disabled={isCalculating}
-                    className={`w-full py-3 px-4 rounded-md text-sm font-medium transition-colors ${
-                      isCalculating
-                        ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                        : 'bg-[#153969] hover:bg-[#1e4d8a] text-white'
-                    }`}
-                  >
-                    {isCalculating ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                        </svg>
-                        {isEn ? 'Processing...' : 'Memproses...'}
-                      </span>
-                    ) : (
-                      isEn ? 'Calculate Estimate' : 'Hitung Estimasi'
-                    )}
-                  </button>
                 </div>
-              </div>
+
+                {/* Quality */}
+                <div className="mb-5">
+                  <label className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-3 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    {isEn ? 'Quality Level' : 'Tingkat Kualitas'}
+                  </label>
+                  <div className="space-y-2">
+                    {(Object.keys(QUALITY_LABELS) as Quality[]).map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => setQuality(q)}
+                        className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                          quality === q
+                            ? isDark
+                              ? `border-blue-500/50 bg-blue-500/5 ring-2 ${QUALITY_COLORS[q].ring}`
+                              : `border-[#153969]/50 bg-[#153969]/5 ring-2 ${QUALITY_COLORS[q].ring}`
+                            : isDark
+                              ? 'border-gray-700 hover:border-gray-600 hover:bg-gray-700/30'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${QUALITY_COLORS[q].gradient} flex items-center justify-center shrink-0`}>
+                          <Sparkles className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                            {isEn ? QUALITY_LABELS[q].en : QUALITY_LABELS[q].id}
+                          </p>
+                          <p className={`text-xs truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {isEn ? QUALITY_LABELS[q].descEn : QUALITY_LABELS[q].desc}
+                          </p>
+                        </div>
+                        {quality === q && (
+                          <CheckCircle2 className={`w-5 h-5 shrink-0 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Region */}
+                <div className="mb-5">
+                  <label className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <MapPin className="w-3.5 h-3.5" />
+                    {isEn ? 'Project Location' : 'Lokasi Proyek'}
+                  </label>
+                  <select
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value as Region)}
+                    className={`w-full rounded-xl border px-4 py-3 text-sm font-medium appearance-none cursor-pointer ${
+                      isDark
+                        ? 'bg-gray-900/50 border-gray-700 text-white'
+                        : 'bg-white border-gray-200 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-[#153969]/20 transition-all`}
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '20px' }}
+                  >
+                    {(Object.keys(REGION_LABELS) as Region[]).map((r) => (
+                      <option key={r} value={r}>
+                        {REGION_LABELS[r]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Validation Error */}
+                {validationError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400 px-4 py-2.5 rounded-xl border border-red-200 dark:border-red-800/50"
+                  >
+                    ⚠️ {validationError}
+                  </motion.div>
+                )}
+
+                {/* Calculate Button */}
+                <button
+                  onClick={handleCalculate}
+                  disabled={isCalculating}
+                  className={`w-full py-3.5 px-6 rounded-xl text-sm font-semibold transition-all ${
+                    isCalculating
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-[#153969] to-[#1e4d8a] hover:from-[#1e4d8a] hover:to-[#2563eb] text-white shadow-lg shadow-[#153969]/25 hover:shadow-xl hover:shadow-[#153969]/30 hover:-translate-y-0.5'
+                  }`}
+                >
+                  {isCalculating ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                      </svg>
+                      {isEn ? 'Calculating...' : 'Menghitung...'}
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <Calculator className="w-4 h-4" />
+                      {isEn ? 'Calculate Estimate' : 'Hitung Estimasi'}
+                    </span>
+                  )}
+                </button>
+              </motion.div>
             </div>
 
-            {/* Results Panel */}
-            <div className="lg:col-span-8">
+            {/* ========== RESULTS PANEL ========== */}
+            <div className="lg:col-span-7">
               <AnimatePresence mode="wait">
                 {isCalculating ? (
                   <motion.div
@@ -578,17 +742,20 @@ export default function KalkulatorRABPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-10`}
+                    className={`rounded-2xl ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} border backdrop-blur-xl p-10 shadow-lg shadow-black/5`}
                   >
-                    <div className="flex flex-col items-center justify-center py-8">
-                      <div className="relative w-16 h-16 mb-4">
-                        <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700" />
-                        <div className="absolute inset-0 rounded-full border-4 border-t-[#153969] animate-spin" />
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <div className="relative w-20 h-20 mb-6">
+                        <div className={`absolute inset-0 rounded-full border-[3px] ${isDark ? 'border-gray-700' : 'border-gray-200'}`} />
+                        <div className="absolute inset-0 rounded-full border-[3px] border-t-[#153969] animate-spin" />
+                        <div className="absolute inset-3 rounded-full bg-gradient-to-br from-[#153969]/10 to-transparent flex items-center justify-center">
+                          <BarChart3 className={`w-6 h-6 ${isDark ? 'text-blue-400' : 'text-[#153969]'}`} />
+                        </div>
                       </div>
                       <p className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                         {isEn ? 'Calculating estimates...' : 'Menghitung estimasi...'}
                       </p>
-                      <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                      <p className={`text-xs mt-1.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                         {isEn ? 'Fetching regional price data' : 'Mengambil data harga regional'}
                       </p>
                     </div>
@@ -596,216 +763,261 @@ export default function KalkulatorRABPage() {
                 ) : result ? (
                   <motion.div
                     key="result"
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.4 }}
                     className="space-y-4"
                   >
                     {/* Total Estimate Card */}
-                    <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-5`}>
-                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                        <div>
-                          <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                            {isEn ? 'ESTIMATED TOTAL COST' : 'ESTIMASI TOTAL BIAYA'}
-                          </p>
-                          <p className={`text-3xl md:text-4xl font-bold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                            {formatCurrency(result.totalCost)}
-                          </p>
-                        </div>
-                        <div className="flex gap-5">
+                    <div className={`rounded-2xl ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} border backdrop-blur-xl overflow-hidden shadow-lg shadow-black/5`}>
+                      {/* Gradient accent top */}
+                      <div className="h-1 bg-gradient-to-r from-[#153969] via-[#2563eb] to-[#153969]" />
+
+                      <div className="p-6">
+                        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                           <div>
-                            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                              {isEn ? 'COST/M²' : 'BIAYA/M²'}
+                            <p className={`text-xs font-medium uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                              {isEn ? 'Estimated Total Cost' : 'Estimasi Total Biaya'}
                             </p>
-                            <p className={`text-base font-semibold mt-0.5 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                              {formatCurrency(result.pricePerM2)}
+                            <p className={`text-3xl md:text-4xl font-bold mt-1.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                              <AnimatedNumber value={result.totalCost} />
                             </p>
                           </div>
-                          <div>
-                            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                              {isEn ? 'DURATION' : 'DURASI'}
-                            </p>
-                            <p className={`text-base font-semibold mt-0.5 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                              {isEn ? result.durationEn : result.duration}
-                            </p>
+                          <div className="flex gap-6">
+                            <div className="text-center md:text-right">
+                              <p className={`text-xs uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                                {isEn ? 'Cost/m²' : 'Biaya/m²'}
+                              </p>
+                              <p className={`text-base font-bold mt-0.5 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                                {formatCurrency(result.pricePerM2)}
+                              </p>
+                            </div>
+                            <div className="text-center md:text-right">
+                              <p className={`text-xs uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                                <Clock className="w-3 h-3 inline-block mr-1" />
+                                {isEn ? 'Duration' : 'Durasi'}
+                              </p>
+                              <p className={`text-base font-bold mt-0.5 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                                {isEn ? result.durationEn : result.duration}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Specs row */}
-                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-100'} flex flex-wrap gap-x-4 gap-y-1 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        <span>{isEn ? BUILDING_TYPE_LABELS[buildingType].en : BUILDING_TYPE_LABELS[buildingType].id}</span>
-                        <span>•</span>
-                        <span>{area} m² × {floors} {isEn ? 'floor' : 'lantai'}</span>
-                        <span>•</span>
-                        <span>{isEn ? QUALITY_LABELS[quality].en : QUALITY_LABELS[quality].id}</span>
-                        <span>•</span>
-                        <span>{REGION_LABELS[region]}</span>
-                      </div>
+                        {/* Specs tags */}
+                        <div className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-700/50' : 'border-gray-100'} flex flex-wrap gap-2`}>
+                          {[
+                            { icon: <Building2 className="w-3 h-3" />, text: isEn ? BUILDING_TYPE_LABELS[buildingType].en : BUILDING_TYPE_LABELS[buildingType].id },
+                            { icon: <Ruler className="w-3 h-3" />, text: `${area} m² × ${floors} ${isEn ? 'fl' : 'lt'}` },
+                            { icon: <Sparkles className="w-3 h-3" />, text: isEn ? QUALITY_LABELS[quality].en : QUALITY_LABELS[quality].id },
+                            { icon: <MapPin className="w-3 h-3" />, text: REGION_LABELS[region] },
+                          ].map((tag, i) => (
+                            <span
+                              key={i}
+                              className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg ${
+                                isDark ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-100 text-gray-600'
+                              }`}
+                            >
+                              {tag.icon} {tag.text}
+                            </span>
+                          ))}
+                        </div>
 
-                      {/* Action buttons */}
-                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-100'} flex flex-wrap gap-2`}>
-                        <button
-                          onClick={handleSaveScenario}
-                          className={`text-xs px-3 py-1.5 rounded border ${
-                            isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-                          }`}
-                        >
-                          💾 {isEn ? 'Save' : 'Simpan'}
-                        </button>
-                        <button
-                          onClick={handlePrintPDF}
-                          className={`text-xs px-3 py-1.5 rounded border ${
-                            isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-                          }`}
-                        >
-                          📄 {isEn ? 'Export PDF' : 'Export PDF'}
-                        </button>
-                        <button
-                          onClick={handleCopyLink}
-                          className={`text-xs px-3 py-1.5 rounded border ${
-                            isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-                          }`}
-                        >
-                          🔗 {isEn ? 'Copy Link' : 'Salin Link'}
-                        </button>
+                        {/* Action buttons */}
+                        <div className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-700/50' : 'border-gray-100'} flex flex-wrap gap-2`}>
+                          {[
+                            { icon: <Bookmark className="w-3.5 h-3.5" />, label: isEn ? 'Save' : 'Simpan', onClick: handleSaveScenario },
+                            { icon: <Download className="w-3.5 h-3.5" />, label: 'PDF', onClick: handlePrintPDF },
+                            { icon: <Share2 className="w-3.5 h-3.5" />, label: copied ? '✓' : 'Link', onClick: handleCopyLink },
+                          ].map((btn, i) => (
+                            <button
+                              key={i}
+                              onClick={btn.onClick}
+                              className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg border transition-all ${
+                                isDark
+                                  ? 'border-gray-700 text-gray-300 hover:bg-gray-700/50 hover:border-gray-600'
+                                  : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                              }`}
+                            >
+                              {btn.icon} {btn.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Tabs */}
-                    <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border overflow-hidden`}>
-                      <div className={`flex border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                        <button
-                          onClick={() => setActiveTab('breakdown')}
-                          className={`flex-1 py-3 text-sm font-medium text-center transition-colors ${
-                            activeTab === 'breakdown'
-                              ? isDark ? 'text-white border-b-2 border-blue-500' : 'text-[#153969] border-b-2 border-[#153969]'
-                              : isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
-                          }`}
-                        >
-                          {isEn ? 'Cost Breakdown' : 'Rincian Biaya'}
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('comparison')}
-                          className={`flex-1 py-3 text-sm font-medium text-center transition-colors ${
-                            activeTab === 'comparison'
-                              ? isDark ? 'text-white border-b-2 border-blue-500' : 'text-[#153969] border-b-2 border-[#153969]'
-                              : isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
-                          }`}
-                        >
-                          {isEn ? 'Regional Comparison' : 'Perbandingan Daerah'}
-                        </button>
+                    {/* Breakdown / Comparison Tabs */}
+                    <div className={`rounded-2xl ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} border backdrop-blur-xl overflow-hidden shadow-lg shadow-black/5`}>
+                      <div className={`flex border-b ${isDark ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                        {[
+                          { key: 'breakdown', label: isEn ? 'Cost Breakdown' : 'Rincian Biaya', icon: <BarChart3 className="w-3.5 h-3.5" /> },
+                          { key: 'comparison', label: isEn ? 'Regional Comparison' : 'Perbandingan Daerah', icon: <MapPin className="w-3.5 h-3.5" /> },
+                        ].map((tab) => (
+                          <button
+                            key={tab.key}
+                            onClick={() => setActiveTab(tab.key as 'breakdown' | 'comparison')}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-medium transition-all ${
+                              activeTab === tab.key
+                                ? isDark
+                                  ? 'text-white border-b-2 border-blue-500 bg-blue-500/5'
+                                  : 'text-[#153969] border-b-2 border-[#153969] bg-[#153969]/5'
+                                : isDark
+                                  ? 'text-gray-400 hover:text-gray-300'
+                                  : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                          >
+                            {tab.icon} {tab.label}
+                          </button>
+                        ))}
                       </div>
 
-                      <div className="p-5">
+                      <div className="p-6">
                         {activeTab === 'breakdown' ? (
-                          <div className="space-y-3">
+                          <div className="space-y-4">
                             {result.breakdown.map((item, index) => (
-                              <div key={index}>
-                                <div className="flex justify-between text-sm mb-1">
-                                  <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.05 }}
+                              >
+                                <div className="flex justify-between text-sm mb-1.5">
+                                  <span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                                     {isEn ? item.labelEn : item.label}
                                   </span>
-                                  <span className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
-                                    {formatShort(item.amount)}
-                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{item.percentage}%</span>
+                                    <span className={`font-semibold ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                                      {formatShort(item.amount)}
+                                    </span>
+                                  </div>
                                 </div>
-                                <div className={`w-full h-2 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                <div className={`w-full h-2.5 rounded-full overflow-hidden ${isDark ? 'bg-gray-700/50' : 'bg-gray-100'}`}>
                                   <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${item.percentage * 3.3}%` }}
-                                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                                    className="h-full rounded-full bg-[#153969]"
+                                    transition={{ duration: 0.6, delay: index * 0.05, ease: 'easeOut' }}
+                                    className="h-full rounded-full bg-gradient-to-r from-[#153969] to-[#2563eb]"
                                   />
                                 </div>
-                              </div>
+                              </motion.div>
                             ))}
                           </div>
                         ) : (
-                          <div className="space-y-1">
-                            {/* Current region highlighted */}
-                            <div className={`flex items-center justify-between py-2.5 px-3 rounded-md text-sm ${
-                              isDark ? 'bg-blue-900/20 border border-blue-800' : 'bg-[#153969]/5 border border-[#153969]/20'
+                          <div className="space-y-1.5">
+                            {/* Current region */}
+                            <div className={`flex items-center justify-between py-3 px-4 rounded-xl text-sm ${
+                              isDark ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-[#153969]/5 border border-[#153969]/10'
                             }`}>
-                              <span className={`font-medium ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
-                                {REGION_LABELS[region]} ({isEn ? 'selected' : 'terpilih'})
+                              <span className={`font-semibold flex items-center gap-2 ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
+                                <MapPin className="w-3.5 h-3.5" />
+                                {REGION_LABELS[region]}
                               </span>
-                              <span className={`font-semibold ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
+                              <span className={`font-bold ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
                                 {formatShort(result.totalCost)}
                               </span>
                             </div>
+
                             {result.comparison.map((item, index) => (
-                              <div key={index} className={`flex items-center justify-between py-2.5 px-3 rounded-md text-sm ${
-                                isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
-                              }`}>
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: index * 0.03 }}
+                                className={`flex items-center justify-between py-2.5 px-4 rounded-xl text-sm transition-colors ${
+                                  isDark ? 'hover:bg-gray-700/30' : 'hover:bg-gray-50'
+                                }`}
+                              >
                                 <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
                                   {item.regionLabel}
                                 </span>
                                 <div className="flex items-center gap-3">
-                                  <span className={`text-xs px-1.5 py-0.5 rounded ${
+                                  <span className={`inline-flex items-center gap-0.5 text-xs font-medium px-2 py-0.5 rounded-md ${
                                     item.diff > 0
                                       ? isDark ? 'text-red-400 bg-red-900/20' : 'text-red-600 bg-red-50'
                                       : item.diff < 0
                                         ? isDark ? 'text-green-400 bg-green-900/20' : 'text-green-600 bg-green-50'
                                         : isDark ? 'text-gray-400 bg-gray-700' : 'text-gray-500 bg-gray-100'
                                   }`}>
+                                    {item.diff > 0 ? <TrendingUp className="w-3 h-3" /> : item.diff < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
                                     {item.diff > 0 ? '+' : ''}{item.diff}%
                                   </span>
-                                  <span className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                                  <span className={`font-semibold min-w-[80px] text-right ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
                                     {formatShort(item.cost)}
                                   </span>
                                 </div>
-                              </div>
+                              </motion.div>
                             ))}
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* CTA */}
-                    <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-5`}>
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                          <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                            {isEn ? 'Need a detailed RAB document?' : 'Butuh dokumen RAB detail?'}
-                          </p>
-                          <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                            {isEn
-                              ? 'Our team can prepare a full RAB with material specifications and contractor quotes.'
-                              : 'Tim kami dapat menyiapkan RAB lengkap dengan spesifikasi material dan penawaran kontraktor.'}
-                          </p>
+                    {/* CTA Card */}
+                    <div className={`rounded-2xl overflow-hidden shadow-lg`}>
+                      <div className="relative bg-gradient-to-r from-[#153969] to-[#1e4d8a] p-6">
+                        {/* Decorative */}
+                        <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-white/5 -mr-10 -mt-10" />
+                        <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/5 -ml-8 -mb-8" />
+
+                        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                          <div>
+                            <p className="text-white font-semibold">
+                              {isEn ? 'Need a detailed RAB document?' : 'Butuh dokumen RAB detail?'}
+                            </p>
+                            <p className="text-white/70 text-sm mt-1">
+                              {isEn
+                                ? 'Get material specs, contractor quotes, and full project planning.'
+                                : 'Dapatkan spesifikasi material, penawaran kontraktor, dan perencanaan proyek lengkap.'}
+                            </p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <a
+                              href={`https://wa.me/6281218127503?text=${encodeURIComponent(
+                                `Halo, saya ingin konsultasi RAB detail:\n- Tipe: ${BUILDING_TYPE_LABELS[buildingType].id}\n- Luas: ${area}m², ${floors} lantai\n- Kualitas: ${QUALITY_LABELS[quality].id}\n- Lokasi: ${REGION_LABELS[region]}\n- Estimasi: ${formatCurrency(result.totalCost)}`
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 border border-white/20 text-white text-sm font-medium py-2.5 px-4 rounded-xl transition-all"
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                              WhatsApp
+                            </a>
+                            <button
+                              onClick={() => setShowLeadForm(true)}
+                              className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-[#153969] text-sm font-semibold py-2.5 px-4 rounded-xl transition-all"
+                            >
+                              {isEn ? 'Request' : 'Minta RAB'}
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
-                        <button
-                          onClick={() => setShowLeadForm(true)}
-                          className="shrink-0 bg-[#153969] hover:bg-[#1e4d8a] text-white text-sm font-medium py-2.5 px-5 rounded-md transition-colors"
-                        >
-                          {isEn ? 'Request Detailed RAB' : 'Minta RAB Detail'}
-                        </button>
                       </div>
                     </div>
                   </motion.div>
                 ) : (
+                  /* Empty state */
                   <motion.div
                     key="empty"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-8 md:p-12`}
+                    className={`rounded-2xl ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} border backdrop-blur-xl p-10 md:p-14 shadow-lg shadow-black/5`}
                   >
                     <div className="max-w-sm mx-auto text-center">
-                      <div className={`w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                        <svg className={`w-7 h-7 ${isDark ? 'text-gray-400' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
+                      <div className={`w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center ${
+                        isDark ? 'bg-gradient-to-br from-gray-700 to-gray-800' : 'bg-gradient-to-br from-gray-100 to-gray-50'
+                      } border ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
+                        <Calculator className={`w-8 h-8 ${isDark ? 'text-gray-400' : 'text-gray-400'}`} />
                       </div>
-                      <h3 className={`text-base font-semibold mb-2 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                      <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                         {isEn ? 'Enter project details' : 'Masukkan detail proyek'}
                       </h3>
                       <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} leading-relaxed`}>
                         {isEn
-                          ? 'Fill in the parameters on the left and click "Calculate Estimate" to generate a budget breakdown for your project.'
-                          : 'Isi parameter di sebelah kiri dan klik "Hitung Estimasi" untuk menghasilkan rincian anggaran proyek Anda.'}
+                          ? 'Fill in the parameters on the left and click "Calculate Estimate" to generate a comprehensive budget breakdown.'
+                          : 'Isi parameter di sebelah kiri dan klik "Hitung Estimasi" untuk menghasilkan rincian anggaran yang komprehensif.'}
                       </p>
                     </div>
                   </motion.div>
@@ -814,57 +1026,69 @@ export default function KalkulatorRABPage() {
             </div>
           </div>
 
-          {/* Footer note */}
-          <div className={`mt-8 text-center text-xs ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
+          {/* Footer disclaimer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className={`mt-12 text-center text-xs max-w-3xl mx-auto ${isDark ? 'text-gray-600' : 'text-gray-400'}`}
+          >
             <p>
               {isEn
-                ? 'Estimates based on 2024 contractor rates and BPS Construction Cost Index (IKK). Actual costs depend on site conditions, material availability, and contractor pricing. Does not include land cost, permits, or furniture.'
+                ? 'Estimates based on 2024 contractor rates and BPS Construction Cost Index (IKK). Actual costs depend on site conditions, material availability, and contractor pricing. Does not include land cost, permits (IMB/PBG), or furniture.'
                 : 'Estimasi berdasarkan harga borongan kontraktor 2024 dan Indeks Kemahalan Konstruksi (IKK) BPS. Biaya aktual tergantung kondisi lokasi, ketersediaan material, dan penawaran kontraktor. Belum termasuk biaya tanah, IMB/PBG, dan furniture.'}
             </p>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </section>
 
-      {/* Lead Form Modal */}
+      {/* ========== LEAD FORM MODAL ========== */}
       <AnimatePresence>
         {showLeadForm && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
             onClick={() => setShowLeadForm(false)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-              className={`w-full max-w-md rounded-lg ${isDark ? 'bg-gray-800' : 'bg-white'} p-6 shadow-xl`}
+              className={`w-full max-w-md rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} p-6 shadow-2xl`}
             >
               {leadSuccess ? (
-                <div className="text-center py-6">
-                  <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-900/30 mx-auto mb-4 flex items-center justify-center">
-                    <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 mx-auto mb-4 flex items-center justify-center">
+                    <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
                   </div>
-                  <p className={`text-base font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                  <p className={`text-lg font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                     {isEn ? 'Request submitted!' : 'Permintaan terkirim!'}
                   </p>
-                  <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     {isEn ? 'Our team will contact you within 1×24 hours.' : 'Tim kami akan menghubungi Anda dalam 1×24 jam.'}
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmitLead}>
-                  <h3 className={`text-base font-semibold mb-4 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                    {isEn ? 'Request Detailed RAB' : 'Minta RAB Detail'}
-                  </h3>
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className={`text-base font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                      {isEn ? 'Request Detailed RAB' : 'Minta RAB Detail'}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setShowLeadForm(false)}
+                      className={`p-1.5 rounded-lg ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                    >
+                      <X className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                    </button>
+                  </div>
 
                   <div className="space-y-3">
                     <div>
-                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <label className={`block text-xs font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                         {isEn ? 'Name' : 'Nama'} *
                       </label>
                       <input
@@ -872,75 +1096,75 @@ export default function KalkulatorRABPage() {
                         required
                         value={leadForm.name}
                         onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                        className={`w-full rounded-md border px-3 py-2 text-sm ${
-                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
+                        className={`w-full rounded-xl border px-4 py-2.5 text-sm ${
+                          isDark ? 'bg-gray-900/50 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+                        } focus:outline-none focus:ring-2 focus:ring-[#153969]/20`}
                         placeholder={isEn ? 'Your name' : 'Nama Anda'}
                       />
                     </div>
                     <div>
-                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {isEn ? 'Phone / WhatsApp' : 'No. Telepon / WhatsApp'} *
+                      <label className={`block text-xs font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {isEn ? 'Phone / WhatsApp' : 'No. HP / WhatsApp'} *
                       </label>
                       <input
                         type="tel"
                         required
                         value={leadForm.phone}
                         onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                        className={`w-full rounded-md border px-3 py-2 text-sm ${
-                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
+                        className={`w-full rounded-xl border px-4 py-2.5 text-sm ${
+                          isDark ? 'bg-gray-900/50 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+                        } focus:outline-none focus:ring-2 focus:ring-[#153969]/20`}
                         placeholder="08xx-xxxx-xxxx"
                       />
                     </div>
-                    <div>
-                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        value={leadForm.email}
-                        onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                        className={`w-full rounded-md border px-3 py-2 text-sm ${
-                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
-                      />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className={`block text-xs font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Email</label>
+                        <input
+                          type="email"
+                          value={leadForm.email}
+                          onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                          className={`w-full rounded-xl border px-4 py-2.5 text-sm ${
+                            isDark ? 'bg-gray-900/50 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+                          } focus:outline-none focus:ring-2 focus:ring-[#153969]/20`}
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-xs font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {isEn ? 'Company' : 'Perusahaan'}
+                        </label>
+                        <input
+                          type="text"
+                          value={leadForm.company}
+                          onChange={(e) => setLeadForm({ ...leadForm, company: e.target.value })}
+                          className={`w-full rounded-xl border px-4 py-2.5 text-sm ${
+                            isDark ? 'bg-gray-900/50 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+                          } focus:outline-none focus:ring-2 focus:ring-[#153969]/20`}
+                        />
+                      </div>
                     </div>
                     <div>
-                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {isEn ? 'Company' : 'Perusahaan'}
-                      </label>
-                      <input
-                        type="text"
-                        value={leadForm.company}
-                        onChange={(e) => setLeadForm({ ...leadForm, company: e.target.value })}
-                        className={`w-full rounded-md border px-3 py-2 text-sm ${
-                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
-                      />
-                    </div>
-                    <div>
-                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <label className={`block text-xs font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                         {isEn ? 'Message (optional)' : 'Pesan (opsional)'}
                       </label>
                       <textarea
                         value={leadForm.message}
                         onChange={(e) => setLeadForm({ ...leadForm, message: e.target.value })}
-                        rows={3}
-                        className={`w-full rounded-md border px-3 py-2 text-sm ${
-                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
+                        rows={2}
+                        className={`w-full rounded-xl border px-4 py-2.5 text-sm resize-none ${
+                          isDark ? 'bg-gray-900/50 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
+                        } focus:outline-none focus:ring-2 focus:ring-[#153969]/20`}
                         placeholder={isEn ? 'Tell us about your project...' : 'Ceritakan tentang proyek Anda...'}
                       />
                     </div>
                   </div>
 
-                  {/* Summary in modal */}
+                  {/* Summary */}
                   {result && (
-                    <div className={`mt-4 p-3 rounded-md text-xs ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-50 text-gray-600'}`}>
-                      <p className="font-medium">{isEn ? 'Your estimate:' : 'Estimasi Anda:'}</p>
+                    <div className={`mt-4 p-3 rounded-xl text-xs ${isDark ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-50 text-gray-600'} border ${isDark ? 'border-gray-700' : 'border-gray-100'}`}>
+                      <p className="font-medium mb-1">{isEn ? 'Your estimate:' : 'Estimasi Anda:'}</p>
                       <p>{isEn ? BUILDING_TYPE_LABELS[buildingType].en : BUILDING_TYPE_LABELS[buildingType].id} • {area}m² • {floors} {isEn ? 'floor' : 'lantai'} • {REGION_LABELS[region]}</p>
-                      <p className="font-semibold mt-1">{formatCurrency(result.totalCost)}</p>
+                      <p className="font-bold mt-1 text-sm">{formatCurrency(result.totalCost)}</p>
                     </div>
                   )}
 
@@ -948,8 +1172,8 @@ export default function KalkulatorRABPage() {
                     <button
                       type="button"
                       onClick={() => setShowLeadForm(false)}
-                      className={`flex-1 py-2.5 rounded-md text-sm font-medium border ${
-                        isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-medium border ${
+                        isDark ? 'border-gray-700 text-gray-300 hover:bg-gray-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                       }`}
                     >
                       {isEn ? 'Cancel' : 'Batal'}
@@ -957,7 +1181,7 @@ export default function KalkulatorRABPage() {
                     <button
                       type="submit"
                       disabled={leadSubmitting}
-                      className="flex-1 py-2.5 rounded-md text-sm font-medium bg-[#153969] hover:bg-[#1e4d8a] text-white disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-[#153969] to-[#1e4d8a] text-white disabled:opacity-50 hover:shadow-lg transition-all"
                     >
                       {leadSubmitting ? (isEn ? 'Sending...' : 'Mengirim...') : (isEn ? 'Submit Request' : 'Kirim Permintaan')}
                     </button>
