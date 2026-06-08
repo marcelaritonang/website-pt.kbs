@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Building2, Loader2, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function LoginPage() {
   const { theme } = useTheme();
   const { language } = useLanguage();
+  const { login, isLoggedIn } = useAuth();
   const isDark = theme === 'dark';
   const router = useRouter();
 
@@ -26,6 +28,13 @@ export default function LoginPage() {
     company: '',
     phone: ''
   });
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push('/platform/project-tracking');
+    }
+  }, [isLoggedIn, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +61,8 @@ export default function LoginPage() {
         return;
       }
 
-      // Save token & user data
-      localStorage.setItem('kbs_token', data.token);
-      localStorage.setItem('kbs_user', JSON.stringify(data.user));
+      // Save token & user data via AuthContext (sets cookies + localStorage)
+      login(data.token, data.user);
 
       setSuccess(isLogin
         ? (language === 'id' ? 'Login berhasil! Mengalihkan...' : 'Login successful! Redirecting...')
@@ -62,7 +70,7 @@ export default function LoginPage() {
       );
 
       setTimeout(() => {
-        router.push('/platform/');
+        router.push('/platform/project-tracking');
       }, 1500);
 
     } catch {

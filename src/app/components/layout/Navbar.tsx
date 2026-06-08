@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '../../context/ThemeContext';
-import { ChevronDown, Menu, X, Globe, Moon, Sun, LogIn } from 'lucide-react';
+import { ChevronDown, Menu, X, Globe, Moon, Sun, LogIn, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 
 // Helper function to convert translation value to string
 const asString = (value: unknown): string => {
@@ -40,10 +41,13 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { language, changeLanguage, t } = useLanguage();
-  
+  const { user, isLoggedIn, logout } = useAuth();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
   
   // Fungsi untuk mendeteksi apakah halaman ini memiliki background gelap
   const isDarkPage = pathname === '/' || 
@@ -230,12 +234,29 @@ export default function Navbar() {
 
     // Set initial scroll state
     handleScroll();
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Close profile dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setIsProfileOpen(false);
+    router.push('/');
+  };
 
   // Toggle dropdown
   const toggleDropdown = (index: number) => {
@@ -447,20 +468,75 @@ export default function Navbar() {
                 )}
               </button>
 
-              {/* Login Button */}
-              <Link
-                href="/platform/login"
-                className={`ml-1 flex items-center gap-1 whitespace-nowrap px-2 xl:px-3 py-1.5 rounded-md font-medium text-xs xl:text-sm ${
-                  isScrolled || !isDarkPage
-                    ? isDark
-                      ? 'text-blue-400 border border-blue-400 hover:bg-blue-400/10'
-                      : 'text-[#153969] border border-[#153969] hover:bg-[#153969]/5'
-                    : 'text-white border border-white/50 hover:bg-white/10'
-                }`}
-              >
-                <LogIn className="h-4 w-4" />
-                {asString(t('nav.login'))}
-              </Link>
+              {/* Login Button or Profile */}
+              {isLoggedIn && user ? (
+                <div className="relative ml-1" ref={profileRef}>
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className={`flex items-center gap-2 px-2 xl:px-3 py-1.5 rounded-md font-medium text-xs xl:text-sm ${
+                      isScrolled || !isDarkPage
+                        ? isDark
+                          ? 'text-blue-400 hover:bg-blue-400/10'
+                          : 'text-[#153969] hover:bg-[#153969]/5'
+                        : 'text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                      isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-[#153969]/10 text-[#153969]'
+                    }`}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="hidden xl:inline max-w-[80px] truncate">{user.name.split(' ')[0]}</span>
+                    <ChevronDown className={`h-3 w-3 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isProfileOpen && (
+                    <div className={`absolute right-0 mt-2 w-56 rounded-lg shadow-lg border z-50 ${
+                      isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    }`}>
+                      <div className={`px-4 py-3 border-b ${isDark ? 'border-gray-700' : 'border-gray-100'}`}>
+                        <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{user.name}</p>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{user.email}</p>
+                      </div>
+                      <div className="py-1">
+                        <Link
+                          href="/platform/project-tracking"
+                          onClick={() => setIsProfileOpen(false)}
+                          className={`flex items-center gap-2 px-4 py-2 text-sm ${
+                            isDark ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          <LayoutDashboard className="h-4 w-4" />
+                          Dashboard
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-left ${
+                            isDark ? 'text-red-400 hover:bg-gray-700' : 'text-red-600 hover:bg-red-50'
+                          }`}
+                        >
+                          <LogOut className="h-4 w-4" />
+                          {language === 'id' ? 'Keluar' : 'Logout'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href="/platform/login"
+                  className={`ml-1 flex items-center gap-1 whitespace-nowrap px-2 xl:px-3 py-1.5 rounded-md font-medium text-xs xl:text-sm ${
+                    isScrolled || !isDarkPage
+                      ? isDark
+                        ? 'text-blue-400 border border-blue-400 hover:bg-blue-400/10'
+                        : 'text-[#153969] border border-[#153969] hover:bg-[#153969]/5'
+                      : 'text-white border border-white/50 hover:bg-white/10'
+                  }`}
+                >
+                  <LogIn className="h-4 w-4" />
+                  {asString(t('nav.login'))}
+                </Link>
+              )}
 
               {/* Get Quote Button */}
               <a
@@ -597,14 +673,45 @@ export default function Navbar() {
             ))}
             
             <div className="mt-4 px-4">
-              <a
-                href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-2 bg-[#153969] text-white rounded-md text-center font-medium"
-              >
-                {asString(t('nav.getQuote'))}
-              </a>
+              {isLoggedIn && user ? (
+                <div className="space-y-2">
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                      isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-[#153969]/10 text-[#153969]'
+                    }`}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{user.name}</p>
+                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{user.email}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/platform/project-tracking"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full py-2 bg-[#153969] text-white rounded-md text-center font-medium"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
+                    className={`block w-full py-2 rounded-md text-center font-medium border ${
+                      isDark ? 'border-red-400 text-red-400' : 'border-red-500 text-red-500'
+                    }`}
+                  >
+                    {language === 'id' ? 'Keluar' : 'Logout'}
+                  </button>
+                </div>
+              ) : (
+                <a
+                  href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full py-2 bg-[#153969] text-white rounded-md text-center font-medium"
+                >
+                  {asString(t('nav.getQuote'))}
+                </a>
+              )}
             </div>
           </div>
         </div>
