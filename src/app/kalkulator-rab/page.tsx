@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -122,11 +122,6 @@ export default function KalkulatorRABPage() {
   const [region, setRegion] = useState<Region>('jakarta');
   const [result, setResult] = useState<CalculationResult | null>(null);
 
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-  };
-
   function calculateRAB() {
     const basePrice = basePrices[buildingType];
     const qMul = qualityMultiplier[quality];
@@ -164,105 +159,66 @@ export default function KalkulatorRABPage() {
   }
 
   return (
-    <div className={isDark ? 'bg-gray-900' : 'bg-white'}>
-      {/* Hero Section - same style as services page */}
-      <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-        <Image
-          src="/images/servicepage/gambar1.jpg"
-          alt={isEn ? 'Construction Budget Calculator' : 'Kalkulator RAB Konstruksi'}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent flex items-center">
-          <div className="container mx-auto px-4 md:px-8">
-            <div className="max-w-2xl">
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4"
-              >
-                {isEn ? 'RAB Calculator' : 'Kalkulator RAB'}
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-lg md:text-xl text-white/90"
-              >
-                {isEn
-                  ? 'Estimate your construction budget quickly and accurately for various regions in Indonesia'
-                  : 'Hitung estimasi anggaran konstruksi Anda dengan cepat dan akurat untuk berbagai daerah di Indonesia'}
-              </motion.p>
+    <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Page Header - compact, tool-focused */}
+      <div className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b pt-24 pb-8`}>
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+              <div>
+                <div className={`flex items-center gap-2 text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <Link href="/" className={`hover:${isDark ? 'text-blue-400' : 'text-[#153969]'}`}>
+                    {isEn ? 'Home' : 'Beranda'}
+                  </Link>
+                  <span>/</span>
+                  <Link href="/services" className={`hover:${isDark ? 'text-blue-400' : 'text-[#153969]'}`}>
+                    {isEn ? 'Services' : 'Layanan'}
+                  </Link>
+                  <span>/</span>
+                  <span className={isDark ? 'text-gray-200' : 'text-gray-900'}>
+                    {isEn ? 'RAB Calculator' : 'Kalkulator RAB'}
+                  </span>
+                </div>
+                <h1 className={`text-2xl md:text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {isEn ? 'Construction Budget Estimator' : 'Estimasi Anggaran Konstruksi'}
+                </h1>
+                <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {isEn
+                    ? 'Get instant cost estimates based on regional market data across Indonesia.'
+                    : 'Dapatkan estimasi biaya instan berdasarkan data pasar regional di Indonesia.'}
+                </p>
+              </div>
+              <div className={`flex items-center gap-2 text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                <span className={`inline-block w-2 h-2 rounded-full bg-green-500`} />
+                {isEn ? 'Data updated Q1 2024' : 'Data diperbarui Q1 2024'}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Introduction */}
-      <section className={`py-16 md:py-20 ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.h2
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className={`text-3xl md:text-4xl font-bold mb-6 ${isDark ? 'text-white' : 'text-[#153969]'}`}
-            >
-              {isEn ? 'Construction Cost Estimator' : 'Estimasi Biaya Konstruksi'}
-            </motion.h2>
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className="w-20 h-1 bg-[#153969] mx-auto mb-8"
-            />
-            <motion.p
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
-            >
-              {isEn
-                ? 'Use this tool to get an initial estimate of your construction costs. Our calculator uses up-to-date pricing data from contractors and material suppliers across Indonesia. No registration needed — just fill in your project details and get results instantly.'
-                : 'Gunakan alat ini untuk mendapatkan estimasi awal biaya konstruksi Anda. Kalkulator kami menggunakan data harga terkini dari kontraktor dan pemasok material di seluruh Indonesia. Tanpa perlu registrasi — cukup isi detail proyek dan dapatkan hasilnya langsung.'}
-            </motion.p>
-          </div>
-        </div>
-      </section>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 md:px-8 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      {/* Calculator Section */}
-      <section className={`py-16 ${isDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Form Panel */}
+            <div className="lg:col-span-4">
+              <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-5 sticky top-24`}>
+                <h2 className={`text-sm font-semibold uppercase tracking-wide mb-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {isEn ? 'Project Parameters' : 'Parameter Proyek'}
+                </h2>
 
-              {/* Form */}
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeInUp}
-                className={`rounded-lg p-6 md:p-8 ${isDark ? 'bg-gray-900' : 'bg-white'} shadow-md`}
-              >
-                <h3 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-[#153969]'}`}>
-                  {isEn ? 'Project Specifications' : 'Spesifikasi Proyek'}
-                </h3>
-
-                <div className="space-y-5">
+                <div className="space-y-4">
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       {isEn ? 'Building Type' : 'Tipe Bangunan'}
                     </label>
                     <select
                       value={buildingType}
                       onChange={(e) => setBuildingType(e.target.value as BuildingType)}
-                      className={`w-full rounded-md border px-4 py-3 text-sm ${
-                        isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                      className={`w-full rounded border px-3 py-2 text-sm ${
+                        isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'
                       } focus:outline-none focus:ring-2 focus:ring-[#153969]`}
                     >
                       {(Object.keys(buildingTypeLabels) as BuildingType[]).map((type) => (
@@ -273,10 +229,10 @@ export default function KalkulatorRABPage() {
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {isEn ? 'Building Area (m²)' : 'Luas Bangunan (m²)'}
+                      <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                        {isEn ? 'Area (m²)' : 'Luas (m²)'}
                       </label>
                       <input
                         type="number"
@@ -284,38 +240,38 @@ export default function KalkulatorRABPage() {
                         max={10000}
                         value={area}
                         onChange={(e) => setArea(Math.max(1, parseInt(e.target.value) || 1))}
-                        className={`w-full rounded-md border px-4 py-3 text-sm ${
-                          isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        className={`w-full rounded border px-3 py-2 text-sm ${
+                          isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'
                         } focus:outline-none focus:ring-2 focus:ring-[#153969]`}
                       />
                     </div>
                     <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {isEn ? 'Number of Floors' : 'Jumlah Lantai'}
+                      <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                        {isEn ? 'Floors' : 'Lantai'}
                       </label>
                       <select
                         value={floors}
                         onChange={(e) => setFloors(parseInt(e.target.value))}
-                        className={`w-full rounded-md border px-4 py-3 text-sm ${
-                          isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        className={`w-full rounded border px-3 py-2 text-sm ${
+                          isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'
                         } focus:outline-none focus:ring-2 focus:ring-[#153969]`}
                       >
-                        <option value={1}>1 {isEn ? 'Floor' : 'Lantai'}</option>
-                        <option value={2}>2 {isEn ? 'Floors' : 'Lantai'}</option>
-                        <option value={3}>3 {isEn ? 'Floors' : 'Lantai'}</option>
+                        <option value={1}>1</option>
+                        <option value={2}>2</option>
+                        <option value={3}>3</option>
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {isEn ? 'Quality Level' : 'Tingkat Kualitas'}
+                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {isEn ? 'Quality' : 'Kualitas'}
                     </label>
                     <select
                       value={quality}
                       onChange={(e) => setQuality(e.target.value as Quality)}
-                      className={`w-full rounded-md border px-4 py-3 text-sm ${
-                        isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                      className={`w-full rounded border px-3 py-2 text-sm ${
+                        isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'
                       } focus:outline-none focus:ring-2 focus:ring-[#153969]`}
                     >
                       {(Object.keys(qualityLabels) as Quality[]).map((q) => (
@@ -327,14 +283,14 @@ export default function KalkulatorRABPage() {
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {isEn ? 'Project Region' : 'Daerah Proyek'}
+                    <label className={`block text-xs font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {isEn ? 'Region' : 'Daerah'}
                     </label>
                     <select
                       value={region}
                       onChange={(e) => setRegion(e.target.value as Region)}
-                      className={`w-full rounded-md border px-4 py-3 text-sm ${
-                        isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                      className={`w-full rounded border px-3 py-2 text-sm ${
+                        isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'
                       } focus:outline-none focus:ring-2 focus:ring-[#153969]`}
                     >
                       {(Object.keys(regionLabels) as Region[]).map((r) => (
@@ -347,218 +303,194 @@ export default function KalkulatorRABPage() {
 
                   <button
                     onClick={calculateRAB}
-                    className="w-full bg-[#153969] hover:bg-[#1e4d8a] text-white font-semibold py-3.5 px-6 rounded-md transition-colors duration-200 mt-2"
+                    className="w-full bg-[#153969] hover:bg-[#1e4d8a] text-white font-medium py-2.5 px-4 rounded text-sm transition-colors"
                   >
-                    {isEn ? 'Calculate Estimate' : 'Hitung Estimasi'}
+                    {isEn ? 'Calculate' : 'Hitung'}
                   </button>
                 </div>
-              </motion.div>
 
-              {/* Results */}
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeInUp}
-              >
-                {result ? (
-                  <div className="space-y-6">
-                    {/* Total */}
-                    <div className={`rounded-lg p-6 ${isDark ? 'bg-gray-900' : 'bg-white'} shadow-md`}>
-                      <p className={`text-sm font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {isEn ? 'Estimated Total Cost' : 'Estimasi Total Biaya'}
-                      </p>
-                      <p className={`text-3xl md:text-4xl font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'}`}>
-                        {formatCurrency(result.totalCost)}
-                      </p>
-                      <div className={`mt-4 grid grid-cols-2 gap-4 pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {isEn
+                      ? 'Estimates are based on average contractor pricing in selected region. Actual costs may vary.'
+                      : 'Estimasi berdasarkan rata-rata harga kontraktor di daerah terpilih. Biaya aktual dapat berbeda.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Results Panel */}
+            <div className="lg:col-span-8">
+              {result ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-5"
+                >
+                  {/* Summary */}
+                  <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-5`}>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div>
+                        <p className={`text-xs font-medium uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {isEn ? 'Estimated Total' : 'Total Estimasi'}
+                        </p>
+                        <p className={`text-3xl font-bold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          {formatCurrency(result.totalCost)}
+                        </p>
+                      </div>
+                      <div className="flex gap-6">
                         <div>
-                          <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                            {isEn ? 'Price per m²' : 'Harga per m²'}
+                          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {isEn ? 'Per m²' : 'Per m²'}
                           </p>
-                          <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <p className={`text-lg font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                             {formatCurrency(result.pricePerM2)}
                           </p>
                         </div>
                         <div>
-                          <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                            {isEn ? 'Estimated Duration' : 'Estimasi Waktu'}
+                          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {isEn ? 'Duration' : 'Durasi'}
                           </p>
-                          <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <p className={`text-lg font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                             {isEn ? result.durationEn : result.duration}
                           </p>
                         </div>
                       </div>
                     </div>
-
-                    {/* Breakdown */}
-                    <div className={`rounded-lg p-6 ${isDark ? 'bg-gray-900' : 'bg-white'} shadow-md`}>
-                      <h4 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-[#153969]'}`}>
-                        {isEn ? 'Cost Breakdown' : 'Rincian Biaya'}
-                      </h4>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                              <th className={`text-left py-2.5 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                {isEn ? 'Component' : 'Komponen'}
-                              </th>
-                              <th className={`text-center py-2.5 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>%</th>
-                              <th className={`text-right py-2.5 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                {isEn ? 'Amount' : 'Jumlah'}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {result.breakdown.map((item, index) => (
-                              <tr key={index} className={`border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
-                                <td className={`py-2.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  {isEn ? item.labelEn : item.label}
-                                </td>
-                                <td className={`py-2.5 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  {item.percentage}%
-                                </td>
-                                <td className={`py-2.5 text-right font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
-                                  {formatCurrency(item.amount)}
-                                </td>
-                              </tr>
-                            ))}
-                            <tr className={`font-bold ${isDark ? 'text-white' : 'text-[#153969]'}`}>
-                              <td className="py-3">Total</td>
-                              <td className="py-3 text-center">100%</td>
-                              <td className="py-3 text-right">{formatCurrency(result.totalCost)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-
-                    {/* Regional Comparison */}
-                    <div className={`rounded-lg p-6 ${isDark ? 'bg-gray-900' : 'bg-white'} shadow-md`}>
-                      <h4 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-[#153969]'}`}>
-                        {isEn ? 'Price Comparison by Region' : 'Perbandingan Harga per Daerah'}
-                      </h4>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                              <th className={`text-left py-2.5 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                {isEn ? 'Region' : 'Daerah'}
-                              </th>
-                              <th className={`text-right py-2.5 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                {isEn ? 'Estimated Cost' : 'Estimasi Biaya'}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className={`border-b ${isDark ? 'border-gray-800 bg-blue-900/20' : 'border-gray-100 bg-blue-50'}`}>
-                              <td className={`py-2.5 font-semibold ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
-                                {regionLabels[region]} ★
-                              </td>
-                              <td className={`py-2.5 text-right font-semibold ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
-                                {formatCurrency(result.totalCost)}
-                              </td>
-                            </tr>
-                            {result.comparison.map((item, index) => (
-                              <tr key={index} className={`border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
-                                <td className={`py-2.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  {item.regionLabel}
-                                </td>
-                                <td className={`py-2.5 text-right font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
-                                  {formatCurrency(item.cost)}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                    <div className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-100'} flex flex-wrap gap-2 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <span className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                        {isEn ? buildingTypeLabels[buildingType].en : buildingTypeLabels[buildingType].id}
+                      </span>
+                      <span className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                        {area} m²
+                      </span>
+                      <span className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                        {floors} {isEn ? 'floor' : 'lantai'}
+                      </span>
+                      <span className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                        {isEn ? qualityLabels[quality].en : qualityLabels[quality].id}
+                      </span>
+                      <span className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                        {regionLabels[region]}
+                      </span>
                     </div>
                   </div>
-                ) : (
-                  <div className={`rounded-lg p-8 md:p-12 text-center ${isDark ? 'bg-gray-900' : 'bg-white'} shadow-md`}>
-                    <Image
-                      src="/images/servicepage/gambar4.jpg"
-                      alt="Construction"
-                      width={120}
-                      height={120}
-                      className="rounded-full mx-auto mb-6 object-cover w-24 h-24"
-                    />
-                    <h3 className={`text-xl font-bold mb-3 ${isDark ? 'text-white' : 'text-[#153969]'}`}>
-                      {isEn ? 'Ready to Calculate' : 'Siap Menghitung'}
+
+                  {/* Breakdown */}
+                  <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-5`}>
+                    <h3 className={`text-sm font-semibold uppercase tracking-wide mb-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {isEn ? 'Cost Breakdown' : 'Rincian Biaya'}
+                    </h3>
+                    <div className="space-y-2">
+                      {result.breakdown.map((item, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div className={`w-full flex-1`}>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
+                                {isEn ? item.labelEn : item.label}
+                              </span>
+                              <span className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                                {formatCurrency(item.amount)}
+                              </span>
+                            </div>
+                            <div className={`w-full h-1.5 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                              <div
+                                className="h-full rounded-full bg-[#153969]"
+                                style={{ width: `${item.percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                          <span className={`text-xs w-8 text-right ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {item.percentage}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Regional Comparison */}
+                  <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-5`}>
+                    <h3 className={`text-sm font-semibold uppercase tracking-wide mb-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {isEn ? 'Regional Comparison' : 'Perbandingan Regional'}
+                    </h3>
+                    <div className="space-y-2">
+                      <div className={`flex items-center justify-between py-2 px-3 rounded text-sm font-medium ${
+                        isDark ? 'bg-[#153969]/30 text-blue-300' : 'bg-[#153969]/5 text-[#153969]'
+                      }`}>
+                        <span>{regionLabels[region]}</span>
+                        <span>{formatCurrency(result.totalCost)}</span>
+                      </div>
+                      {result.comparison.map((item, index) => (
+                        <div key={index} className={`flex items-center justify-between py-2 px-3 rounded text-sm ${
+                          isDark ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          <span>{item.regionLabel}</span>
+                          <span className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                            {formatCurrency(item.cost)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-5`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div>
+                        <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                          {isEn ? 'Need a detailed quotation?' : 'Butuh penawaran detail?'}
+                        </p>
+                        <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {isEn
+                            ? 'Our estimator team can provide an accurate RAB based on your exact specifications.'
+                            : 'Tim estimator kami dapat memberikan RAB akurat sesuai spesifikasi Anda.'}
+                        </p>
+                      </div>
+                      <a
+                        href="https://wa.me/6281218127503?text=Halo%2C%20saya%20ingin%20konsultasi%20RAB%20detail%20untuk%20proyek%20saya."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 bg-[#153969] hover:bg-[#1e4d8a] text-white text-sm font-medium py-2.5 px-5 rounded transition-colors"
+                      >
+                        {isEn ? 'Contact Estimator' : 'Hubungi Estimator'}
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-8 md:p-12`}>
+                  <div className="max-w-md mx-auto text-center">
+                    <div className={`text-5xl mb-4`}>📐</div>
+                    <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                      {isEn ? 'Set your project parameters' : 'Atur parameter proyek Anda'}
                     </h3>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       {isEn
-                        ? 'Fill in your project details on the left, then click "Calculate Estimate" to get your construction budget breakdown.'
-                        : 'Isi detail proyek Anda di samping, lalu klik "Hitung Estimasi" untuk mendapatkan rincian anggaran konstruksi Anda.'}
+                        ? 'Select building type, area, quality level, and region on the left panel, then click Calculate to get your budget estimate.'
+                        : 'Pilih tipe bangunan, luas, kualitas, dan daerah pada panel kiri, lalu klik Hitung untuk mendapatkan estimasi anggaran.'}
                     </p>
+                    <div className={`mt-6 grid grid-cols-3 gap-4 text-center`}>
+                      <div className={`p-3 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                        <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-[#153969]'}`}>10</p>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{isEn ? 'Regions' : 'Daerah'}</p>
+                      </div>
+                      <div className={`p-3 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                        <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-[#153969]'}`}>5</p>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{isEn ? 'Types' : 'Tipe'}</p>
+                      </div>
+                      <div className={`p-3 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                        <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-[#153969]'}`}>9</p>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{isEn ? 'Components' : 'Komponen'}</p>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </motion.div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Disclaimer & CTA - same style as other pages */}
-      <section className={`py-16 ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.h2
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className={`text-3xl md:text-4xl font-bold mb-6 ${isDark ? 'text-white' : 'text-[#153969]'}`}
-            >
-              {isEn ? 'Need a Detailed RAB?' : 'Butuh RAB yang Lebih Detail?'}
-            </motion.h2>
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className="w-20 h-1 bg-[#153969] mx-auto mb-8"
-            />
-            <motion.p
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className={`text-lg mb-8 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
-            >
-              {isEn
-                ? 'The results above are initial estimates based on average market prices. For a complete and accurate RAB tailored to your project specifications, our estimator team is ready to help — free of charge.'
-                : 'Hasil di atas merupakan estimasi awal berdasarkan harga rata-rata pasar. Untuk RAB lengkap dan akurat sesuai spesifikasi proyek Anda, tim estimator kami siap membantu — tanpa dipungut biaya.'}
-            </motion.p>
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
-              <a
-                href="https://wa.me/6281218127503?text=Halo%2C%20saya%20ingin%20konsultasi%20RAB%20detail%20untuk%20proyek%20saya."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#153969] hover:bg-[#1e4d8a] text-white font-semibold py-3.5 px-8 rounded-md transition-colors duration-200"
-              >
-                {isEn ? 'Consult for Free' : 'Konsultasi Gratis'}
-              </a>
-              <a
-                href="/contact"
-                className={`inline-block font-semibold py-3.5 px-8 rounded-md border transition-colors duration-200 ${
-                  isDark
-                    ? 'border-gray-600 text-gray-300 hover:bg-gray-800'
-                    : 'border-[#153969] text-[#153969] hover:bg-[#153969]/5'
-                }`}
-              >
-                {isEn ? 'Contact Us' : 'Hubungi Kami'}
-              </a>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
