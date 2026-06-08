@@ -138,4 +138,57 @@ export async function initDatabase() {
       created_at TIMESTAMP DEFAULT NOW()
     )
   `;
+
+  // Project Dashboard tables
+  await sql`
+    CREATE TABLE IF NOT EXISTS projects (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      title_en VARCHAR(255),
+      client VARCHAR(255),
+      category VARCHAR(100),
+      sub_category VARCHAR(100),
+      description TEXT,
+      description_en TEXT,
+      contract_number VARCHAR(100),
+      location_name VARCHAR(255),
+      latitude DECIMAL(10, 7),
+      longitude DECIMAL(10, 7),
+      start_date DATE,
+      end_date DATE,
+      estimated_end_date DATE,
+      progress INTEGER DEFAULT 0,
+      status VARCHAR(50) DEFAULT 'planning',
+      current_phase VARCHAR(100),
+      budget BIGINT,
+      image_url VARCHAR(500),
+      scope TEXT,
+      scope_en TEXT,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS project_updates (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+      title VARCHAR(255),
+      description TEXT,
+      progress_after INTEGER,
+      photos TEXT,
+      updated_by INTEGER REFERENCES users(id),
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS project_team (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      role VARCHAR(50) DEFAULT 'client',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
 }
