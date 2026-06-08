@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
+import bcrypt from 'bcryptjs';
 import { initDatabase } from '@/lib/db';
 
 export async function GET(request: Request) {
@@ -47,9 +48,52 @@ export async function GET(request: Request) {
       `;
     }
 
+    // Seed admin user
+    const existingAdmin = await sql`SELECT COUNT(*) as count FROM users WHERE email = 'rianco@karyabangunsemesta.my.id'`;
+    if (Number(existingAdmin.rows[0].count) === 0) {
+      const hashedPassword = await bcrypt.hash('kbs123', 10);
+      await sql`
+        INSERT INTO users (name, email, password_hash, company, phone, role)
+        VALUES ('Rianco', 'rianco@karyabangunsemesta.my.id', ${hashedPassword}, 'PT Karya Bangun Semesta', '', 'admin')
+      `;
+    } else {
+      // Ensure existing user has admin role
+      await sql`UPDATE users SET role = 'admin' WHERE email = 'rianco@karyabangunsemesta.my.id'`;
+    }
+
+    // Seed RAB pricing data
+    const existingRABPricing = await sql`SELECT COUNT(*) as count FROM rab_pricing`;
+    if (Number(existingRABPricing.rows[0].count) === 0) {
+      await sql`INSERT INTO rab_pricing (building_type, base_price_per_m2) VALUES
+        ('rumah', 4200000),
+        ('ruko', 4800000),
+        ('gudang', 3500000),
+        ('kantor', 5800000),
+        ('workshop', 3800000)
+      `;
+      await sql`INSERT INTO rab_quality (quality, multiplier, description_id, description_en) VALUES
+        ('standar', 1.00, 'Bata merah, keramik 40x40, kusen kayu, cat ekonomi', 'Red brick, 40x40 tiles, wood frames, economy paint'),
+        ('menengah', 1.45, 'Hebel, keramik 60x60, kusen aluminium, cat Dulux', 'AAC block, 60x60 tiles, aluminum frames, Dulux paint'),
+        ('premium', 2.10, 'Hebel + panel, granit/marmer, kusen UPVC, custom design', 'AAC + panel, granite/marble, UPVC frames, custom design')
+      `;
+      await sql`INSERT INTO rab_regional_index (region, region_label, multiplier) VALUES
+        ('jakarta', 'Jakarta', 1.20),
+        ('bogor', 'Bogor', 1.00),
+        ('depok', 'Depok', 1.05),
+        ('tangerang', 'Tangerang', 1.08),
+        ('bekasi', 'Bekasi', 1.05),
+        ('bandung', 'Bandung', 0.92),
+        ('surabaya', 'Surabaya', 0.98),
+        ('semarang', 'Semarang', 0.88),
+        ('yogyakarta', 'Yogyakarta', 0.85),
+        ('medan', 'Medan', 0.95)
+      `;
+    }
+
     return NextResponse.json({
       message: 'Database seeded successfully',
-      tables: ['users', 'equipment', 'bookings', 'materials', 'material_orders']
+      tables: ['users', 'equipment', 'bookings', 'materials', 'material_orders', 'rab_pricing', 'rab_quality', 'rab_regional_index', 'rab_calculations', 'rab_leads'],
+      admin: 'rianco@karyabangunsemesta.my.id (role: admin)'
     });
 
   } catch (error: unknown) {
