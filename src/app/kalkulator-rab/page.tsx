@@ -1,102 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import {
+  calculateRAB,
+  validateRABInput,
+  DEFAULT_PRICING,
+  REGION_LABELS,
+  BUILDING_TYPE_LABELS,
+  QUALITY_LABELS,
+  type RABPricing,
+  type RABInput,
+  type RABResult,
+  type BuildingType,
+  type Quality,
+  type Region,
+} from '@/lib/rab';
 
-// Types
-type BuildingType = 'rumah' | 'ruko' | 'gudang' | 'kantor' | 'workshop';
-type Quality = 'standar' | 'menengah' | 'premium';
-type Region = 'jakarta' | 'bogor' | 'depok' | 'tangerang' | 'bekasi' | 'bandung' | 'surabaya' | 'semarang' | 'yogyakarta' | 'medan';
-
-interface CalculationResult {
-  totalCost: number;
-  pricePerM2: number;
-  breakdown: { label: string; labelEn: string; percentage: number; amount: number }[];
-  duration: string;
-  durationEn: string;
-  comparison: { region: string; regionLabel: string; cost: number; diff: number }[];
+interface SavedScenario {
+  id: string;
+  input: RABInput;
+  result: RABResult;
+  createdAt: string;
 }
-
-// Pricing data based on AHSP (Analisa Harga Satuan Pekerjaan) & market rates 2024
-// Reference: Permen PUPR, harga borongan kontraktor Jabodetabek & kota besar
-// Harga dasar = harga per m² untuk kualitas standar di wilayah non-Jakarta
-const basePrices: Record<BuildingType, number> = {
-  rumah: 4200000,    // Rumah tinggal: Rp 4.2jt/m² (standar, luar Jakarta)
-  ruko: 4800000,     // Ruko 2-3 lantai: Rp 4.8jt/m²
-  gudang: 3500000,   // Gudang/pabrik: Rp 3.5jt/m² (struktur baja ringan)
-  kantor: 5800000,   // Kantor: Rp 5.8jt/m² (standar finishing)
-  workshop: 3800000, // Workshop/bengkel: Rp 3.8jt/m²
-};
-
-// Multiplier kualitas berdasarkan tingkat material & finishing
-const qualityMultiplier: Record<Quality, number> = {
-  standar: 1.0,   // Material lokal (bata merah, keramik 40x40, cat ekonomi)
-  menengah: 1.45, // Material branded (hebel, keramik 60x60, cat Dulux/Nippon)
-  premium: 2.1,   // Material impor/premium (granit, aluminium, custom millwork)
-};
-
-// Indeks kemahalan konstruksi (IKK) relatif antar kota
-// Referensi: BPS Indeks Kemahalan Konstruksi & survey kontraktor 2024
-const regionalMultiplier: Record<Region, number> = {
-  jakarta: 1.20,     // Tertinggi: upah buruh & material transport mahal
-  bogor: 1.0,        // Baseline
-  depok: 1.05,       // Dekat Jakarta, sedikit lebih mahal
-  tangerang: 1.08,   // Kawasan industri, akses material baik
-  bekasi: 1.05,      // Mirip Depok
-  bandung: 0.92,     // Upah buruh lebih rendah
-  surabaya: 0.98,    // Kota besar tapi biaya hidup lebih rendah dari Jakarta
-  semarang: 0.88,    // Biaya hidup & upah lebih rendah
-  yogyakarta: 0.85,  // Terendah: upah buruh paling kompetitif
-  medan: 0.95,       // Transport material agak mahal (Sumatra)
-};
-
-// Biaya tambahan per lantai (pondasi lebih kuat, struktur kolom, scaffolding)
-const floorMultiplier: Record<number, number> = {
-  1: 1.0,
-  2: 1.20,  // +20% untuk struktur 2 lantai
-  3: 1.35,  // +35% untuk struktur 3 lantai
-};
-
-const regionLabels: Record<Region, string> = {
-  jakarta: 'Jakarta',
-  bogor: 'Bogor',
-  depok: 'Depok',
-  tangerang: 'Tangerang',
-  bekasi: 'Bekasi',
-  bandung: 'Bandung',
-  surabaya: 'Surabaya',
-  semarang: 'Semarang',
-  yogyakarta: 'Yogyakarta',
-  medan: 'Medan',
-};
-
-const buildingTypeLabels: Record<BuildingType, { id: string; en: string }> = {
-  rumah: { id: 'Rumah Tinggal', en: 'Residential House' },
-  ruko: { id: 'Ruko', en: 'Shophouse' },
-  gudang: { id: 'Gudang', en: 'Warehouse' },
-  kantor: { id: 'Kantor', en: 'Office' },
-  workshop: { id: 'Workshop', en: 'Workshop' },
-};
-
-const qualityLabels: Record<Quality, { id: string; en: string; desc: string; descEn: string }> = {
-  standar: { id: 'Standar', en: 'Standard', desc: 'Bata merah, keramik 40x40, kusen kayu, cat ekonomi', descEn: 'Red brick, 40x40 tiles, wood frames, economy paint' },
-  menengah: { id: 'Menengah', en: 'Medium', desc: 'Hebel/batako, keramik 60x60, kusen aluminium, cat Dulux', descEn: 'AAC block, 60x60 tiles, aluminum frames, Dulux paint' },
-  premium: { id: 'Premium', en: 'Premium', desc: 'Hebel + panel, granit/marmer, kusen UPVC, custom design', descEn: 'AAC + panel, granite/marble, UPVC frames, custom design' },
-};
-
-// Breakdown berdasarkan proporsi umum RAB konstruksi Indonesia (SNI/Permen PUPR)
-const breakdownItems = [
-  { label: 'Pondasi & Struktur', labelEn: 'Foundation & Structure', percentage: 30 },
-  { label: 'Dinding & Plester', labelEn: 'Walls & Plastering', percentage: 18 },
-  { label: 'Atap & Rangka', labelEn: 'Roof & Framework', percentage: 13 },
-  { label: 'Lantai', labelEn: 'Flooring', percentage: 10 },
-  { label: 'Instalasi ME (Listrik & Plumbing)', labelEn: 'MEP (Electrical & Plumbing)', percentage: 12 },
-  { label: 'Pintu, Jendela & Kusen', labelEn: 'Doors, Windows & Frames', percentage: 7 },
-  { label: 'Pengecatan & Finishing', labelEn: 'Paint & Finishing', percentage: 6 },
-  { label: 'Pekerjaan Persiapan & Lain-lain', labelEn: 'Site Prep & Miscellaneous', percentage: 4 },
-];
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('id-ID', {
@@ -113,12 +41,14 @@ function formatShort(amount: number): string {
   return formatCurrency(amount);
 }
 
-function getDuration(area: number, floors: number): { id: string; en: string } {
-  const base = area * floors;
-  if (base < 100) return { id: '3-4 bulan', en: '3-4 months' };
-  if (base <= 200) return { id: '4-6 bulan', en: '4-6 months' };
-  if (base <= 500) return { id: '6-9 bulan', en: '6-9 months' };
-  return { id: '9-12 bulan', en: '9-12 months' };
+function getSessionId(): string {
+  if (typeof window === 'undefined') return '';
+  let sid = sessionStorage.getItem('rab_session_id');
+  if (!sid) {
+    sid = crypto.randomUUID();
+    sessionStorage.setItem('rab_session_id', sid);
+  }
+  return sid;
 }
 
 export default function KalkulatorRABPage() {
@@ -127,59 +57,284 @@ export default function KalkulatorRABPage() {
   const isDark = theme === 'dark';
   const isEn = language === 'en';
 
+  // Form state
   const [buildingType, setBuildingType] = useState<BuildingType>('rumah');
   const [area, setArea] = useState<number>(100);
   const [floors, setFloors] = useState<number>(1);
   const [quality, setQuality] = useState<Quality>('menengah');
   const [region, setRegion] = useState<Region>('jakarta');
-  const [result, setResult] = useState<CalculationResult | null>(null);
+
+  // Result state
+  const [result, setResult] = useState<RABResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [activeTab, setActiveTab] = useState<'breakdown' | 'comparison'>('breakdown');
+  const [validationError, setValidationError] = useState<string | null>(null);
 
-  function calculateRAB() {
+  // Pricing from API
+  const [pricing, setPricing] = useState<RABPricing>(DEFAULT_PRICING);
+
+  // Saved scenarios
+  const [savedScenarios, setSavedScenarios] = useState<SavedScenario[]>([]);
+  const [showScenarios, setShowScenarios] = useState(false);
+
+  // Lead form
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadForm, setLeadForm] = useState({ name: '', phone: '', email: '', company: '', message: '' });
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [leadSuccess, setLeadSuccess] = useState(false);
+
+  // Load pricing from API on mount
+  useEffect(() => {
+    fetch('/api/rab/pricing')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.pricing) setPricing(data.pricing);
+      })
+      .catch(() => {
+        // Fallback to defaults silently
+      });
+  }, []);
+
+  // Load saved scenarios from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('rab_scenarios');
+      if (saved) setSavedScenarios(JSON.parse(saved));
+    } catch {
+      // Ignore parse errors
+    }
+  }, []);
+
+  // Load from URL params (share link)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get('type');
+    const a = params.get('area');
+    const f = params.get('floors');
+    const q = params.get('quality');
+    const r = params.get('region');
+
+    if (t) setBuildingType(t as BuildingType);
+    if (a) setArea(parseInt(a));
+    if (f) setFloors(parseInt(f));
+    if (q) setQuality(q as Quality);
+    if (r) setRegion(r as Region);
+  }, []);
+
+  const saveScenarios = useCallback((scenarios: SavedScenario[]) => {
+    setSavedScenarios(scenarios);
+    localStorage.setItem('rab_scenarios', JSON.stringify(scenarios));
+  }, []);
+
+  async function handleCalculate() {
+    setValidationError(null);
+
+    const input: RABInput = { buildingType, area, floors, quality, region };
+    const error = validateRABInput(input);
+    if (error) {
+      setValidationError(error);
+      return;
+    }
+
     setIsCalculating(true);
     setResult(null);
 
-    // Simulate data processing delay (feels like real computation)
-    setTimeout(() => {
-      const basePrice = basePrices[buildingType];
-      const qMul = qualityMultiplier[quality];
-      const rMul = regionalMultiplier[region];
-      const fMul = floorMultiplier[floors];
-
-      const pricePerM2 = basePrice * qMul * rMul * fMul;
-      const totalCost = pricePerM2 * area;
-
-      const breakdown = breakdownItems.map((item) => ({
-        ...item,
-        amount: Math.round((totalCost * item.percentage) / 100),
-      }));
-
-      const duration = getDuration(area, floors);
-
-      const comparison = (Object.keys(regionalMultiplier) as Region[])
-        .filter((r) => r !== region)
-        .map((r) => {
-          const cost = Math.round(basePrice * qMul * regionalMultiplier[r] * fMul * area);
-          return {
-            region: r,
-            regionLabel: regionLabels[r],
-            cost,
-            diff: Math.round(((cost - totalCost) / totalCost) * 100),
-          };
-        })
-        .sort((a, b) => b.cost - a.cost);
-
-      setResult({
-        totalCost: Math.round(totalCost),
-        pricePerM2: Math.round(pricePerM2),
-        breakdown,
-        duration: duration.id,
-        durationEn: duration.en,
-        comparison,
+    // Try API first, fallback to local calculation
+    try {
+      const res = await fetch('/api/rab/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...input, sessionId: getSessionId() }),
       });
-      setIsCalculating(false);
-    }, 1200);
+
+      if (res.ok) {
+        const data = await res.json();
+        setResult(data.result);
+        setIsCalculating(false);
+        return;
+      }
+    } catch {
+      // API failed, calculate locally
+    }
+
+    // Local fallback
+    const localResult = calculateRAB(input, pricing);
+    setResult(localResult);
+    setIsCalculating(false);
+  }
+
+  function handleSaveScenario() {
+    if (!result) return;
+    const input: RABInput = { buildingType, area, floors, quality, region };
+    const scenario: SavedScenario = {
+      id: crypto.randomUUID(),
+      input,
+      result,
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [scenario, ...savedScenarios].slice(0, 5); // Max 5 saved
+    saveScenarios(updated);
+  }
+
+  function handleDeleteScenario(id: string) {
+    const updated = savedScenarios.filter((s) => s.id !== id);
+    saveScenarios(updated);
+  }
+
+  function handleLoadScenario(scenario: SavedScenario) {
+    setBuildingType(scenario.input.buildingType);
+    setArea(scenario.input.area);
+    setFloors(scenario.input.floors);
+    setQuality(scenario.input.quality);
+    setRegion(scenario.input.region);
+    setResult(scenario.result);
+    setShowScenarios(false);
+  }
+
+  function getShareLink(): string {
+    const base = typeof window !== 'undefined' ? window.location.origin : '';
+    const params = new URLSearchParams({
+      type: buildingType,
+      area: area.toString(),
+      floors: floors.toString(),
+      quality,
+      region,
+    });
+    return `${base}/kalkulator-rab?${params.toString()}`;
+  }
+
+  function handleCopyLink() {
+    navigator.clipboard.writeText(getShareLink());
+  }
+
+  function handlePrintPDF() {
+    if (!result) return;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const typeLabel = isEn ? BUILDING_TYPE_LABELS[buildingType].en : BUILDING_TYPE_LABELS[buildingType].id;
+    const qualLabel = isEn ? QUALITY_LABELS[quality].en : QUALITY_LABELS[quality].id;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>RAB Estimasi - PT Karya Bangun Semesta</title>
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1a1a1a; max-width: 800px; margin: 0 auto; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #153969; padding-bottom: 20px; margin-bottom: 30px; }
+          .logo { font-size: 20px; font-weight: bold; color: #153969; }
+          .logo small { display: block; font-size: 11px; color: #666; font-weight: normal; }
+          .date { font-size: 12px; color: #666; text-align: right; }
+          h1 { font-size: 18px; color: #153969; margin: 0 0 20px; }
+          .total-box { background: #f0f4f8; border-left: 4px solid #153969; padding: 20px; margin: 20px 0; }
+          .total-box .amount { font-size: 28px; font-weight: bold; color: #153969; }
+          .total-box .per-m2 { font-size: 14px; color: #555; margin-top: 4px; }
+          .specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; }
+          .spec-item { background: #f9f9f9; padding: 10px 14px; border-radius: 4px; }
+          .spec-item label { font-size: 11px; color: #888; text-transform: uppercase; }
+          .spec-item value { display: block; font-size: 14px; font-weight: 600; margin-top: 2px; }
+          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          th { text-align: left; padding: 10px 12px; background: #153969; color: white; font-size: 12px; }
+          td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+          td:last-child { text-align: right; font-weight: 600; }
+          .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 11px; color: #888; }
+          @media print { body { padding: 20px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">
+            PT Karya Bangun Semesta
+            <small>Construction & Building Services</small>
+          </div>
+          <div class="date">
+            ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}<br/>
+            Ref: RAB-${Date.now().toString(36).toUpperCase()}
+          </div>
+        </div>
+
+        <h1>${isEn ? 'Construction Cost Estimate (RAB)' : 'Estimasi Rencana Anggaran Biaya (RAB)'}</h1>
+
+        <div class="total-box">
+          <div class="amount">${formatCurrency(result.totalCost)}</div>
+          <div class="per-m2">${formatCurrency(result.pricePerM2)} / m²  •  ${isEn ? 'Duration' : 'Durasi'}: ${isEn ? result.durationEn : result.duration}</div>
+        </div>
+
+        <div class="specs">
+          <div class="spec-item"><label>${isEn ? 'Building Type' : 'Tipe Bangunan'}</label><value>${typeLabel}</value></div>
+          <div class="spec-item"><label>${isEn ? 'Area' : 'Luas Bangunan'}</label><value>${area} m²</value></div>
+          <div class="spec-item"><label>${isEn ? 'Floors' : 'Jumlah Lantai'}</label><value>${floors}</value></div>
+          <div class="spec-item"><label>${isEn ? 'Quality' : 'Kualitas'}</label><value>${qualLabel}</value></div>
+          <div class="spec-item"><label>${isEn ? 'Location' : 'Lokasi'}</label><value>${REGION_LABELS[region]}</value></div>
+          <div class="spec-item"><label>${isEn ? 'Duration' : 'Estimasi Durasi'}</label><value>${isEn ? result.durationEn : result.duration}</value></div>
+        </div>
+
+        <h2 style="font-size: 15px; color: #153969; margin-top: 30px;">${isEn ? 'Cost Breakdown' : 'Rincian Biaya'}</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>${isEn ? 'Work Item' : 'Item Pekerjaan'}</th>
+              <th style="text-align:center;">%</th>
+              <th style="text-align:right;">${isEn ? 'Amount' : 'Jumlah'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${result.breakdown.map((item) => `
+              <tr>
+                <td>${isEn ? item.labelEn : item.label}</td>
+                <td style="text-align:center;">${item.percentage}%</td>
+                <td>${formatCurrency(item.amount)}</td>
+              </tr>
+            `).join('')}
+            <tr style="font-weight: bold; border-top: 2px solid #153969;">
+              <td colspan="2"><strong>TOTAL</strong></td>
+              <td>${formatCurrency(result.totalCost)}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="footer">
+          <p><strong>${isEn ? 'Disclaimer' : 'Catatan'}:</strong> ${isEn
+            ? 'This estimate is based on 2024 contractor rates and BPS Construction Cost Index (IKK). Actual costs depend on site conditions, material availability, and contractor pricing. Does not include land cost, permits (IMB/PBG), or furniture.'
+            : 'Estimasi berdasarkan harga borongan kontraktor 2024 dan Indeks Kemahalan Konstruksi (IKK) BPS. Biaya aktual tergantung kondisi lokasi, ketersediaan material, dan penawaran kontraktor. Belum termasuk biaya tanah, IMB/PBG, dan furniture.'}</p>
+          <p style="margin-top: 12px;">PT Karya Bangun Semesta • WhatsApp: 0812-1812-7503 • www.karyabangunsemesta.com</p>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
+  async function handleSubmitLead(e: React.FormEvent) {
+    e.preventDefault();
+    setLeadSubmitting(true);
+
+    try {
+      await fetch('/api/rab/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...leadForm,
+          buildingType,
+          area,
+          floors,
+          quality,
+          region,
+          estimatedCost: result?.totalCost || 0,
+        }),
+      });
+      setLeadSuccess(true);
+      setTimeout(() => {
+        setShowLeadForm(false);
+        setLeadSuccess(false);
+        setLeadForm({ name: '', phone: '', email: '', company: '', message: '' });
+      }, 2000);
+    } catch {
+      // Silently handle - WA link is fallback
+    }
+    setLeadSubmitting(false);
   }
 
   return (
@@ -187,15 +342,28 @@ export default function KalkulatorRABPage() {
       {/* Header */}
       <div className={`${isDark ? 'bg-gray-800' : 'bg-white'} border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} pt-24 md:pt-28 pb-6`}>
         <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-6xl mx-auto">
-            <h1 className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              {isEn ? 'RAB Calculator' : 'Kalkulator RAB'}
-            </h1>
-            <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-              {isEn
-                ? 'Estimate construction costs based on current market rates across regions in Indonesia.'
-                : 'Estimasi biaya konstruksi berdasarkan harga pasar terkini di berbagai wilayah Indonesia.'}
-            </p>
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h1 className={`text-xl md:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                {isEn ? 'RAB Calculator' : 'Kalkulator RAB'}
+              </h1>
+              <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                {isEn
+                  ? 'Estimate construction costs based on current market rates across regions in Indonesia.'
+                  : 'Estimasi biaya konstruksi berdasarkan harga pasar terkini di berbagai wilayah Indonesia.'}
+              </p>
+            </div>
+            {/* Saved scenarios button */}
+            {savedScenarios.length > 0 && (
+              <button
+                onClick={() => setShowScenarios(!showScenarios)}
+                className={`text-xs px-3 py-2 rounded-md border ${
+                  isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                📋 {isEn ? `${savedScenarios.length} Saved` : `${savedScenarios.length} Tersimpan`}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -203,6 +371,51 @@ export default function KalkulatorRABPage() {
       {/* Main Content */}
       <div className="container mx-auto px-4 md:px-8 py-6">
         <div className="max-w-6xl mx-auto">
+
+          {/* Saved Scenarios Panel */}
+          <AnimatePresence>
+            {showScenarios && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden mb-6"
+              >
+                <div className={`rounded-lg ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border p-4`}>
+                  <h3 className={`text-sm font-medium mb-3 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                    {isEn ? 'Saved Scenarios' : 'Skenario Tersimpan'}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {savedScenarios.map((s) => (
+                      <div
+                        key={s.id}
+                        className={`p-3 rounded-md border ${isDark ? 'border-gray-600 hover:border-gray-500' : 'border-gray-200 hover:border-gray-300'} cursor-pointer group`}
+                        onClick={() => handleLoadScenario(s)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                              {formatShort(s.result.totalCost)}
+                            </p>
+                            <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {isEn ? BUILDING_TYPE_LABELS[s.input.buildingType].en : BUILDING_TYPE_LABELS[s.input.buildingType].id} • {s.input.area}m² • {REGION_LABELS[s.input.region]}
+                            </p>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDeleteScenario(s.id); }}
+                            className="opacity-0 group-hover:opacity-100 text-xs text-red-400 hover:text-red-500 p-1"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
             {/* Form Panel */}
@@ -221,9 +434,9 @@ export default function KalkulatorRABPage() {
                         isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                       } focus:outline-none focus:ring-2 focus:ring-[#153969]/50 focus:border-[#153969]`}
                     >
-                      {(Object.keys(buildingTypeLabels) as BuildingType[]).map((type) => (
+                      {(Object.keys(BUILDING_TYPE_LABELS) as BuildingType[]).map((type) => (
                         <option key={type} value={type}>
-                          {isEn ? buildingTypeLabels[type].en : buildingTypeLabels[type].id}
+                          {isEn ? BUILDING_TYPE_LABELS[type].en : BUILDING_TYPE_LABELS[type].id}
                         </option>
                       ))}
                     </select>
@@ -238,9 +451,12 @@ export default function KalkulatorRABPage() {
                       <input
                         type="number"
                         min={20}
-                        max={10000}
+                        max={5000}
                         value={area}
-                        onChange={(e) => setArea(Math.max(1, parseInt(e.target.value) || 1))}
+                        onChange={(e) => {
+                          setArea(parseInt(e.target.value) || 0);
+                          setValidationError(null);
+                        }}
                         className={`w-full rounded-md border px-3 py-2.5 text-sm ${
                           isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                         } focus:outline-none focus:ring-2 focus:ring-[#153969]/50 focus:border-[#153969]`}
@@ -270,7 +486,7 @@ export default function KalkulatorRABPage() {
                       {isEn ? 'Quality Level' : 'Tingkat Kualitas'}
                     </label>
                     <div className="space-y-2">
-                      {(Object.keys(qualityLabels) as Quality[]).map((q) => (
+                      {(Object.keys(QUALITY_LABELS) as Quality[]).map((q) => (
                         <label
                           key={q}
                           className={`flex items-start gap-3 p-2.5 rounded-md border cursor-pointer transition-colors ${
@@ -289,10 +505,10 @@ export default function KalkulatorRABPage() {
                           />
                           <div>
                             <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                              {isEn ? qualityLabels[q].en : qualityLabels[q].id}
+                              {isEn ? QUALITY_LABELS[q].en : QUALITY_LABELS[q].id}
                             </p>
                             <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                              {isEn ? qualityLabels[q].descEn : qualityLabels[q].desc}
+                              {isEn ? QUALITY_LABELS[q].descEn : QUALITY_LABELS[q].desc}
                             </p>
                           </div>
                         </label>
@@ -312,17 +528,24 @@ export default function KalkulatorRABPage() {
                         isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                       } focus:outline-none focus:ring-2 focus:ring-[#153969]/50 focus:border-[#153969]`}
                     >
-                      {(Object.keys(regionLabels) as Region[]).map((r) => (
+                      {(Object.keys(REGION_LABELS) as Region[]).map((r) => (
                         <option key={r} value={r}>
-                          {regionLabels[r]}
+                          {REGION_LABELS[r]}
                         </option>
                       ))}
                     </select>
                   </div>
 
+                  {/* Validation Error */}
+                  {validationError && (
+                    <p className="text-xs text-red-500 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-md">
+                      ⚠️ {validationError}
+                    </p>
+                  )}
+
                   {/* Calculate Button */}
                   <button
-                    onClick={calculateRAB}
+                    onClick={handleCalculate}
                     disabled={isCalculating}
                     className={`w-full py-3 px-4 rounded-md text-sm font-medium transition-colors ${
                       isCalculating
@@ -412,13 +635,41 @@ export default function KalkulatorRABPage() {
 
                       {/* Specs row */}
                       <div className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-100'} flex flex-wrap gap-x-4 gap-y-1 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        <span>{isEn ? buildingTypeLabels[buildingType].en : buildingTypeLabels[buildingType].id}</span>
+                        <span>{isEn ? BUILDING_TYPE_LABELS[buildingType].en : BUILDING_TYPE_LABELS[buildingType].id}</span>
                         <span>•</span>
                         <span>{area} m² × {floors} {isEn ? 'floor' : 'lantai'}</span>
                         <span>•</span>
-                        <span>{isEn ? qualityLabels[quality].en : qualityLabels[quality].id}</span>
+                        <span>{isEn ? QUALITY_LABELS[quality].en : QUALITY_LABELS[quality].id}</span>
                         <span>•</span>
-                        <span>{regionLabels[region]}</span>
+                        <span>{REGION_LABELS[region]}</span>
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-100'} flex flex-wrap gap-2`}>
+                        <button
+                          onClick={handleSaveScenario}
+                          className={`text-xs px-3 py-1.5 rounded border ${
+                            isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          💾 {isEn ? 'Save' : 'Simpan'}
+                        </button>
+                        <button
+                          onClick={handlePrintPDF}
+                          className={`text-xs px-3 py-1.5 rounded border ${
+                            isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          📄 {isEn ? 'Export PDF' : 'Export PDF'}
+                        </button>
+                        <button
+                          onClick={handleCopyLink}
+                          className={`text-xs px-3 py-1.5 rounded border ${
+                            isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          🔗 {isEn ? 'Copy Link' : 'Salin Link'}
+                        </button>
                       </div>
                     </div>
 
@@ -463,7 +714,7 @@ export default function KalkulatorRABPage() {
                                 <div className={`w-full h-2 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
                                   <motion.div
                                     initial={{ width: 0 }}
-                                    animate={{ width: `${item.percentage * 4}%` }}
+                                    animate={{ width: `${item.percentage * 3.3}%` }}
                                     transition={{ duration: 0.5, delay: index * 0.05 }}
                                     className="h-full rounded-full bg-[#153969]"
                                   />
@@ -478,7 +729,7 @@ export default function KalkulatorRABPage() {
                               isDark ? 'bg-blue-900/20 border border-blue-800' : 'bg-[#153969]/5 border border-[#153969]/20'
                             }`}>
                               <span className={`font-medium ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
-                                {regionLabels[region]} ({isEn ? 'selected' : 'terpilih'})
+                                {REGION_LABELS[region]} ({isEn ? 'selected' : 'terpilih'})
                               </span>
                               <span className={`font-semibold ${isDark ? 'text-blue-300' : 'text-[#153969]'}`}>
                                 {formatShort(result.totalCost)}
@@ -525,14 +776,12 @@ export default function KalkulatorRABPage() {
                               : 'Tim kami dapat menyiapkan RAB lengkap dengan spesifikasi material dan penawaran kontraktor.'}
                           </p>
                         </div>
-                        <a
-                          href="https://wa.me/6281218127503?text=Halo%2C%20saya%20ingin%20konsultasi%20RAB%20detail%20untuk%20proyek%20saya."
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          onClick={() => setShowLeadForm(true)}
                           className="shrink-0 bg-[#153969] hover:bg-[#1e4d8a] text-white text-sm font-medium py-2.5 px-5 rounded-md transition-colors"
                         >
                           {isEn ? 'Request Detailed RAB' : 'Minta RAB Detail'}
-                        </a>
+                        </button>
                       </div>
                     </div>
                   </motion.div>
@@ -575,6 +824,150 @@ export default function KalkulatorRABPage() {
           </div>
         </div>
       </div>
+
+      {/* Lead Form Modal */}
+      <AnimatePresence>
+        {showLeadForm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            onClick={() => setShowLeadForm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-md rounded-lg ${isDark ? 'bg-gray-800' : 'bg-white'} p-6 shadow-xl`}
+            >
+              {leadSuccess ? (
+                <div className="text-center py-6">
+                  <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-900/30 mx-auto mb-4 flex items-center justify-center">
+                    <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className={`text-base font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                    {isEn ? 'Request submitted!' : 'Permintaan terkirim!'}
+                  </p>
+                  <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {isEn ? 'Our team will contact you within 1×24 hours.' : 'Tim kami akan menghubungi Anda dalam 1×24 jam.'}
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmitLead}>
+                  <h3 className={`text-base font-semibold mb-4 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                    {isEn ? 'Request Detailed RAB' : 'Minta RAB Detail'}
+                  </h3>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {isEn ? 'Name' : 'Nama'} *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={leadForm.name}
+                        onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                        className={`w-full rounded-md border px-3 py-2 text-sm ${
+                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                        placeholder={isEn ? 'Your name' : 'Nama Anda'}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {isEn ? 'Phone / WhatsApp' : 'No. Telepon / WhatsApp'} *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={leadForm.phone}
+                        onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+                        className={`w-full rounded-md border px-3 py-2 text-sm ${
+                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                        placeholder="08xx-xxxx-xxxx"
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={leadForm.email}
+                        onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                        className={`w-full rounded-md border px-3 py-2 text-sm ${
+                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {isEn ? 'Company' : 'Perusahaan'}
+                      </label>
+                      <input
+                        type="text"
+                        value={leadForm.company}
+                        onChange={(e) => setLeadForm({ ...leadForm, company: e.target.value })}
+                        className={`w-full rounded-md border px-3 py-2 text-sm ${
+                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {isEn ? 'Message (optional)' : 'Pesan (opsional)'}
+                      </label>
+                      <textarea
+                        value={leadForm.message}
+                        onChange={(e) => setLeadForm({ ...leadForm, message: e.target.value })}
+                        rows={3}
+                        className={`w-full rounded-md border px-3 py-2 text-sm ${
+                          isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                        placeholder={isEn ? 'Tell us about your project...' : 'Ceritakan tentang proyek Anda...'}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Summary in modal */}
+                  {result && (
+                    <div className={`mt-4 p-3 rounded-md text-xs ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-50 text-gray-600'}`}>
+                      <p className="font-medium">{isEn ? 'Your estimate:' : 'Estimasi Anda:'}</p>
+                      <p>{isEn ? BUILDING_TYPE_LABELS[buildingType].en : BUILDING_TYPE_LABELS[buildingType].id} • {area}m² • {floors} {isEn ? 'floor' : 'lantai'} • {REGION_LABELS[region]}</p>
+                      <p className="font-semibold mt-1">{formatCurrency(result.totalCost)}</p>
+                    </div>
+                  )}
+
+                  <div className="mt-5 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowLeadForm(false)}
+                      className={`flex-1 py-2.5 rounded-md text-sm font-medium border ${
+                        isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {isEn ? 'Cancel' : 'Batal'}
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={leadSubmitting}
+                      className="flex-1 py-2.5 rounded-md text-sm font-medium bg-[#153969] hover:bg-[#1e4d8a] text-white disabled:opacity-50"
+                    >
+                      {leadSubmitting ? (isEn ? 'Sending...' : 'Mengirim...') : (isEn ? 'Submit Request' : 'Kirim Permintaan')}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

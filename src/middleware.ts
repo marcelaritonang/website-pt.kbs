@@ -8,6 +8,7 @@ const protectedRoutes = [
   '/platform/material-store',
   '/platform/orders',
   '/platform/invoice',
+  '/platform/admin',
 ];
 
 // Routes that should redirect to platform if already logged in
