@@ -608,42 +608,9 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      <nav className={`${isDark ? 'bg-gray-800 shadow-gray-900' : 'bg-white shadow-md'} py-3 sticky top-0 z-50 transition-colors duration-300`}>
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="flex justify-between items-center">
-            <Link href="/" className={`text-xl font-bold ${isDark ? 'text-blue-400' : 'text-[#153969]'} transition-colors duration-300`}>
-              Logo Perusahaan
-            </Link>
-            
-            <div className="hidden md:flex items-center space-x-6">
-              <Link href="/" className={`${isDark ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-[#153969]'} transition-colors`}>
-                {language === 'en' ? "Home" : "Beranda"}
-              </Link>
-              <Link href="/services" className={`${isDark ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-[#153969]'} transition-colors`}>
-                {language === 'en' ? "Services" : "Layanan"}
-              </Link>
-              <Link href="/projects" className={`${isDark ? 'text-blue-400' : 'text-[#153969]'} font-medium`}>
-                {language === 'en' ? "Projects" : "Proyek"}
-              </Link>
-              <Link href="/contact" className={`${isDark ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-[#153969]'} transition-colors`}>
-                {language === 'en' ? "Contact" : "Kontak"}
-              </Link>
-            </div>
-            
-            <div className="md:hidden">
-              {/* Mobile Menu Button */}
-              <button className={`${isDark ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-[#153969]'} transition-colors`}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
 
       {/* Search and Filter Section */}
-      <section className={`py-8 md:py-12 ${isDark ? 'bg-gray-800/50' : 'bg-gray-50'} sticky top-[57px] z-40 shadow-sm transition-colors duration-300`}>
+      <section className={`py-8 md:py-12 ${isDark ? 'bg-gray-800/50' : 'bg-gray-50'} sticky top-[64px] md:top-[80px] z-40 shadow-sm transition-colors duration-300`}>
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1153,72 +1120,13 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* Fixed Navigation Button (visible when scrolling) */}
-      <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2">
-        <Link 
-          href="/" 
-          className={`${isDark ? 'bg-blue-600 hover:bg-blue-700' : 'bg-[#153969] hover:bg-[#0f2a4d]'} p-3 rounded-full shadow-lg transition-colors text-white flex items-center justify-center`}
-          aria-label={language === 'en' ? "Back to Home" : "Kembali ke Beranda"}
-        >
-          <Home className="h-5 w-5" />
-        </Link>
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className={`${isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-white hover:bg-gray-100 text-[#153969]'} p-3 rounded-full shadow-lg transition-colors flex items-center justify-center`}
-          aria-label={language === 'en' ? "Back to Top" : "Kembali ke Atas"}
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path>
-          </svg>
-        </button>
-      </div>
-
-      {/* Shortcuts Menu - Mobile Only */}
-      <div className={`md:hidden fixed bottom-0 left-0 right-0 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t py-2 px-4 z-40 transition-colors duration-300`}>
-        <div className="flex justify-between items-center">
-          <Link href="/" className={`flex flex-col items-center ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-[#153969]'} transition-colors`}>
-            <Home className="h-6 w-6" />
-            <span className="text-xs mt-1">{language === 'en' ? "Home" : "Beranda"}</span>
-          </Link>
-          
-          <Link href="/about" className={`flex flex-col items-center ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-[#153969]'} transition-colors`}>
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span className="text-xs mt-1">{language === 'en' ? "About" : "Tentang"}</span>
-          </Link>
-          
-          <Link href="/services" className={`flex flex-col items-center ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-[#153969]'} transition-colors`}>
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <span className="text-xs mt-1">{language === 'en' ? "Services" : "Layanan"}</span>
-          </Link>
-          
-          <div className={`flex flex-col items-center ${isDark ? 'text-blue-400' : 'text-[#153969]'} transition-colors`}>
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-            </svg>
-            <span className="text-xs mt-1 font-medium">{language === 'en' ? "Projects" : "Proyek"}</span>
-          </div>
-          
-          <Link href="/contact" className={`flex flex-col items-center ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-[#153969]'} transition-colors`}>
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-            </svg>
-            <span className="text-xs mt-1">{language === 'en' ? "Contact" : "Kontak"}</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* Back to Top Button - Appears when scrolling down */}
-      {isMounted && (
+      {/* Fixed Navigation - Back to Top only */}
+      {isMounted && scrollPosition > 500 && (
         <motion.button
           initial={{ opacity: 0 }}
-          animate={{ opacity: scrollPosition > 500 ? 1 : 0 }}
+          animate={{ opacity: 1 }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className={`hidden md:flex fixed bottom-4 left-4 z-40 ${
+          className={`fixed bottom-6 right-6 z-40 ${
             isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-white hover:bg-gray-100'
           } shadow-lg rounded-full p-3 transition-colors`}
           aria-label={language === 'en' ? "Back to Top" : "Kembali ke Atas"}
