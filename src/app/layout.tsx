@@ -5,6 +5,7 @@ import './globals.css';
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/layout/Navbar';
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
         <ThemeProvider>
           <LanguageProvider>
+            <AuthProvider>
             {/* Loading Screen */}
             <AnimatePresence mode="wait">
               {isLoading && (
@@ -72,6 +74,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
             {/* Add portal root for modals */}
             <div id="modal-root"></div>
+            </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>
