@@ -304,14 +304,14 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center mr-6">
             <Link href="/" className="flex items-center">
               <Image
                 src="/images/logo-kbs.png"
                 alt="KBS Logo"
-                width={40}
-                height={40}
-                className="w-auto h-8 md:h-10 rounded-md"
+                width={48}
+                height={48}
+                className="w-auto h-9 md:h-11 rounded-md"
                 priority
               />
             </Link>
