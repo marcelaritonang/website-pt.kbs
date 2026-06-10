@@ -322,8 +322,8 @@ export default function ProjectTrackingPage() {
                             </span>
                           </div>
                           {project.current_phase && (
-                            <p className={`text-xs mt-1.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                              📍 {project.current_phase}
+                            <p className={`text-xs mt-1.5 flex items-center gap-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                              <MapPin className="w-3 h-3" /> {project.current_phase}
                             </p>
                           )}
                         </div>

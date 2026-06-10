@@ -154,6 +154,11 @@ export default function Navbar() {
           title: asString(t('nav.platformDigital')),
           items: [
             {
+              name: 'BangunHub',
+              href: '/tech',
+              description: language === 'id' ? 'Platform manajemen konstruksi all-in-one' : 'All-in-one construction management platform'
+            },
+            {
               name: asString(t('nav.rabCalculator')),
               href: '/kalkulator-rab',
               description: asString(t('nav.rabCalculatorDesc'))
@@ -300,7 +305,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center">
               <Image
                 src="/images/logo-kbs.png"
                 alt="KBS Logo"
@@ -309,15 +314,6 @@ export default function Navbar() {
                 className="w-auto h-8 md:h-10 rounded-md"
                 priority
               />
-              <span className={`text-xl md:text-2xl font-bold ${
-                isScrolled || !isDarkPage 
-                  ? isDark 
-                    ? 'text-white' 
-                    : 'text-[#153969]' 
-                  : 'text-white'
-              }`}>
-                KBS
-              </span>
             </Link>
           </div>
 

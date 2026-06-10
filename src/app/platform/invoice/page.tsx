@@ -1,30 +1,30 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Printer, ArrowLeft, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Printer, ArrowLeft, CheckCircle, Clock, XCircle, FileText, Package, Truck, Receipt } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
-interface OrderItem {
+interface InvoiceItem {
   name: string;
   qty: number;
   price: number;
   unit?: string;
 }
 
-interface OrderData {
-  orderId?: string;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
-  customerAddress?: string;
-  items: OrderItem[];
-  paymentStatus?: 'paid' | 'pending' | 'failed';
-  paymentMethod?: string;
-  orderDate?: string;
-  notes?: string;
+interface Invoice {
+  id: string;
+  type: 'equipment' | 'material';
+  date: string;
+  items: InvoiceItem[];
+  total: number;
+  status: string;
+  customer: {
+    name: string;
+    email: string;
+  };
 }
 
 export default function InvoicePage() {
@@ -32,46 +32,103 @@ export default function InvoicePage() {
   const { language } = useLanguage();
   const isDark = theme === 'dark';
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const [orderData, setOrderData] = useState<OrderData | null>(null);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Only load order data from localStorage (not from URL params to prevent phishing)
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('kbs_last_order');
-      if (stored) {
-        try {
-          setOrderData(JSON.parse(stored));
-        } catch {
-          // No valid data
-        }
+    loadInvoices();
+  }, []);
+
+  async function loadInvoices() {
+    const token = localStorage.getItem('kbs_token');
+    const user = JSON.parse(localStorage.getItem('kbs_user') || '{}');
+    const allInvoices: Invoice[] = [];
+
+    // Fetch bookings
+    try {
+      const res = await fetch('/api/bookings/', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        (data.bookings || []).forEach((b: Record<string, unknown>) => {
+          allInvoices.push({
+            id: `INV-EQ-${String(b.id).padStart(4, '0')}`,
+            type: 'equipment',
+            date: b.created_at as string,
+            items: [{
+              name: (b.equipment_name as string) || 'Equipment Rental',
+              qty: Math.ceil((new Date(b.end_date as string).getTime() - new Date(b.start_date as string).getTime()) / 86400000),
+              price: Math.round((b.total_price as number) / Math.max(1, Math.ceil((new Date(b.end_date as string).getTime() - new Date(b.start_date as string).getTime()) / 86400000))),
+              unit: language === 'id' ? 'hari' : 'days',
+            }],
+            total: b.total_price as number,
+            status: b.status as string,
+            customer: { name: user.name || '', email: user.email || '' },
+          });
+        });
       }
-    }
-  }, [searchParams]);
+    } catch {}
 
-  // Generate invoice number
-  const invoiceNumber = useMemo(() => {
-    if (!orderData) return '';
-    const date = orderData.orderDate ? new Date(orderData.orderDate) : new Date();
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    const seq = orderData.orderId
-      ? String(orderData.orderId).padStart(4, '0')
-      : String(Math.floor(Math.random() * 9000) + 1000);
-    return `INV-KBS-${y}${m}${d}-${seq}`;
-  }, [orderData]);
+    // Fetch material orders
+    try {
+      const res = await fetch('/api/orders/', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        (data.orders || []).forEach((o: Record<string, unknown>) => {
+          const items = (o.items as Array<{id: number; qty: number}>) || [];
+          allInvoices.push({
+            id: `INV-MT-${String(o.id).padStart(4, '0')}`,
+            type: 'material',
+            date: o.created_at as string,
+            items: items.map((item) => ({
+              name: `Material #${item.id}`,
+              qty: item.qty,
+              price: Math.round((o.total_price as number) / items.reduce((s, i) => s + i.qty, 0)),
+              unit: 'pcs',
+            })),
+            total: o.total_price as number,
+            status: o.status as string,
+            customer: { name: user.name || '', email: user.email || '' },
+          });
+        });
+      }
+    } catch {}
 
-  const invoiceDate = useMemo(() => {
-    if (!orderData) return '';
-    const date = orderData.orderDate ? new Date(orderData.orderDate) : new Date();
-    return date.toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }, [orderData, language]);
+    // Also check localStorage for recent order
+    try {
+      const stored = localStorage.getItem('kbs_last_order');
+      if (stored && allInvoices.length === 0) {
+        const parsed = JSON.parse(stored);
+        allInvoices.push({
+          id: `INV-${String(parsed.id || '0001').padStart(4, '0')}`,
+          type: 'material',
+          date: parsed.date || new Date().toISOString(),
+          items: (parsed.items || []).map((item: InvoiceItem) => ({
+            name: item.name,
+            qty: item.qty,
+            price: item.price,
+            unit: item.unit || '',
+          })),
+          total: (parsed.items || []).reduce((s: number, i: InvoiceItem) => s + i.price * i.qty, 0),
+          status: parsed.status || 'pending',
+          customer: {
+            name: parsed.customer?.name || user.name || '',
+            email: parsed.customer?.email || user.email || '',
+          },
+        });
+      }
+    } catch {}
+
+    allInvoices.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    setInvoices(allInvoices);
+    if (allInvoices.length > 0) setSelectedInvoice(allInvoices[0]);
+    setLoading(false);
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -81,396 +138,304 @@ export default function InvoicePage() {
     }).format(amount);
   };
 
-  const subtotal = useMemo(() => {
-    if (!orderData) return 0;
-    return orderData.items.reduce((sum, item) => sum + item.price * item.qty, 0);
-  }, [orderData]);
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+      case 'completed':
+        return { icon: <CheckCircle className="w-3.5 h-3.5" />, label: language === 'id' ? 'Lunas' : 'Paid', className: 'bg-green-100 text-green-700' };
+      case 'cancelled':
+        return { icon: <XCircle className="w-3.5 h-3.5" />, label: language === 'id' ? 'Dibatalkan' : 'Cancelled', className: 'bg-red-100 text-red-700' };
+      default:
+        return { icon: <Clock className="w-3.5 h-3.5" />, label: language === 'id' ? 'Menunggu' : 'Pending', className: 'bg-amber-100 text-amber-700' };
+    }
+  };
+
+  const subtotal = selectedInvoice ? selectedInvoice.total : 0;
   const taxRate = 0.11;
   const taxAmount = Math.round(subtotal * taxRate);
   const grandTotal = subtotal + taxAmount;
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const getStatusBadge = (status?: string) => {
-    switch (status) {
-      case 'paid':
-        return {
-          icon: <CheckCircle className="w-4 h-4" />,
-          label: language === 'id' ? 'Lunas' : 'Paid',
-          className: 'bg-green-100 text-green-800 border-green-200',
-        };
-      case 'failed':
-        return {
-          icon: <XCircle className="w-4 h-4" />,
-          label: language === 'id' ? 'Gagal' : 'Failed',
-          className: 'bg-red-100 text-red-800 border-red-200',
-        };
-      default:
-        return {
-          icon: <Clock className="w-4 h-4" />,
-          label: language === 'id' ? 'Menunggu Pembayaran' : 'Pending',
-          className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-        };
-    }
-  };
-
-  if (!orderData) {
+  if (loading) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
-        <div className="text-center">
-          <p className={`text-lg mb-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-            {language === 'id' ? 'Data invoice tidak ditemukan.' : 'Invoice data not found.'}
-          </p>
-          <button
-            onClick={() => router.push('/platform')}
-            className="px-6 py-2 bg-[#153969] text-white rounded-lg hover:bg-[#1e4d8a] transition"
-          >
-            {language === 'id' ? 'Kembali ke Platform' : 'Back to Platform'}
-          </button>
+      <div className={`min-h-screen pt-24 px-4 ${isDark ? 'bg-[#0a1628]' : 'bg-gray-50'}`}>
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className={`h-8 w-48 rounded ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`} />
+            <div className={`h-64 rounded-xl ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`} />
+          </div>
         </div>
       </div>
     );
   }
 
-  const statusBadge = getStatusBadge(orderData.paymentStatus);
-
   return (
-    <div className={`min-h-screen py-8 px-4 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      {/* Action Buttons - hidden on print */}
-      <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between print:hidden">
-        <button
-          onClick={() => router.push('/platform')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-            isDark
-              ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-          }`}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {language === 'id' ? 'Kembali ke Platform' : 'Back to Platform'}
-        </button>
+    <div className={`min-h-screen pt-24 pb-12 px-4 ${isDark ? 'bg-[#0a1628]' : 'bg-gray-50'}`}>
+      <div className="max-w-6xl mx-auto">
 
-        <button
-          onClick={handlePrint}
-          className="flex items-center gap-2 px-5 py-2 bg-[#153969] text-white rounded-lg text-sm font-medium hover:bg-[#1e4d8a] transition"
-        >
-          <Printer className="w-4 h-4" />
-          {language === 'id' ? 'Cetak Invoice' : 'Print Invoice'}
-        </button>
-      </div>
-
-      {/* Invoice Document */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className={`max-w-4xl mx-auto rounded-lg shadow-sm print:shadow-none print:rounded-none ${
-          isDark ? 'bg-gray-800' : 'bg-white'
-        }`}
-      >
-        <div className="p-8 md:p-12">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-10">
-            <div>
-              <h1 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                PT KARYA BANGUN SEMESTA
-              </h1>
-              <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                Jl. Raya Kalimalang No. 88, Jakarta Timur 13450
-              </p>
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                Tel: (021) 8888-7777
-              </p>
-            </div>
-            <div className="text-left md:text-right">
-              <h2 className={`text-xl font-bold uppercase tracking-wide ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                Invoice
-              </h2>
-              <p className={`text-sm mt-1 font-mono ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                {invoiceNumber}
-              </p>
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                {invoiceDate}
-              </p>
-            </div>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 print:hidden">
+          <div>
+            <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <Receipt className="w-6 h-6 inline-block mr-2 -mt-1" />
+              {language === 'id' ? 'Invoice & Tagihan' : 'Invoices & Billing'}
+            </h1>
+            <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+              {language === 'id' ? 'Riwayat transaksi dan tagihan Anda' : 'Your transaction and billing history'}
+            </p>
           </div>
-
-          {/* Divider */}
-          <div className={`border-t-2 mb-8 ${isDark ? 'border-gray-700' : 'border-[#153969]'}`} />
-
-          {/* Customer Info & Payment Status */}
-          <div className="flex flex-col md:flex-row md:justify-between gap-6 mb-10">
-            <div>
-              <h3 className={`text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                {language === 'id' ? 'Ditagihkan Kepada' : 'Bill To'}
-              </h3>
-              <p className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                {orderData.customerName || (language === 'id' ? 'Pelanggan' : 'Customer')}
-              </p>
-              {orderData.customerEmail && (
-                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {orderData.customerEmail}
-                </p>
-              )}
-              {orderData.customerPhone && (
-                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {orderData.customerPhone}
-                </p>
-              )}
-              {orderData.customerAddress && (
-                <p className={`text-sm mt-1 max-w-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {orderData.customerAddress}
-                </p>
-              )}
-            </div>
-
-            <div className="md:text-right">
-              <h3 className={`text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                {language === 'id' ? 'Status Pembayaran' : 'Payment Status'}
-              </h3>
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${statusBadge.className}`}>
-                {statusBadge.icon}
-                {statusBadge.label}
-              </span>
-              {orderData.paymentMethod && (
-                <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {language === 'id' ? 'Metode: ' : 'Method: '}{orderData.paymentMethod}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Items Table */}
-          <div className="mb-8 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                  <th className={`text-left py-3 px-2 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    No
-                  </th>
-                  <th className={`text-left py-3 px-2 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {language === 'id' ? 'Deskripsi' : 'Description'}
-                  </th>
-                  <th className={`text-center py-3 px-2 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {language === 'id' ? 'Jumlah' : 'Qty'}
-                  </th>
-                  <th className={`text-right py-3 px-2 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {language === 'id' ? 'Harga Satuan' : 'Unit Price'}
-                  </th>
-                  <th className={`text-right py-3 px-2 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Total
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderData.items.map((item, index) => (
-                  <tr
-                    key={index}
-                    className={`border-b ${isDark ? 'border-gray-700/50' : 'border-gray-100'}`}
-                  >
-                    <td className={`py-3 px-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {index + 1}
-                    </td>
-                    <td className={`py-3 px-2 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                      {item.name}
-                      {item.unit && (
-                        <span className={`text-xs ml-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                          ({item.unit})
-                        </span>
-                      )}
-                    </td>
-                    <td className={`py-3 px-2 text-center ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {item.qty}
-                    </td>
-                    <td className={`py-3 px-2 text-right ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {formatCurrency(item.price)}
-                    </td>
-                    <td className={`py-3 px-2 text-right font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
-                      {formatCurrency(item.price * item.qty)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Totals */}
-          <div className="flex justify-end mb-10">
-            <div className="w-full md:w-72">
-              <div className={`flex justify-between py-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                <span>Subtotal</span>
-                <span>{formatCurrency(subtotal)}</span>
-              </div>
-              <div className={`flex justify-between py-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                <span>PPN (11%)</span>
-                <span>{formatCurrency(taxAmount)}</span>
-              </div>
-              <div className={`flex justify-between py-3 mt-2 border-t-2 font-bold text-base ${
-                isDark ? 'border-gray-600 text-white' : 'border-[#153969] text-gray-900'
-              }`}>
-                <span>{language === 'id' ? 'Total' : 'Grand Total'}</span>
-                <span>{formatCurrency(grandTotal)}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Notes */}
-          {orderData.notes && (
-            <div className={`mb-8 p-4 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-              <h4 className={`text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                {language === 'id' ? 'Catatan' : 'Notes'}
-              </h4>
-              <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                {orderData.notes}
-              </p>
-            </div>
+          {selectedInvoice && (
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-4 py-2 bg-[#153969] text-white rounded-lg text-sm font-medium hover:bg-[#1e4d8a] transition"
+            >
+              <Printer className="w-4 h-4" />
+              {language === 'id' ? 'Cetak' : 'Print'}
+            </button>
           )}
-
-          {/* Footer */}
-          <div className={`border-t pt-6 mt-6 ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="flex flex-col md:flex-row md:justify-between gap-4">
-              <div>
-                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                  {language === 'id'
-                    ? 'Invoice ini dibuat secara otomatis oleh sistem PT Karya Bangun Semesta.'
-                    : 'This invoice was generated automatically by PT Karya Bangun Semesta system.'}
-                </p>
-              </div>
-              <div className="text-left md:text-right">
-                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                  {language === 'id' ? 'Pertanyaan? Hubungi:' : 'Questions? Contact:'}
-                </p>
-                <p className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  info@karyabangunsemesta.co.id
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
-      </motion.div>
 
-      {/* Next Steps Section - hidden on print */}
-      <div className="max-w-4xl mx-auto mt-8 print:hidden">
-        <div className={`rounded-lg p-6 md:p-8 ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-          <h3 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            {language === 'id' ? 'Langkah Selanjutnya' : 'Next Steps'}
-          </h3>
-
-          {/* Timeline Steps */}
-          <div className="relative">
-            <div className={`absolute left-4 top-6 bottom-6 w-0.5 ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`} />
-
-            {[
-              {
-                step: 1,
-                title: language === 'id' ? 'Pesanan Diterima' : 'Order Received',
-                desc: language === 'id' ? 'Pesanan Anda telah masuk ke sistem kami' : 'Your order has been received in our system',
-                active: true,
-              },
-              {
-                step: 2,
-                title: language === 'id' ? 'Konfirmasi Pembayaran' : 'Payment Confirmation',
-                desc: language === 'id' ? 'Tim kami akan mengonfirmasi pembayaran Anda (maks. 1x24 jam)' : 'Our team will confirm your payment (max. 1x24 hours)',
-                active: false,
-              },
-              {
-                step: 3,
-                title: language === 'id' ? 'Proses & Pengiriman' : 'Processing & Delivery',
-                desc: language === 'id' ? 'Pesanan diproses dan dikirim ke lokasi proyek Anda' : 'Order processed and delivered to your project site',
-                active: false,
-              },
-              {
-                step: 4,
-                title: language === 'id' ? 'Selesai' : 'Completed',
-                desc: language === 'id' ? 'Barang diterima, proyek Anda berjalan lancar' : 'Goods received, your project runs smoothly',
-                active: false,
-              },
-            ].map((item) => (
-              <div key={item.step} className="relative flex items-start gap-4 mb-6 last:mb-0">
-                <div className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${
-                  item.active
-                    ? 'bg-[#153969] text-white'
-                    : isDark ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {item.step}
-                </div>
-                <div className="flex-1 pt-1">
-                  <p className={`font-medium text-sm ${
-                    item.active
-                      ? (isDark ? 'text-white' : 'text-gray-900')
-                      : (isDark ? 'text-gray-400' : 'text-gray-500')
-                  }`}>
-                    {item.title}
-                  </p>
-                  <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                    {item.desc}
-                  </p>
-                </div>
-                {item.active && (
-                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
-                    {language === 'id' ? 'Saat ini' : 'Current'}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Action Buttons */}
-          <div className={`mt-8 pt-6 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="flex flex-col sm:flex-row gap-3">
+        {invoices.length === 0 ? (
+          /* Empty State */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`rounded-2xl p-12 text-center border ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white border-gray-200'}`}
+          >
+            <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+              <FileText className={`w-8 h-8 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+            </div>
+            <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              {language === 'id' ? 'Belum Ada Invoice' : 'No Invoices Yet'}
+            </h3>
+            <p className={`text-sm mb-6 max-w-md mx-auto ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+              {language === 'id'
+                ? 'Invoice akan muncul di sini setelah Anda melakukan booking alat berat atau pembelian material.'
+                : 'Invoices will appear here after you make an equipment booking or material purchase.'}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
-                onClick={() => router.push('/platform/orders/')}
-                className="flex-1 py-3 px-4 bg-[#153969] text-white rounded-lg font-medium hover:bg-[#1e4d8a] transition text-sm text-center"
+                onClick={() => router.push('/platform/equipment-booking/')}
+                className="px-5 py-2.5 bg-[#153969] text-white rounded-lg text-sm font-medium hover:bg-[#1e4d8a] transition"
               >
-                {language === 'id' ? 'Lihat Status Pesanan' : 'View Order Status'}
+                <Truck className="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
+                {language === 'id' ? 'Sewa Alat Berat' : 'Rent Equipment'}
               </button>
               <button
                 onClick={() => router.push('/platform/material-store/')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition text-sm text-center border ${
-                  isDark
-                    ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                className={`px-5 py-2.5 rounded-lg text-sm font-medium transition border ${
+                  isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                {language === 'id' ? 'Belanja Lagi' : 'Continue Shopping'}
+                <Package className="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
+                {language === 'id' ? 'Beli Material' : 'Buy Materials'}
               </button>
-              <a
-                href="https://wa.me/6281218127503"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition text-sm text-center border ${
-                  isDark
-                    ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {language === 'id' ? 'Hubungi Tim Kami' : 'Contact Our Team'}
-              </a>
+            </div>
+          </motion.div>
+        ) : (
+          /* Invoice Layout: List + Detail */
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* Invoice List */}
+            <div className="lg:col-span-1 print:hidden">
+              <div className={`rounded-xl border overflow-hidden ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white border-gray-200'}`}>
+                <div className={`px-4 py-3 border-b ${isDark ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                  <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {language === 'id' ? `${invoices.length} Invoice` : `${invoices.length} Invoices`}
+                  </p>
+                </div>
+                <div className="max-h-[500px] overflow-y-auto">
+                  {invoices.map((inv) => {
+                    const badge = getStatusBadge(inv.status);
+                    const isActive = selectedInvoice?.id === inv.id;
+                    return (
+                      <button
+                        key={inv.id}
+                        onClick={() => setSelectedInvoice(inv)}
+                        className={`w-full text-left px-4 py-3.5 border-b transition ${
+                          isActive
+                            ? isDark ? 'bg-blue-500/10 border-gray-700/50' : 'bg-blue-50 border-gray-100'
+                            : isDark ? 'hover:bg-gray-700/30 border-gray-700/50' : 'hover:bg-gray-50 border-gray-100'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className={`text-sm font-medium truncate ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                              {inv.id}
+                            </p>
+                            <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                              {formatDate(inv.date)}
+                            </p>
+                          </div>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${badge.className}`}>
+                            {badge.icon}
+                            {badge.label}
+                          </span>
+                        </div>
+                        <p className={`text-sm font-semibold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          {formatCurrency(inv.total)}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Invoice Detail */}
+            <div className="lg:col-span-2">
+              {selectedInvoice && (
+                <motion.div
+                  key={selectedInvoice.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`rounded-xl border ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white border-gray-200'}`}
+                >
+                  <div className="p-6 md:p-8">
+                    {/* Invoice Header */}
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
+                      <div>
+                        <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          PT KARYA BANGUN SEMESTA
+                        </h2>
+                        <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Jl. Raya Kalimalang No. 88, Jakarta Timur
+                        </p>
+                        <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Tel: +62 812-1812-7503
+                        </p>
+                      </div>
+                      <div className="md:text-right">
+                        <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Invoice</p>
+                        <p className={`text-sm font-mono font-bold mt-0.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          {selectedInvoice.id}
+                        </p>
+                        <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {formatDate(selectedInvoice.date)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className={`border-t-2 mb-6 ${isDark ? 'border-[#153969]/50' : 'border-[#153969]'}`} />
+
+                    {/* Customer + Status */}
+                    <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-8">
+                      <div>
+                        <p className={`text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {language === 'id' ? 'Ditagihkan Kepada' : 'Bill To'}
+                        </p>
+                        <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          {selectedInvoice.customer.name}
+                        </p>
+                        <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {selectedInvoice.customer.email}
+                        </p>
+                      </div>
+                      <div className="md:text-right">
+                        <p className={`text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Status
+                        </p>
+                        {(() => {
+                          const badge = getStatusBadge(selectedInvoice.status);
+                          return (
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${badge.className}`}>
+                              {badge.icon} {badge.label}
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* Items Table */}
+                    <div className="mb-6 overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                            <th className={`text-left py-2.5 px-2 text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {language === 'id' ? 'Item' : 'Item'}
+                            </th>
+                            <th className={`text-center py-2.5 px-2 text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {language === 'id' ? 'Qty' : 'Qty'}
+                            </th>
+                            <th className={`text-right py-2.5 px-2 text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {language === 'id' ? 'Harga' : 'Price'}
+                            </th>
+                            <th className={`text-right py-2.5 px-2 text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                              Total
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedInvoice.items.map((item, i) => (
+                            <tr key={i} className={`border-b ${isDark ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                              <td className={`py-3 px-2 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                                {item.name}
+                                {item.unit && <span className={`text-xs ml-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>/{item.unit}</span>}
+                              </td>
+                              <td className={`py-3 px-2 text-center ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                {item.qty}
+                              </td>
+                              <td className={`py-3 px-2 text-right ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                {formatCurrency(item.price)}
+                              </td>
+                              <td className={`py-3 px-2 text-right font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                {formatCurrency(item.price * item.qty)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Totals */}
+                    <div className="flex justify-end mb-6">
+                      <div className="w-full md:w-64">
+                        <div className={`flex justify-between py-1.5 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <span>Subtotal</span>
+                          <span>{formatCurrency(subtotal)}</span>
+                        </div>
+                        <div className={`flex justify-between py-1.5 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <span>PPN (11%)</span>
+                          <span>{formatCurrency(taxAmount)}</span>
+                        </div>
+                        <div className={`flex justify-between py-2.5 mt-2 border-t-2 font-bold ${
+                          isDark ? 'border-gray-600 text-white' : 'border-[#153969] text-gray-900'
+                        }`}>
+                          <span>Total</span>
+                          <span>{formatCurrency(grandTotal)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className={`border-t pt-4 ${isDark ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                      <p className={`text-xs ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
+                        {language === 'id'
+                          ? 'Invoice ini dibuat secara otomatis oleh sistem PT Karya Bangun Semesta. Hubungi +62 812-1812-7503 untuk pertanyaan.'
+                          : 'This invoice was generated automatically by PT Karya Bangun Semesta system. Contact +62 812-1812-7503 for questions.'}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Print Styles */}
       <style jsx global>{`
         @media print {
-          body {
-            background: white !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-          .print\\:hidden {
-            display: none !important;
-          }
-          .print\\:shadow-none {
-            box-shadow: none !important;
-          }
-          .print\\:rounded-none {
-            border-radius: 0 !important;
-          }
+          body { background: white !important; }
+          .print\\:hidden { display: none !important; }
         }
       `}</style>
     </div>

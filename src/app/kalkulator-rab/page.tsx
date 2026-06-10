@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import {
   Building2, Store, Warehouse, Briefcase, Wrench,
-  MapPin, Ruler, Layers, Sparkles, Calculator,
+  MapPin, Ruler, Layers, Calculator,
   Download, Share2, Bookmark, MessageCircle,
   TrendingUp, TrendingDown, Minus, Clock,
   ChevronRight, X, CheckCircle2, BarChart3,
@@ -41,23 +41,6 @@ const BUILDING_ICONS: Record<BuildingType, React.ReactNode> = {
   workshop: <Wrench className="w-5 h-5" />,
 };
 
-const QUALITY_COLORS: Record<Quality, { gradient: string; badge: string; ring: string }> = {
-  standar: {
-    gradient: 'from-amber-600 to-amber-700',
-    badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
-    ring: 'ring-amber-500/30',
-  },
-  menengah: {
-    gradient: 'from-slate-400 to-slate-500',
-    badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800/50 dark:text-slate-300',
-    ring: 'ring-slate-400/30',
-  },
-  premium: {
-    gradient: 'from-yellow-400 to-yellow-600',
-    badge: 'bg-yellow-50 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-    ring: 'ring-yellow-400/30',
-  },
-};
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('id-ID', {
@@ -392,76 +375,31 @@ export default function KalkulatorRABPage() {
     <div className={`min-h-screen ${isDark ? 'bg-[#0a1628]' : 'bg-[#f8fafc]'}`}>
 
       {/* ========== HERO SECTION ========== */}
-      <section className="relative overflow-hidden pt-20 pb-12 md:pt-28 md:pb-16">
+      <section className="relative overflow-hidden pt-20 pb-10 md:pt-24 md:pb-12">
         {/* Background */}
         <div className="absolute inset-0">
           <div className={`absolute inset-0 ${isDark
             ? 'bg-gradient-to-br from-[#0a1628] via-[#112240] to-[#153969]'
             : 'bg-gradient-to-br from-[#153969] via-[#1e4d8a] to-[#2563eb]'
           }`} />
-          {/* Decorative elements */}
-          <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-white/5 blur-3xl" />
-          <div className="absolute bottom-0 left-20 w-96 h-96 rounded-full bg-blue-500/10 blur-3xl" />
-          {/* Grid pattern */}
-          <div className="absolute inset-0 opacity-[0.03]" style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-          }} />
-          {/* Floating shapes */}
-          <motion.div
-            animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-32 right-[20%] w-16 h-16 border border-white/10 rotate-45 rounded-sm hidden md:block"
-          />
-          <motion.div
-            animate={{ y: [0, 10, 0], rotate: [45, 40, 45] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute bottom-20 left-[15%] w-12 h-12 border border-white/10 rotate-45 rounded-sm hidden md:block"
-          />
         </div>
 
         {/* Content */}
         <div className="relative container mx-auto px-4 md:px-8">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-xs font-medium mb-6">
-                <Calculator className="w-3.5 h-3.5" />
-                {isEn ? 'Construction Cost Estimator' : 'Estimasi Biaya Konstruksi'}
-              </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-                {isEn ? 'Calculate Your' : 'Hitung'}{' '}
-                <span className="bg-gradient-to-r from-white via-blue-100 to-blue-200 text-transparent bg-clip-text">
-                  {isEn ? 'Construction Budget' : 'Anggaran Konstruksi'}
-                </span>
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight">
+                {isEn ? 'RAB Calculator' : 'Kalkulator RAB'}
               </h1>
-              <p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto">
+              <p className="text-sm md:text-base text-white/70 max-w-xl mx-auto">
                 {isEn
-                  ? 'Get instant estimates based on current market rates and regional construction indices across Indonesia.'
-                  : 'Dapatkan estimasi instan berdasarkan harga pasar terkini dan indeks biaya konstruksi regional di Indonesia.'}
+                  ? 'Get instant construction cost estimates based on current market rates and regional indices across Indonesia.'
+                  : 'Estimasi biaya konstruksi instan berdasarkan harga pasar terkini dan indeks regional di seluruh Indonesia.'}
               </p>
-            </motion.div>
-
-            {/* Quick stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex items-center justify-center gap-6 md:gap-10 mt-8"
-            >
-              {[
-                { label: isEn ? 'Building Types' : 'Tipe Bangunan', value: '5' },
-                { label: isEn ? 'Regions' : 'Wilayah', value: '10' },
-                { label: isEn ? 'Updated' : 'Data Terkini', value: '2024' },
-              ].map((stat, i) => (
-                <div key={i} className="text-center">
-                  <p className="text-xl md:text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-xs text-white/50">{stat.label}</p>
-                </div>
-              ))}
             </motion.div>
           </div>
         </div>
@@ -548,7 +486,7 @@ export default function KalkulatorRABPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className={`rounded-2xl ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} border backdrop-blur-xl p-6 lg:sticky lg:top-24 shadow-lg shadow-black/5`}
+                className={`rounded-2xl ${isDark ? 'bg-gray-800/60 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} border backdrop-blur-xl p-6 shadow-lg shadow-black/5`}
               >
                 {/* Building Type — Icon Grid */}
                 <div className="mb-5">
@@ -633,7 +571,7 @@ export default function KalkulatorRABPage() {
                 {/* Quality */}
                 <div className="mb-5">
                   <label className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-3 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Layers className="w-3.5 h-3.5" />
                     {isEn ? 'Quality Level' : 'Tingkat Kualitas'}
                   </label>
                   <div className="space-y-2">
@@ -644,16 +582,13 @@ export default function KalkulatorRABPage() {
                         className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
                           quality === q
                             ? isDark
-                              ? `border-blue-500/50 bg-blue-500/5 ring-2 ${QUALITY_COLORS[q].ring}`
-                              : `border-[#153969]/50 bg-[#153969]/5 ring-2 ${QUALITY_COLORS[q].ring}`
+                              ? 'border-blue-500/50 bg-blue-500/5 ring-2 ring-blue-500/20'
+                              : 'border-[#153969]/50 bg-[#153969]/5 ring-2 ring-[#153969]/20'
                             : isDark
                               ? 'border-gray-700 hover:border-gray-600 hover:bg-gray-700/30'
                               : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                         }`}
                       >
-                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${QUALITY_COLORS[q].gradient} flex items-center justify-center shrink-0`}>
-                          <Sparkles className="w-4 h-4 text-white" />
-                        </div>
                         <div className="flex-1 min-w-0">
                           <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                             {isEn ? QUALITY_LABELS[q].en : QUALITY_LABELS[q].id}
@@ -810,7 +745,7 @@ export default function KalkulatorRABPage() {
                           {[
                             { icon: <Building2 className="w-3 h-3" />, text: isEn ? BUILDING_TYPE_LABELS[buildingType].en : BUILDING_TYPE_LABELS[buildingType].id },
                             { icon: <Ruler className="w-3 h-3" />, text: `${area} m² × ${floors} ${isEn ? 'fl' : 'lt'}` },
-                            { icon: <Sparkles className="w-3 h-3" />, text: isEn ? QUALITY_LABELS[quality].en : QUALITY_LABELS[quality].id },
+                            { icon: <Layers className="w-3 h-3" />, text: isEn ? QUALITY_LABELS[quality].en : QUALITY_LABELS[quality].id },
                             { icon: <MapPin className="w-3 h-3" />, text: REGION_LABELS[region] },
                           ].map((tag, i) => (
                             <span

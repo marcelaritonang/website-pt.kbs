@@ -104,41 +104,25 @@ export default function ProjectMap({
     validProjects.forEach((project) => {
       const color = STATUS_COLORS[project.status] || '#6b7280';
       const isSelected = selectedId === project.id;
+      const size = isSelected ? 16 : 12;
 
-      // Custom marker element
+      // Simple clean dot marker
       const el = document.createElement('div');
       el.className = 'project-marker';
       el.style.cssText = `
-        width: ${isSelected ? '32px' : '24px'};
-        height: ${isSelected ? '32px' : '24px'};
+        width: ${size}px;
+        height: ${size}px;
         background: ${color};
-        border: 3px solid white;
+        border: 2.5px solid white;
         border-radius: 50%;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        transition: all 0.2s;
-        position: relative;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        transition: transform 0.2s;
       `;
 
       if (isSelected) {
-        el.style.boxShadow = `0 0 0 4px ${color}40, 0 2px 12px rgba(0,0,0,0.4)`;
-      }
-
-      // Progress ring
-      if (project.progress > 0 && project.progress < 100) {
-        const ring = document.createElement('div');
-        ring.style.cssText = `
-          position: absolute;
-          inset: -5px;
-          border-radius: 50%;
-          border: 2px solid transparent;
-          border-top-color: ${color};
-          border-right-color: ${project.progress > 25 ? color : 'transparent'};
-          border-bottom-color: ${project.progress > 50 ? color : 'transparent'};
-          border-left-color: ${project.progress > 75 ? color : 'transparent'};
-          opacity: 0.5;
-        `;
-        el.appendChild(ring);
+        el.style.transform = 'scale(1.3)';
+        el.style.boxShadow = `0 0 0 3px ${color}50, 0 2px 8px rgba(0,0,0,0.4)`;
       }
 
       // Popup content
