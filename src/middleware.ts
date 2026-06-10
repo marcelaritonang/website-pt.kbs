@@ -14,21 +14,46 @@ const protectedRoutes = [
 // Routes that should redirect to platform if already logged in
 const authRoutes = ['/platform/login'];
 
+// Decode JWT payload and check expiry (Edge-compatible, no crypto deps)
+function isTokenValid(token: string): boolean {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+
+    const payload = JSON.parse(atob(parts[1]));
+
+    // Check expiry
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('kbs_token')?.value;
 
-  // Check if accessing protected route without token
+  // Check if accessing protected route without valid token
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  if (isProtectedRoute && !token) {
+  if (isProtectedRoute && (!token || !isTokenValid(token))) {
     const loginUrl = new URL('/platform/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+    const response = NextResponse.redirect(loginUrl);
+    // Clear invalid cookies so user isn't stuck in a loop
+    if (token) {
+      response.cookies.delete('kbs_token');
+      response.cookies.delete('kbs_user');
+    }
+    return response;
   }
 
   // If logged in and trying to access login page, redirect to platform
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
-  if (isAuthRoute && token) {
+  if (isAuthRoute && token && isTokenValid(token)) {
     return NextResponse.redirect(new URL('/platform', request.url));
   }
 

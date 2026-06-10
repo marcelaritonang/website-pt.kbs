@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Building2, Loader2, CheckCircle } from 'lucide-react';
@@ -217,7 +216,7 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                minLength={6}
+                minLength={isLogin ? undefined : 8}
                 className={`w-full pl-10 pr-12 py-3 rounded-lg border focus:ring-2 focus:ring-[#153969] focus:border-transparent outline-none transition ${
                   isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                 }`}
@@ -236,9 +235,13 @@ export default function LoginPage() {
           {/* Forgot Password */}
           {isLogin && (
             <div className="text-right">
-              <Link href="/platform/forgot-password" className="text-sm text-[#153969] hover:underline">
+              <button
+                type="button"
+                onClick={() => setError(language === 'id' ? 'Fitur reset password belum tersedia. Silakan hubungi admin.' : 'Password reset is not yet available. Please contact admin.')}
+                className="text-sm text-[#153969] hover:underline"
+              >
                 {language === 'id' ? 'Lupa password?' : 'Forgot password?'}
-              </Link>
+              </button>
             </div>
           )}
 
