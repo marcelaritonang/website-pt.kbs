@@ -7,6 +7,7 @@ import StatsSection from './components/home/StatsSection'
 import LocationSection from './components/home/LocationSection'
 import BlogNewsSection from './components/home/BlogNewsSection'
 import VisionMissionSection from './components/home/VisionMissionSection'
+import TechSection from './components/home/TechSection'
 
 
 export default function Home() {
@@ -19,6 +20,8 @@ export default function Home() {
       <ServicesSection />
 
       <PlatformSection />
+
+      <TechSection />
 
       <LocationSection />
 
