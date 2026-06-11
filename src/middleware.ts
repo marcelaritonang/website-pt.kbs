@@ -51,10 +51,11 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // If logged in and trying to access login page, redirect to platform
+  // If logged in and trying to access login page, redirect to platform or redirect param
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
   if (isAuthRoute && token && isTokenValid(token)) {
-    return NextResponse.redirect(new URL('/platform', request.url));
+    const redirectTo = request.nextUrl.searchParams.get('redirect') || '/platform';
+    return NextResponse.redirect(new URL(redirectTo, request.url));
   }
 
   return NextResponse.next();
