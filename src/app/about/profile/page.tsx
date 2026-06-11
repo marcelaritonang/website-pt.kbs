@@ -29,15 +29,15 @@ export default function ProfilPerusahaan() {
     en: {
       backToHome: "Back to Home",
       pageTitle: "Company Profile",
-      subtitle: "Building the future with excellence and integrity since 2005",
+      subtitle: "Building the future with excellence and integrity since 2019",
       viewFullProfile: "View Full Company Profile",
       aboutTitle: "About KBS",
-      aboutText1: "PT Karya Bersama Sejahtera (KBS) is a leading construction and engineering company in Indonesia. Founded in 2005, we have grown to become a trusted partner for various construction projects throughout the country, from commercial buildings to infrastructure development.",
+      aboutText1: "PT Karya Bersama Sejahtera (KBS) is a leading construction and engineering company in Indonesia. Founded in 2019, we have grown to become a trusted partner for various construction projects throughout the country, from commercial buildings to infrastructure development.",
       aboutText2: "With our commitment to quality, innovation, and sustainability, we strive to deliver excellence in every project we undertake, ensuring client satisfaction and contributing to Indonesia's development.",
       stats: {
         experience: {
-          title: "18+ Years Experience",
-          desc: "With over 18 years in the industry, we bring expertise and knowledge to every project."
+          title: "6+ Years Experience",
+          desc: "With over 6 years in the industry, we bring expertise and knowledge to every project."
         },
         iso: {
           title: "ISO Certified",
@@ -102,22 +102,22 @@ export default function ProfilPerusahaan() {
         subtitle: "Key milestones in our company's growth and development",
         milestones: [
           {
-            year: "2005",
+            year: "2019",
             title: "Company Founded",
             desc: "KBS was established with a vision to become a leading construction company in Indonesia."
           },
           {
-            year: "2010",
+            year: "2020",
             title: "First Major Project",
             desc: "Completed our first major commercial building project in Jakarta, establishing our reputation for quality and reliability."
           },
           {
-            year: "2015",
+            year: "2022",
             title: "ISO Certification",
             desc: "Achieved ISO 9001 certification, demonstrating our commitment to quality management systems."
           },
           {
-            year: "2018",
+            year: "2023",
             title: "Expansion to Eastern Indonesia",
             desc: "Opened our first office in Makassar to serve clients in Eastern Indonesia and work on infrastructure projects in the region."
           },
@@ -148,15 +148,15 @@ export default function ProfilPerusahaan() {
     id: {
       backToHome: "Kembali ke Beranda",
       pageTitle: "Profil Perusahaan",
-      subtitle: "Membangun masa depan dengan keunggulan dan integritas sejak 2005",
+      subtitle: "Membangun masa depan dengan keunggulan dan integritas sejak 2019",
       viewFullProfile: "Lihat Profil Perusahaan Lengkap",
       aboutTitle: "Tentang KBS",
-      aboutText1: "PT Karya Bersama Sejahtera (KBS) adalah perusahaan konstruksi dan teknik terkemuka di Indonesia. Didirikan pada tahun 2005, kami telah berkembang menjadi mitra terpercaya untuk berbagai proyek konstruksi di seluruh negeri, mulai dari bangunan komersial hingga pengembangan infrastruktur.",
+      aboutText1: "PT Karya Bersama Sejahtera (KBS) adalah perusahaan konstruksi dan teknik terkemuka di Indonesia. Didirikan pada tahun 2019, kami telah berkembang menjadi mitra terpercaya untuk berbagai proyek konstruksi di seluruh negeri, mulai dari bangunan komersial hingga pengembangan infrastruktur.",
       aboutText2: "Dengan komitmen kami terhadap kualitas, inovasi, dan keberlanjutan, kami berusaha memberikan keunggulan dalam setiap proyek yang kami lakukan, memastikan kepuasan klien dan berkontribusi pada pembangunan Indonesia.",
       stats: {
         experience: {
-          title: "18+ Tahun Pengalaman",
-          desc: "Dengan lebih dari 18 tahun di industri, kami membawa keahlian dan pengetahuan untuk setiap proyek."
+          title: "6+ Tahun Pengalaman",
+          desc: "Dengan lebih dari 6 tahun di industri, kami membawa keahlian dan pengetahuan untuk setiap proyek."
         },
         iso: {
           title: "Bersertifikat ISO",
@@ -221,29 +221,29 @@ export default function ProfilPerusahaan() {
         subtitle: "Tonggak penting dalam pertumbuhan dan perkembangan perusahaan kami",
         milestones: [
           {
-            year: "2005",
+            year: "2019",
             title: "Perusahaan Didirikan",
             desc: "KBS didirikan dengan visi untuk menjadi perusahaan konstruksi terkemuka di Indonesia."
           },
           {
-            year: "2010",
+            year: "2020",
             title: "Proyek Besar Pertama",
             desc: "Menyelesaikan proyek bangunan komersial besar pertama kami di Jakarta, membangun reputasi kami untuk kualitas dan keandalan."
           },
           {
-            year: "2015",
+            year: "2022",
             title: "Sertifikasi ISO",
             desc: "Meraih sertifikasi ISO 9001, menunjukkan komitmen kami terhadap sistem manajemen mutu."
           },
           {
-            year: "2018",
+            year: "2023",
             title: "Ekspansi ke Indonesia Timur",
             desc: "Membuka kantor pertama kami di Makassar untuk melayani klien di Indonesia Timur dan mengerjakan proyek infrastruktur di wilayah tersebut."
           },
           {
-            year: "2020",
-            title: "Adaptasi Pandemi",
-            desc: "Berhasil beradaptasi dengan tantangan pandemi global, menerapkan protokol keselamatan inovatif dan solusi digital."
+            year: "2024",
+            title: "Adaptasi & Inovasi Digital",
+            desc: "Berhasil beradaptasi dengan tantangan industri, menerapkan protokol keselamatan inovatif dan meluncurkan platform digital BangunHub."
           },
           {
             year: "2023",

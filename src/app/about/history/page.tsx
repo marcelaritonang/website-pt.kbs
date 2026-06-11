@@ -59,15 +59,15 @@ export default function CompanyHistoryPage() {
     en: {
       backToHome: "Back to Home",
       pageTitle: "Our Journey",
-      subtitle: "The history and achievements of PT Karya Bangun Semesta since its founding in 2011",
+      subtitle: "The history and achievements of PT Karya Bangun Semesta since its founding in 2019",
       companyHistoryTitle: "Company History",
-      companyHistoryText1: "PT Karya Bangun Semesta began its journey in 2011 as a construction company with a vision to make a significant contribution to Indonesia's infrastructure development. Founded with a commitment to quality and professionalism, our company has grown consistently and is now recognized as one of the trusted contractors in the industry.",
+      companyHistoryText1: "PT Karya Bangun Semesta began its journey in 2019 as a construction company with a vision to make a significant contribution to Indonesia's infrastructure development. Founded with a commitment to quality and professionalism, our company has grown consistently and is now recognized as one of the trusted contractors in the industry.",
       companyHistoryText2: "Throughout its journey, PT Karya Bangun Semesta has completed various important projects in various sectors, including building construction, infrastructure development, renovation, and interior work. Here are important milestones in our journey.",
       timelineTitle: "The Journey of PT Karya Bangun Semesta",
       milestones: [
         {
           id: 1,
-          year: 2011,
+          year: 2019,
           title: "Company Establishment",
           description: "PT Karya Bangun Semesta was established as a construction company focusing on infrastructure development and construction projects.",
           image: "/images/blog/perjalanankami1.jpg",
@@ -79,7 +79,7 @@ export default function CompanyHistoryPage() {
         },
         {
           id: 2,
-          year: 2015,
+          year: 2020,
           title: "ISO Certification",
           description: "The company successfully obtained ISO certification as proof of our commitment to international quality standards.",
           image: "/images/blog/isocertification.jpg",
@@ -218,7 +218,7 @@ export default function CompanyHistoryPage() {
       innovationTitle: "Innovation",
       innovationDesc: "We continuously strive to adopt the latest technology and methods to improve the efficiency and quality of our work on every project.",
       futureVisionTitle: "Future Vision",
-      futureVisionDesc1: "Since its establishment in 2011, PT Karya Bangun Semesta has grown into a trusted construction company with various important projects throughout Indonesia. We are proud of the journey we have taken and the projects we have completed.",
+      futureVisionDesc1: "Since its establishment in 2019, PT Karya Bangun Semesta has grown into a trusted construction company with various important projects throughout Indonesia. We are proud of the journey we have taken and the projects we have completed.",
       futureVisionDesc2: "Looking ahead, we are committed to continuing to grow and improve our services. Our vision is to become a leading construction company known for quality, innovation, and sustainability in every project we handle.",
       futureVisionDesc3: "With our extensive experience and professional team, we are ready to face new challenges and make a greater contribution to Indonesia's infrastructure development.",
       futureVisionImageAlt: "Company's Future Vision",
@@ -235,15 +235,15 @@ export default function CompanyHistoryPage() {
     id: {
       backToHome: "Kembali ke Beranda",
       pageTitle: "Perjalanan Kami",
-      subtitle: "Sejarah dan pencapaian PT Karya Bangun Semesta sejak didirikan pada tahun 2011",
+      subtitle: "Sejarah dan pencapaian PT Karya Bangun Semesta sejak didirikan pada tahun 2019",
       companyHistoryTitle: "Sejarah Perusahaan",
-      companyHistoryText1: "PT Karya Bangun Semesta memulai perjalanannya pada tahun 2011 sebagai perusahaan konstruksi dengan visi untuk memberikan kontribusi signifikan pada pembangunan infrastruktur Indonesia. Didirikan dengan komitmen untuk kualitas dan profesionalisme, perusahaan kami telah berkembang secara konsisten dan kini dikenal sebagai salah satu kontraktor terpercaya di industri.",
+      companyHistoryText1: "PT Karya Bangun Semesta memulai perjalanannya pada tahun 2019 sebagai perusahaan konstruksi dengan visi untuk memberikan kontribusi signifikan pada pembangunan infrastruktur Indonesia. Didirikan dengan komitmen untuk kualitas dan profesionalisme, perusahaan kami telah berkembang secara konsisten dan kini dikenal sebagai salah satu kontraktor terpercaya di industri.",
       companyHistoryText2: "Dalam perjalanannya, PT Karya Bangun Semesta telah menyelesaikan berbagai proyek penting di berbagai sektor, termasuk konstruksi bangunan, pengembangan infrastruktur, renovasi, dan pekerjaan interior. Berikut ini adalah tonggak penting dalam perjalanan kami.",
       timelineTitle: "Perjalanan PT Karya Bangun Semesta",
       milestones: [
         {
           id: 1,
-          year: 2011,
+          year: 2019,
           title: "Pendirian Perusahaan",
           description: "PT Karya Bangun Semesta didirikan sebagai perusahaan konstruksi dengan fokus pada pembangunan infrastruktur dan proyek konstruksi.",
           image: "/images/blog/perjalanankami1.jpg",
@@ -255,7 +255,7 @@ export default function CompanyHistoryPage() {
         },
         {
           id: 2,
-          year: 2015,
+          year: 2020,
           title: "Sertifikasi ISO",
           description: "Perusahaan berhasil mendapatkan sertifikasi ISO sebagai bukti komitmen kami terhadap standar kualitas internasional.",
           image: "/images/blog/isocertification.jpg",
@@ -267,7 +267,7 @@ export default function CompanyHistoryPage() {
         },
         {
           id: 3,
-          year: 2019,
+          year: 2021,
           title: "Perluasan Layanan",
           description: "Memperluas cakupan layanan untuk mencakup berbagai jenis proyek konstruksi dan infrastruktur.",
           image: "/images/blog/perluaslayanan.jpg",
@@ -279,7 +279,7 @@ export default function CompanyHistoryPage() {
         },
         {
           id: 4,
-          year: 2021,
+          year: 2022,
           title: "Proyek-Proyek Besar",
           description: "Menangani berbagai proyek besar di berbagai lokasi di Indonesia, menunjukkan kemampuan dan kepercayaan dari klien-klien besar.",
           image: "/images/servicesection-1.jpg",
@@ -394,7 +394,7 @@ export default function CompanyHistoryPage() {
       innovationTitle: "Inovasi",
       innovationDesc: "Kami terus berupaya mengadopsi teknologi dan metode terbaru untuk meningkatkan efisiensi dan kualitas pekerjaan kami di setiap proyek.",
       futureVisionTitle: "Visi Masa Depan",
-      futureVisionDesc1: "Sejak didirikan pada tahun 2011, PT Karya Bangun Semesta telah tumbuh menjadi perusahaan konstruksi yang terpercaya dengan berbagai proyek penting di seluruh Indonesia. Kami bangga dengan perjalanan yang telah kami lalui dan proyek-proyek yang telah kami selesaikan.",
+      futureVisionDesc1: "Sejak didirikan pada tahun 2019, PT Karya Bangun Semesta telah tumbuh menjadi perusahaan konstruksi yang terpercaya dengan berbagai proyek penting di seluruh Indonesia. Kami bangga dengan perjalanan yang telah kami lalui dan proyek-proyek yang telah kami selesaikan.",
       futureVisionDesc2: "Menatap ke depan, kami berkomitmen untuk terus berkembang dan meningkatkan layanan kami. Visi kami adalah menjadi perusahaan konstruksi terkemuka yang dikenal karena kualitas, inovasi, dan keberlanjutan dalam setiap proyek yang kami tangani.",
       futureVisionDesc3: "Dengan pengalaman luas dan tim profesional yang kami miliki, kami siap menghadapi tantangan-tantangan baru dan berkontribusi lebih besar dalam pembangunan infrastruktur Indonesia.",
       futureVisionImageAlt: "Visi Masa Depan Perusahaan",
