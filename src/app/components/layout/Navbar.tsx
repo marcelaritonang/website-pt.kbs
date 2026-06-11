@@ -159,6 +159,11 @@ export default function Navbar() {
               description: language === 'id' ? 'Platform manajemen konstruksi all-in-one' : 'All-in-one construction management platform'
             },
             {
+              name: language === 'id' ? 'AI Site Intelligence' : 'AI Site Intelligence',
+              href: '/platform/ai-intelligence',
+              description: language === 'id' ? 'Monitoring real-time proyek dengan AI prediktif' : 'Real-time project monitoring with predictive AI'
+            },
+            {
               name: asString(t('nav.rabCalculator')),
               href: '/kalkulator-rab',
               description: asString(t('nav.rabCalculatorDesc'))
