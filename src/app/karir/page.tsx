@@ -53,6 +53,130 @@ export default function CareerPage() {
 
   const jobOpenings = [
     {
+      title: "Fullstack Engineer",
+      title_en: "Fullstack Engineer",
+      type: "Full Time",
+      type_en: "Full Time",
+      location: "Jakarta / Remote",
+      department: "Engineering",
+      department_en: "Engineering",
+      experience: "2-4 tahun",
+      experience_en: "2-4 years",
+      education: "S1 Teknik Informatika / Ilmu Komputer",
+      education_en: "Bachelor's in Computer Science / Informatics",
+      description: "Mengembangkan dan maintain platform BangunHub — sistem manajemen konstruksi berbasis cloud yang melayani 50+ kontraktor di Indonesia.",
+      description_en: "Develop and maintain the BangunHub platform — a cloud-based construction management system serving 50+ contractors across Indonesia.",
+      requirements: [
+        "Mahir Next.js, React, TypeScript",
+        "Pengalaman dengan Node.js & PostgreSQL",
+        "Familiar dengan REST API & GraphQL",
+        "Pengalaman deploy ke AWS atau Vercel",
+        "Memahami Git workflow & CI/CD",
+        "Bonus: pengalaman dengan Redis, WebSocket"
+      ],
+      requirements_en: [
+        "Proficient in Next.js, React, TypeScript",
+        "Experience with Node.js & PostgreSQL",
+        "Familiar with REST API & GraphQL",
+        "Experience deploying to AWS or Vercel",
+        "Understands Git workflow & CI/CD",
+        "Bonus: experience with Redis, WebSocket"
+      ]
+    },
+    {
+      title: "AI/ML Engineer",
+      title_en: "AI/ML Engineer",
+      type: "Full Time",
+      type_en: "Full Time",
+      location: "Jakarta / Remote",
+      department: "Engineering",
+      department_en: "Engineering",
+      experience: "2-3 tahun",
+      experience_en: "2-3 years",
+      education: "S1/S2 Ilmu Komputer / Matematika / Statistik",
+      education_en: "Bachelor's/Master's in CS / Mathematics / Statistics",
+      description: "Membangun model prediktif untuk AI Site Intelligence — sistem monitoring real-time dan prediksi keterlambatan proyek konstruksi.",
+      description_en: "Build predictive models for AI Site Intelligence — real-time monitoring and construction project delay prediction system.",
+      requirements: [
+        "Python, TensorFlow atau PyTorch",
+        "Pengalaman dengan time-series forecasting",
+        "Familiar dengan computer vision (OpenCV, YOLO)",
+        "Pengalaman deploy ML model ke production (FastAPI, Docker)",
+        "Memahami data pipeline & ETL",
+        "Bonus: pengalaman dengan IoT data atau InfluxDB"
+      ],
+      requirements_en: [
+        "Python, TensorFlow or PyTorch",
+        "Experience with time-series forecasting",
+        "Familiar with computer vision (OpenCV, YOLO)",
+        "Experience deploying ML models to production (FastAPI, Docker)",
+        "Understands data pipelines & ETL",
+        "Bonus: experience with IoT data or InfluxDB"
+      ]
+    },
+    {
+      title: "DevOps Engineer",
+      title_en: "DevOps Engineer",
+      type: "Full Time",
+      type_en: "Full Time",
+      location: "Jakarta / Remote",
+      department: "Engineering",
+      department_en: "Engineering",
+      experience: "2-3 tahun",
+      experience_en: "2-3 years",
+      education: "S1 Teknik Informatika / Sistem Informasi",
+      education_en: "Bachelor's in Informatics / Information Systems",
+      description: "Mengelola infrastruktur cloud, CI/CD pipeline, dan memastikan platform BangunHub memiliki uptime 99.9%.",
+      description_en: "Manage cloud infrastructure, CI/CD pipelines, and ensure BangunHub platform maintains 99.9% uptime.",
+      requirements: [
+        "AWS (ECS, S3, RDS, CloudFront)",
+        "Docker & container orchestration",
+        "CI/CD (GitHub Actions, Jenkins)",
+        "Monitoring (Grafana, Prometheus, CloudWatch)",
+        "Linux administration & networking",
+        "Bonus: Terraform, Kubernetes"
+      ],
+      requirements_en: [
+        "AWS (ECS, S3, RDS, CloudFront)",
+        "Docker & container orchestration",
+        "CI/CD (GitHub Actions, Jenkins)",
+        "Monitoring (Grafana, Prometheus, CloudWatch)",
+        "Linux administration & networking",
+        "Bonus: Terraform, Kubernetes"
+      ]
+    },
+    {
+      title: "UI/UX Designer",
+      title_en: "UI/UX Designer",
+      type: "Full Time",
+      type_en: "Full Time",
+      location: "Jakarta / Remote",
+      department: "Product",
+      department_en: "Product",
+      experience: "1-3 tahun",
+      experience_en: "1-3 years",
+      education: "S1 DKV / Desain Produk / Informatika",
+      education_en: "Bachelor's in Visual Communication / Product Design / Informatics",
+      description: "Merancang pengalaman pengguna platform BangunHub agar intuitif untuk pekerja konstruksi di lapangan maupun di kantor.",
+      description_en: "Design user experiences for BangunHub platform to be intuitive for construction workers in both field and office settings.",
+      requirements: [
+        "Mahir Figma & design system",
+        "Portfolio UX case study yang kuat",
+        "Pengalaman user research & usability testing",
+        "Memahami responsive & mobile-first design",
+        "Familiar dengan design-to-code handoff",
+        "Bonus: kemampuan prototyping interaktif"
+      ],
+      requirements_en: [
+        "Proficient in Figma & design systems",
+        "Strong UX case study portfolio",
+        "Experience in user research & usability testing",
+        "Understands responsive & mobile-first design",
+        "Familiar with design-to-code handoff",
+        "Bonus: interactive prototyping skills"
+      ]
+    },
+    {
       title: "Site Engineer",
       title_en: "Site Engineer",
       type: "Full Time",
