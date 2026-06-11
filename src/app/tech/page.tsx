@@ -215,7 +215,7 @@ export default function TechLandingPage() {
       </section>
 
       {/* Pricing */}
-      <section className={`py-16 md:py-24 ${isDark ? 'bg-gray-800/30' : 'bg-gray-50'}`}>
+      <section className={`py-16 md:py-24 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -241,16 +241,14 @@ export default function TechLandingPage() {
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 className={`p-6 rounded-xl border ${
                   plan.highlight
-                    ? isDark
-                      ? 'bg-[#153969] border-[#153969] ring-1 ring-blue-500/20'
-                      : 'bg-[#153969] border-[#153969] ring-1 ring-[#153969]/20'
+                    ? 'bg-[#153969] border-blue-400/30 ring-1 ring-blue-400/20'
                     : isDark
-                      ? 'bg-gray-800 border-gray-700'
+                      ? 'bg-gray-800/80 border-gray-700'
                       : 'bg-white border-gray-200'
                 }`}
               >
                 <p className={`text-sm font-medium mb-1 ${
-                  plan.highlight ? 'text-white/70' : isDark ? 'text-gray-400' : 'text-gray-500'
+                  plan.highlight ? 'text-blue-200' : isDark ? 'text-gray-400' : 'text-gray-500'
                 }`}>
                   {plan.name}
                 </p>
@@ -262,28 +260,28 @@ export default function TechLandingPage() {
                   </span>
                   {plan.period && (
                     <span className={`text-sm ${
-                      plan.highlight ? 'text-white/50' : isDark ? 'text-gray-500' : 'text-gray-400'
+                      plan.highlight ? 'text-white/60' : isDark ? 'text-gray-500' : 'text-gray-400'
                     }`}>
                       {plan.period}
                     </span>
                   )}
                 </div>
                 <p className={`text-xs mb-5 ${
-                  plan.highlight ? 'text-white/50' : isDark ? 'text-gray-500' : 'text-gray-400'
+                  plan.highlight ? 'text-blue-100/60' : isDark ? 'text-gray-500' : 'text-gray-400'
                 }`}>
                   {plan.desc}
                 </p>
                 <ul className="space-y-2 mb-6">
                   {plan.features.map((f, j) => (
                     <li key={j} className={`text-sm ${
-                      plan.highlight ? 'text-white/80' : isDark ? 'text-gray-300' : 'text-gray-600'
+                      plan.highlight ? 'text-white/90' : isDark ? 'text-gray-300' : 'text-gray-600'
                     }`}>
                       • {f}
                     </li>
                   ))}
                 </ul>
                 <Link
-                  href="/contact"
+                  href={plan.name === 'Enterprise' ? '/contact' : '/platform/login'}
                   className={`block w-full py-2.5 text-center text-sm font-medium rounded-lg transition ${
                     plan.highlight
                       ? 'bg-white text-[#153969] hover:bg-gray-100'
