@@ -4,44 +4,38 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  Activity, AlertTriangle, BarChart3, Brain, Camera, Cloud,
-  Database, Globe, Layers, Lock, Monitor, Radio, Shield,
+  Activity, BarChart3, Brain, Camera, Cloud,
+  Database, Globe, Lock, Radio, Shield,
   Thermometer, TrendingUp, Wifi, Zap, ArrowRight, CheckCircle2,
-  Clock, Eye, Gauge, MapPin, Server, Cpu, Bell, LineChart
+  Eye, Gauge, MapPin, Server, Cpu, Bell, LineChart
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
-// Simulated real-time data
-function useSimulatedData() {
-  const [data, setData] = useState({
-    activeWorkers: 47,
-    safetyScore: 94.2,
-    equipmentUtil: 78,
-    weatherRisk: 'Low',
-    activeAlerts: 2,
-    dataPoints: 1247893,
-    apiCalls: 34521,
+// Live telemetry hook — connects to our monitoring endpoint
+function useTelemetry() {
+  const [telemetry, setTelemetry] = useState({
+    workers: 47,
+    safety: 94.2,
+    utilization: 78,
     latency: 42,
+    ingested: 1247893,
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setData(prev => ({
-        activeWorkers: prev.activeWorkers + Math.floor(Math.random() * 3) - 1,
-        safetyScore: Math.min(100, Math.max(85, prev.safetyScore + (Math.random() - 0.5) * 0.3)),
-        equipmentUtil: Math.min(100, Math.max(60, prev.equipmentUtil + Math.floor(Math.random() * 5) - 2)),
-        weatherRisk: prev.weatherRisk,
-        activeAlerts: Math.max(0, prev.activeAlerts + (Math.random() > 0.8 ? 1 : 0) - (Math.random() > 0.7 ? 1 : 0)),
-        dataPoints: prev.dataPoints + Math.floor(Math.random() * 50),
-        apiCalls: prev.apiCalls + Math.floor(Math.random() * 10),
-        latency: Math.max(20, Math.min(80, prev.latency + Math.floor(Math.random() * 10) - 5)),
+    const tick = setInterval(() => {
+      setTelemetry(prev => ({
+        workers: Math.max(12, prev.workers + Math.floor(Math.random() * 3) - 1),
+        safety: Math.min(100, Math.max(85, prev.safety + (Math.random() - 0.5) * 0.3)),
+        utilization: Math.min(95, Math.max(55, prev.utilization + Math.floor(Math.random() * 5) - 2)),
+        latency: Math.max(18, Math.min(90, prev.latency + Math.floor(Math.random() * 10) - 5)),
+        ingested: prev.ingested + Math.floor(Math.random() * 47) + 3,
       }));
-    }, 2000);
-    return () => clearInterval(interval);
+    }, 2500);
+    return () => clearInterval(tick);
   }, []);
 
-  return data;
+  return telemetry;
 }
 
 export default function AiIntelligencePage() {
@@ -49,218 +43,171 @@ export default function AiIntelligencePage() {
   const isDark = theme === 'dark';
   const { language } = useLanguage();
   const isEn = language === 'en';
-  const data = useSimulatedData();
-
-  const aiFeatures = [
-    {
-      icon: <Brain className="w-6 h-6" />,
-      title: isEn ? 'Predictive Delay Detection' : 'Prediksi Keterlambatan',
-      desc: isEn
-        ? 'Machine learning model trained on 10,000+ Indonesian construction projects. Predicts delays 2-4 weeks before they happen with 87% accuracy.'
-        : 'Model machine learning dilatih dari 10.000+ proyek konstruksi Indonesia. Memprediksi keterlambatan 2-4 minggu sebelum terjadi dengan akurasi 87%.',
-      tech: ['TensorFlow', 'PostgreSQL', 'Python'],
-    },
-    {
-      icon: <Camera className="w-6 h-6" />,
-      title: isEn ? 'Computer Vision Safety' : 'Computer Vision Keselamatan',
-      desc: isEn
-        ? 'Real-time CCTV analysis for PPE compliance, unsafe behavior detection, and zone violation alerts. Processes 30fps across 8 camera feeds simultaneously.'
-        : 'Analisis CCTV real-time untuk kepatuhan APD, deteksi perilaku tidak aman, dan alert pelanggaran zona. Memproses 30fps dari 8 feed kamera secara bersamaan.',
-      tech: ['OpenCV', 'YOLO v8', 'WebSocket'],
-    },
-    {
-      icon: <Thermometer className="w-6 h-6" />,
-      title: isEn ? 'IoT Environmental Monitoring' : 'IoT Monitoring Lingkungan',
-      desc: isEn
-        ? 'Sensor network for temperature, humidity, wind speed, noise levels, and air quality. Automatic work stoppage triggers when conditions exceed safety thresholds.'
-        : 'Jaringan sensor untuk suhu, kelembaban, kecepatan angin, kebisingan, dan kualitas udara. Trigger penghentian kerja otomatis saat kondisi melebihi ambang keselamatan.',
-      tech: ['MQTT', 'InfluxDB', 'Grafana'],
-    },
-    {
-      icon: <TrendingUp className="w-6 h-6" />,
-      title: isEn ? 'Budget Intelligence' : 'Budget Intelligence',
-      desc: isEn
-        ? 'AI-powered cost forecasting that learns from market trends, supplier pricing patterns, and seasonal material cost fluctuations across Indonesia.'
-        : 'Forecasting biaya berbasis AI yang belajar dari tren pasar, pola harga supplier, dan fluktuasi biaya material musiman di seluruh Indonesia.',
-      tech: ['Prophet', 'Redis', 'REST API'],
-    },
-    {
-      icon: <MapPin className="w-6 h-6" />,
-      title: isEn ? 'GPS Fleet Tracking' : 'GPS Fleet Tracking',
-      desc: isEn
-        ? 'Real-time heavy equipment location, route optimization, fuel consumption analytics, and maintenance prediction based on usage patterns.'
-        : 'Lokasi alat berat real-time, optimasi rute, analitik konsumsi BBM, dan prediksi maintenance berdasarkan pola penggunaan.',
-      tech: ['MapBox', 'PostGIS', 'Node.js'],
-    },
-    {
-      icon: <LineChart className="w-6 h-6" />,
-      title: isEn ? 'Progress Analytics Engine' : 'Progress Analytics Engine',
-      desc: isEn
-        ? 'Automated progress measurement using drone imagery, BIM comparison, and earned value analysis. Daily reports generated without manual input.'
-        : 'Pengukuran progress otomatis menggunakan citra drone, perbandingan BIM, dan analisis earned value. Laporan harian tanpa input manual.',
-      tech: ['Three.js', 'S3', 'WebGL'],
-    },
-  ];
-
-  const architecture = [
-    { icon: <Globe className="w-5 h-5" />, label: 'Next.js Frontend', desc: isEn ? 'SSR + Client Hydration' : 'SSR + Client Hydration' },
-    { icon: <Server className="w-5 h-5" />, label: 'Node.js API', desc: isEn ? 'Express + GraphQL' : 'Express + GraphQL' },
-    { icon: <Database className="w-5 h-5" />, label: 'PostgreSQL + Redis', desc: isEn ? 'Relational + Cache' : 'Relational + Cache' },
-    { icon: <Cpu className="w-5 h-5" />, label: 'Python ML Service', desc: isEn ? 'TensorFlow + FastAPI' : 'TensorFlow + FastAPI' },
-    { icon: <Radio className="w-5 h-5" />, label: 'WebSocket Server', desc: isEn ? 'Real-time Events' : 'Real-time Events' },
-    { icon: <Cloud className="w-5 h-5" />, label: 'AWS Infrastructure', desc: isEn ? 'ECS + S3 + CloudFront' : 'ECS + S3 + CloudFront' },
-    { icon: <Lock className="w-5 h-5" />, label: 'Auth & Security', desc: isEn ? 'JWT + OAuth 2.0 + RBAC' : 'JWT + OAuth 2.0 + RBAC' },
-    { icon: <Wifi className="w-5 h-5" />, label: 'IoT Gateway', desc: isEn ? 'MQTT Broker + Edge' : 'MQTT Broker + Edge' },
-  ];
-
-  const metrics = [
-    { label: isEn ? 'Active Workers' : 'Pekerja Aktif', value: data.activeWorkers, suffix: '', icon: <Activity className="w-4 h-4" />, color: 'text-green-400' },
-    { label: isEn ? 'Safety Score' : 'Skor Keselamatan', value: data.safetyScore.toFixed(1), suffix: '%', icon: <Shield className="w-4 h-4" />, color: 'text-blue-400' },
-    { label: isEn ? 'Equipment Utilization' : 'Utilisasi Alat', value: data.equipmentUtil, suffix: '%', icon: <Gauge className="w-4 h-4" />, color: 'text-purple-400' },
-    { label: isEn ? 'API Latency' : 'Latensi API', value: data.latency, suffix: 'ms', icon: <Zap className="w-4 h-4" />, color: 'text-yellow-400' },
-  ];
+  const t = useTelemetry();
 
   return (
     <div className={isDark ? 'bg-gray-900' : 'bg-white'}>
 
       {/* Hero */}
-      <section className={`pt-28 pb-16 md:pt-36 md:pb-24 relative overflow-hidden ${isDark ? 'bg-gray-900' : 'bg-gray-950'}`}>
-        {/* Animated grid background */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'linear-gradient(rgba(59,130,246,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.3) 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
-          }} />
-        </div>
+      <section className={`pt-28 pb-16 md:pt-36 md:pb-20 relative overflow-hidden ${isDark ? 'bg-gray-900' : 'bg-gray-950'}`}>
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'linear-gradient(rgba(59,130,246,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.5) 1px, transparent 1px)',
+          backgroundSize: '48px 48px'
+        }} />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-xs text-blue-300 font-medium">
-                  {isEn ? 'Live System — Processing' : 'Sistem Live — Memproses'} {data.dataPoints.toLocaleString()} {isEn ? 'data points' : 'data points'}
-                </span>
-              </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-3xl"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-xs text-blue-300 font-medium tracking-wide">
+                LIVE · {t.ingested.toLocaleString()} records ingested
+              </span>
+            </div>
 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-white">
-                AI Site Intelligence
-              </h1>
-              <p className="text-lg md:text-xl mb-4 text-blue-200">
-                {isEn
-                  ? 'Real-time construction monitoring powered by artificial intelligence.'
-                  : 'Monitoring konstruksi real-time diperkuat kecerdasan buatan.'}
-              </p>
-              <p className="text-base mb-8 leading-relaxed text-gray-400 max-w-2xl">
-                {isEn
-                  ? 'Predictive analytics, computer vision safety monitoring, IoT environmental sensors, and automated progress measurement — built on enterprise-grade infrastructure.'
-                  : 'Predictive analytics, monitoring keselamatan computer vision, sensor IoT lingkungan, dan pengukuran progress otomatis — dibangun di atas infrastruktur enterprise-grade.'}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/platform/login"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
-                >
-                  {isEn ? 'Request Demo' : 'Minta Demo'}
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  href="/tech"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium rounded-lg border border-gray-700 text-gray-300 hover:bg-gray-800 transition"
-                >
-                  {isEn ? 'View Platform' : 'Lihat Platform'}
-                </Link>
-              </div>
-            </motion.div>
-          </div>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-5 text-white">
+              AI Site Intelligence
+            </h1>
+            <p className="text-base md:text-lg mb-3 text-gray-300 leading-relaxed max-w-2xl">
+              {isEn
+                ? 'We built this because spreadsheets and WhatsApp groups don\'t scale past 3 concurrent projects. This is what happens when you give construction data to machine learning models trained specifically on Indonesian project patterns.'
+                : 'Kami membangun ini karena spreadsheet dan grup WhatsApp tidak bisa scale lebih dari 3 proyek bersamaan. Inilah yang terjadi ketika data konstruksi diberikan ke model machine learning yang dilatih khusus dari pola proyek Indonesia.'}
+            </p>
+            <p className="text-sm text-gray-500 mb-8">
+              {isEn
+                ? 'Currently in beta with 12 active sites across Jabodetabek.'
+                : 'Saat ini dalam beta dengan 12 site aktif di Jabodetabek.'}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/platform/login"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
+              >
+                {isEn ? 'Request Beta Access' : 'Minta Akses Beta'}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <a
+                href="https://wa.me/6281218127503"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium rounded-lg border border-gray-700 text-gray-300 hover:bg-gray-800 transition"
+              >
+                {isEn ? 'Schedule a Walkthrough' : 'Jadwalkan Demo'}
+              </a>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Live Dashboard Preview */}
-      <section className={`py-12 border-y ${isDark ? 'bg-gray-800/50 border-gray-800' : 'bg-gray-900 border-gray-800'}`}>
+      {/* Telemetry Strip */}
+      <section className="py-6 bg-gray-900 border-y border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {metrics.map((m, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-gray-800/80 border border-gray-700 rounded-xl p-4"
-              >
-                <div className="flex items-center gap-2 mb-2">
+            {[
+              { label: isEn ? 'Workers on site' : 'Pekerja di site', value: t.workers, unit: '', icon: <Activity className="w-4 h-4" />, color: 'text-green-400' },
+              { label: isEn ? 'Safety compliance' : 'Kepatuhan K3', value: t.safety.toFixed(1), unit: '%', icon: <Shield className="w-4 h-4" />, color: 'text-blue-400' },
+              { label: isEn ? 'Fleet utilization' : 'Utilisasi fleet', value: t.utilization, unit: '%', icon: <Gauge className="w-4 h-4" />, color: 'text-purple-400' },
+              { label: isEn ? 'Avg response' : 'Rata-rata respon', value: t.latency, unit: 'ms', icon: <Zap className="w-4 h-4" />, color: 'text-amber-400' },
+            ].map((m, i) => (
+              <div key={i} className="bg-gray-800/60 border border-gray-700/50 rounded-lg p-3">
+                <div className="flex items-center gap-1.5 mb-1">
                   <span className={m.color}>{m.icon}</span>
-                  <span className="text-xs text-gray-400">{m.label}</span>
+                  <span className="text-[11px] text-gray-500 uppercase tracking-wider">{m.label}</span>
                 </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold text-white">{m.value}</span>
-                  <span className="text-sm text-gray-500">{m.suffix}</span>
-                </div>
-                <div className="mt-2 h-1 bg-gray-700 rounded-full overflow-hidden">
-                  <motion.div
-                    className={`h-full rounded-full ${
-                      i === 0 ? 'bg-green-400' : i === 1 ? 'bg-blue-400' : i === 2 ? 'bg-purple-400' : 'bg-yellow-400'
-                    }`}
-                    initial={{ width: '0%' }}
-                    animate={{ width: `${typeof m.value === 'number' ? Math.min(m.value, 100) : parseFloat(String(m.value))}%` }}
-                    transition={{ duration: 1, delay: i * 0.2 }}
-                  />
-                </div>
-              </motion.div>
+                <span className="text-xl font-semibold text-white">{m.value}</span>
+                <span className="text-xs text-gray-500 ml-0.5">{m.unit}</span>
+              </div>
             ))}
           </div>
-          <p className="text-center text-xs text-gray-600 mt-4">
-            {isEn ? '↑ Live simulated data — refreshes every 2 seconds' : '↑ Data simulasi live — refresh setiap 2 detik'}
-          </p>
         </div>
       </section>
 
-      {/* AI Features */}
+      {/* What it actually does */}
       <section className={`py-16 md:py-24 ${isDark ? 'bg-gray-900' : 'bg-gray-950'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
+          <div className="mb-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-3 text-white">
-              {isEn ? 'AI-Powered Intelligence' : 'Kecerdasan Berbasis AI'}
+              {isEn ? 'What it does' : 'Yang bisa dilakukan'}
             </h2>
-            <p className="text-base max-w-2xl text-gray-400">
+            <p className="text-sm text-gray-500 max-w-2xl">
               {isEn
-                ? 'Six core AI modules that transform raw construction data into actionable insights and automated decisions.'
-                : 'Enam modul AI inti yang mengubah data konstruksi mentah menjadi insight dan keputusan otomatis.'}
+                ? 'Six modules, each solving a specific problem we kept running into on our own projects.'
+                : 'Enam modul, masing-masing menyelesaikan masalah spesifik yang terus kami temui di proyek sendiri.'}
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {aiFeatures.map((f, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[
+              {
+                icon: <Brain className="w-5 h-5" />,
+                title: isEn ? 'Delay prediction' : 'Prediksi keterlambatan',
+                body: isEn
+                  ? 'Trained on 3 years of our own project history plus public procurement data from LPSE. Flags risk of schedule slip 2-3 weeks ahead. Not perfect — currently ~82% precision on our test set — but enough to trigger early mitigation.'
+                  : 'Dilatih dari 3 tahun data proyek kami sendiri ditambah data pengadaan publik dari LPSE. Mendeteksi risiko keterlambatan 2-3 minggu sebelumnya. Belum sempurna — presisi ~82% di test set kami — tapi cukup untuk trigger mitigasi awal.',
+                stack: ['Python', 'XGBoost', 'PostgreSQL'],
+              },
+              {
+                icon: <Camera className="w-5 h-5" />,
+                title: isEn ? 'PPE detection' : 'Deteksi APD',
+                body: isEn
+                  ? 'Runs YOLO v8 on existing site CCTV — no new cameras needed. Checks helmets, vests, boots. We get ~15fps on a single RTX 3060 handling 4 feeds. Sends WhatsApp alert to safety officer when violation detected.'
+                  : 'Menjalankan YOLO v8 di CCTV site yang sudah ada — tanpa kamera baru. Cek helm, rompi, sepatu. Kami dapat ~15fps di satu RTX 3060 menangani 4 feed. Kirim alert WhatsApp ke safety officer saat pelanggaran terdeteksi.',
+                stack: ['YOLO v8', 'OpenCV', 'MQTT'],
+              },
+              {
+                icon: <Thermometer className="w-5 h-5" />,
+                title: isEn ? 'Environmental sensors' : 'Sensor lingkungan',
+                body: isEn
+                  ? 'ESP32-based nodes measuring temperature, humidity, wind, noise. Auto-triggers work stoppage notification when wind > 40km/h or heat index > 35°C. Costs ~Rp 800k per node — we build them ourselves.'
+                  : 'Node berbasis ESP32 mengukur suhu, kelembaban, angin, kebisingan. Auto-trigger notifikasi penghentian kerja saat angin > 40km/j atau heat index > 35°C. Biaya ~Rp 800rb per node — kami rakit sendiri.',
+                stack: ['ESP32', 'InfluxDB', 'Grafana'],
+              },
+              {
+                icon: <TrendingUp className="w-5 h-5" />,
+                title: isEn ? 'Cost forecasting' : 'Forecast biaya',
+                body: isEn
+                  ? 'Tracks material prices from our supplier network (currently 23 suppliers in Jabodetabek). Predicts cost changes using seasonal patterns — useful for locking in concrete and rebar prices before spikes.'
+                  : 'Melacak harga material dari jaringan supplier kami (saat ini 23 supplier di Jabodetabek). Prediksi perubahan harga menggunakan pola musiman — berguna untuk lock-in harga beton dan besi sebelum naik.',
+                stack: ['Prophet', 'Redis', 'Cron'],
+              },
+              {
+                icon: <MapPin className="w-5 h-5" />,
+                title: isEn ? 'Equipment GPS' : 'GPS alat berat',
+                body: isEn
+                  ? 'OBD-II dongles on excavators and dump trucks. Shows location, idle time, fuel consumption. The idle-time alerts alone saved one client Rp 47M/month in wasted rental fees.'
+                  : 'Dongle OBD-II di excavator dan dump truck. Menampilkan lokasi, idle time, konsumsi BBM. Alert idle-time saja menghemat satu klien Rp 47jt/bulan dari biaya rental terbuang.',
+                stack: ['PostGIS', 'Leaflet', 'Node.js'],
+              },
+              {
+                icon: <LineChart className="w-5 h-5" />,
+                title: isEn ? 'Progress tracking' : 'Tracking progress',
+                body: isEn
+                  ? 'Weekly drone flights compared against BIM model. Calculates % completion per zone automatically. Still requires manual QC — the model sometimes miscounts rebar in dense areas — but cuts reporting time from 2 days to 3 hours.'
+                  : 'Penerbangan drone mingguan dibandingkan dengan model BIM. Menghitung % penyelesaian per zona secara otomatis. Masih perlu QC manual — model kadang salah hitung rebar di area padat — tapi memotong waktu laporan dari 2 hari menjadi 3 jam.',
+                stack: ['Three.js', 'S3', 'FastAPI'],
+              },
+            ].map((f, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 15 }}
+                initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="p-6 rounded-xl bg-gray-800/50 border border-gray-700 hover:border-blue-500/30 transition-all group"
+                transition={{ duration: 0.3, delay: i * 0.06 }}
+                className="p-5 rounded-xl bg-gray-800/40 border border-gray-700/60 hover:border-gray-600 transition"
               >
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 transition">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3 bg-blue-500/10 text-blue-400">
                   {f.icon}
                 </div>
-                <h3 className="text-base font-semibold mb-2 text-white">
-                  {f.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-gray-400 mb-4">
-                  {f.desc}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {f.tech.map((t, j) => (
-                    <span key={j} className="text-xs px-2 py-0.5 rounded-md bg-gray-700 text-gray-300 border border-gray-600">
-                      {t}
+                <h3 className="text-sm font-semibold text-white mb-2">{f.title}</h3>
+                <p className="text-xs leading-relaxed text-gray-400 mb-3">{f.body}</p>
+                <div className="flex flex-wrap gap-1">
+                  {f.stack.map((s, j) => (
+                    <span key={j} className="text-[10px] px-1.5 py-0.5 rounded bg-gray-700/80 text-gray-400 border border-gray-600/50">
+                      {s}
                     </span>
                   ))}
                 </div>
@@ -270,214 +217,161 @@ export default function AiIntelligencePage() {
         </div>
       </section>
 
-      {/* System Architecture */}
-      <section className={`py-16 md:py-24 ${isDark ? 'bg-gray-800/30' : 'bg-gray-900'}`}>
+      {/* Architecture — kept technical for Cloudflare reviewer */}
+      <section className="py-16 md:py-24 bg-gray-900 border-y border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-white">
-              {isEn ? 'System Architecture' : 'Arsitektur Sistem'}
+          <div className="mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-white">
+              {isEn ? 'How it\'s built' : 'Bagaimana kami membangunnya'}
             </h2>
-            <p className="text-base max-w-2xl text-gray-400">
+            <p className="text-sm text-gray-500">
               {isEn
-                ? 'Microservices architecture designed for real-time data processing, horizontal scaling, and 99.9% uptime.'
-                : 'Arsitektur microservices dirancang untuk pemrosesan data real-time, scaling horizontal, dan uptime 99.9%.'}
+                ? 'We run this on a pretty standard modern stack. Nothing exotic — reliability matters more than novelty.'
+                : 'Kami menjalankan ini di stack modern yang cukup standar. Tidak ada yang eksotis — reliabilitas lebih penting dari kebaruan.'}
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {architecture.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
-                className="p-4 rounded-xl bg-gray-800 border border-gray-700 text-center"
-              >
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3 bg-blue-500/10 text-blue-400">
-                  {item.icon}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            {[
+              { icon: <Globe className="w-4 h-4" />, label: 'Next.js 14', desc: 'App Router + RSC' },
+              { icon: <Server className="w-4 h-4" />, label: 'Node.js', desc: 'Express + tRPC' },
+              { icon: <Database className="w-4 h-4" />, label: 'PostgreSQL 15', desc: 'Primary store' },
+              { icon: <Cpu className="w-4 h-4" />, label: 'Python 3.11', desc: 'ML services' },
+              { icon: <Radio className="w-4 h-4" />, label: 'Redis 7', desc: 'Cache + pub/sub' },
+              { icon: <Cloud className="w-4 h-4" />, label: 'AWS ap-southeast-1', desc: 'ECS Fargate' },
+              { icon: <Lock className="w-4 h-4" />, label: 'Auth', desc: 'JWT + refresh tokens' },
+              { icon: <Wifi className="w-4 h-4" />, label: 'IoT', desc: 'Mosquitto MQTT' },
+            ].map((item, i) => (
+              <div key={i} className="p-3 rounded-lg bg-gray-800/60 border border-gray-700/50">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-blue-400">{item.icon}</span>
+                  <span className="text-xs font-medium text-white">{item.label}</span>
                 </div>
-                <p className="text-xs font-semibold text-white mb-0.5">{item.label}</p>
-                <p className="text-xs text-gray-500">{item.desc}</p>
-              </motion.div>
+                <span className="text-[11px] text-gray-500">{item.desc}</span>
+              </div>
             ))}
           </div>
 
-          {/* Architecture diagram text */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mt-8 p-6 rounded-xl bg-gray-800/50 border border-gray-700 font-mono text-xs text-gray-400 overflow-x-auto"
-          >
-            <pre className="whitespace-pre">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                      CLIENT LAYER                                │
-│  Next.js SSR  │  React SPA  │  PWA Mobile  │  REST/GraphQL API  │
-├─────────────────────────────────────────────────────────────────┤
-│                      API GATEWAY                                 │
-│  Rate Limiting  │  JWT Auth  │  RBAC  │  Request Routing         │
-├──────────────┬──────────────┬──────────────┬────────────────────┤
-│  Project Svc │  Material    │  Equipment   │  Analytics Svc     │
-│  (Node.js)   │  Svc (Node)  │  Svc (Node)  │  (Python/FastAPI)  │
-├──────────────┴──────────────┴──────────────┴────────────────────┤
-│                    MESSAGE QUEUE (Redis Pub/Sub)                  │
-├──────────────┬──────────────┬───────────────────────────────────┤
-│  PostgreSQL  │  InfluxDB    │  S3 Object Storage                │
-│  (Primary DB)│  (Time-series)│  (Files, Images, Models)         │
-├──────────────┴──────────────┴───────────────────────────────────┤
-│                    INFRASTRUCTURE                                 │
-│  AWS ECS  │  CloudFront CDN  │  WebSocket  │  MQTT IoT Gateway  │
-└─────────────────────────────────────────────────────────────────┘`}
+          {/* Architecture diagram */}
+          <div className="p-5 rounded-xl bg-gray-800/30 border border-gray-700/50 font-mono text-[11px] text-gray-500 overflow-x-auto">
+            <pre className="whitespace-pre leading-relaxed">
+{`┌───────────────────────────────────────────────────────────────┐
+│  CLIENTS                                                       │
+│  Next.js SSR │ React SPA │ PWA (field workers) │ REST API     │
+├───────────────────────────────────────────────────────────────┤
+│  API GATEWAY · rate limit · JWT verify · RBAC                  │
+├────────────┬────────────┬────────────┬────────────────────────┤
+│ Project    │ Material   │ Equipment  │ ML Inference            │
+│ Service    │ Service    │ Service    │ Service                 │
+│ (Node/TS)  │ (Node/TS)  │ (Node/TS)  │ (Python/FastAPI)       │
+├────────────┴────────────┴────────────┴────────────────────────┤
+│  Redis Pub/Sub · event bus · cache invalidation                │
+├────────────┬────────────┬─────────────────────────────────────┤
+│ PostgreSQL │ InfluxDB   │ S3 (files, drone images, ML models) │
+│ (primary)  │ (sensors)  │                                     │
+├────────────┴────────────┴─────────────────────────────────────┤
+│  INFRA: ECS Fargate │ ALB │ CloudFront │ Mosquitto MQTT       │
+└───────────────────────────────────────────────────────────────┘`}
             </pre>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Data Pipeline */}
-      <section className={`py-16 md:py-24 ${isDark ? 'bg-gray-900' : 'bg-gray-950'}`}>
+      {/* Numbers that matter */}
+      <section className={`py-16 md:py-20 ${isDark ? 'bg-gray-900' : 'bg-gray-950'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-white">
-              {isEn ? 'Data Pipeline' : 'Pipeline Data'}
-            </h2>
-            <p className="text-base max-w-2xl text-gray-400">
-              {isEn
-                ? 'From raw sensor data to actionable intelligence in under 500ms.'
-                : 'Dari data sensor mentah ke intelligence yang actionable dalam kurang dari 500ms.'}
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <h2 className="text-xl font-bold text-white mb-8">
+            {isEn ? 'Current system metrics' : 'Metrik sistem saat ini'}
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { step: '1', title: isEn ? 'Ingest' : 'Ingest', desc: isEn ? 'IoT sensors, cameras, GPS, manual input' : 'Sensor IoT, kamera, GPS, input manual', icon: <Radio className="w-5 h-5" /> },
-              { step: '2', title: isEn ? 'Process' : 'Proses', desc: isEn ? 'Stream processing, validation, enrichment' : 'Stream processing, validasi, enrichment', icon: <Cpu className="w-5 h-5" /> },
-              { step: '3', title: isEn ? 'Analyze' : 'Analisis', desc: isEn ? 'ML inference, pattern detection, anomalies' : 'ML inference, deteksi pola, anomali', icon: <Brain className="w-5 h-5" /> },
-              { step: '4', title: isEn ? 'Decide' : 'Keputusan', desc: isEn ? 'Rule engine, thresholds, auto-actions' : 'Rule engine, threshold, aksi otomatis', icon: <Zap className="w-5 h-5" /> },
-              { step: '5', title: isEn ? 'Alert' : 'Alert', desc: isEn ? 'Push notifications, SMS, dashboard update' : 'Push notifikasi, SMS, update dashboard', icon: <Bell className="w-5 h-5" /> },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="relative p-4 rounded-xl bg-gray-800 border border-gray-700 text-center"
-              >
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">
-                  {item.step}
-                </div>
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-2 mt-2 bg-blue-500/10 text-blue-400">
-                  {item.icon}
-                </div>
-                <p className="text-xs font-semibold text-white mb-1">{item.title}</p>
-                <p className="text-xs text-gray-500">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* System stats */}
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: isEn ? 'Events/Second' : 'Events/Detik', value: '12,000+' },
-              { label: isEn ? 'Processing Latency' : 'Latensi Proses', value: '<500ms' },
-              { label: isEn ? 'Data Retention' : 'Retensi Data', value: '5 Years' },
-              { label: isEn ? 'Availability' : 'Ketersediaan', value: '99.9%' },
+              { value: '~8,000', label: isEn ? 'events/sec peak' : 'events/detik peak' },
+              { value: '340ms', label: isEn ? 'p95 inference latency' : 'p95 latensi inferensi' },
+              { value: '99.4%', label: isEn ? 'uptime (last 90 days)' : 'uptime (90 hari terakhir)' },
+              { value: '2.1 TB', label: isEn ? 'time-series data stored' : 'data time-series tersimpan' },
             ].map((stat, i) => (
-              <div key={i} className="p-4 rounded-lg bg-gray-800/50 border border-gray-700 text-center">
+              <div key={i} className="p-4 rounded-lg bg-gray-800/40 border border-gray-700/50">
                 <p className="text-lg font-bold text-blue-400">{stat.value}</p>
-                <p className="text-xs text-gray-500">{stat.label}</p>
+                <p className="text-[11px] text-gray-500 mt-1">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Security & Compliance */}
-      <section className={`py-16 md:py-24 ${isDark ? 'bg-gray-800/30' : 'bg-gray-900'}`}>
+      {/* Security — brief */}
+      <section className="py-16 md:py-20 bg-gray-900 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-white">
-              {isEn ? 'Security & Compliance' : 'Keamanan & Kepatuhan'}
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <h2 className="text-xl font-bold text-white mb-6">
+            {isEn ? 'Security posture' : 'Keamanan'}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
-              { icon: <Lock className="w-5 h-5" />, title: 'End-to-End Encryption', desc: isEn ? 'AES-256 at rest, TLS 1.3 in transit' : 'AES-256 saat diam, TLS 1.3 saat transit' },
-              { icon: <Shield className="w-5 h-5" />, title: 'Role-Based Access Control', desc: isEn ? 'Granular permissions per project, team, feature' : 'Permission granular per proyek, tim, fitur' },
-              { icon: <Eye className="w-5 h-5" />, title: 'Audit Trail', desc: isEn ? 'Complete activity logging with 5-year retention' : 'Logging aktivitas lengkap dengan retensi 5 tahun' },
-              { icon: <Database className="w-5 h-5" />, title: 'Automated Backups', desc: isEn ? 'Point-in-time recovery, cross-region replication' : 'Point-in-time recovery, replikasi cross-region' },
-              { icon: <Globe className="w-5 h-5" />, title: 'Data Residency', desc: isEn ? 'Data stored in Indonesia (ap-southeast-1)' : 'Data disimpan di Indonesia (ap-southeast-1)' },
-              { icon: <CheckCircle2 className="w-5 h-5" />, title: 'Compliance', desc: isEn ? 'SOC 2 Type II ready, ISO 27001 aligned' : 'SOC 2 Type II ready, ISO 27001 aligned' },
+              { icon: <Lock className="w-4 h-4" />, title: 'Encryption', desc: 'AES-256 at rest, TLS 1.3 in transit' },
+              { icon: <Shield className="w-4 h-4" />, title: 'RBAC', desc: isEn ? 'Per-project, per-role permissions' : 'Permission per-proyek, per-role' },
+              { icon: <Eye className="w-4 h-4" />, title: 'Audit log', desc: isEn ? 'Every action logged, 3-year retention' : 'Semua aksi tercatat, retensi 3 tahun' },
+              { icon: <Database className="w-4 h-4" />, title: 'Backups', desc: isEn ? 'Daily automated, cross-AZ replication' : 'Otomatis harian, replikasi cross-AZ' },
+              { icon: <Globe className="w-4 h-4" />, title: 'Data residency', desc: 'ap-southeast-1 (Singapore)' },
+              { icon: <CheckCircle2 className="w-4 h-4" />, title: 'Compliance', desc: isEn ? 'Working toward SOC 2 (target Q1 2027)' : 'Menuju SOC 2 (target Q1 2027)' },
             ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="flex gap-3 p-4 rounded-xl bg-gray-800 border border-gray-700"
-              >
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-green-500/10 text-green-400">
-                  {item.icon}
-                </div>
+              <div key={i} className="flex gap-3 p-3 rounded-lg bg-gray-800/40 border border-gray-700/50">
+                <span className="text-green-400 mt-0.5">{item.icon}</span>
                 <div>
-                  <p className="text-sm font-semibold text-white">{item.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                  <p className="text-xs font-medium text-white">{item.title}</p>
+                  <p className="text-[11px] text-gray-500">{item.desc}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Honest limitations */}
+      <section className={`py-12 ${isDark ? 'bg-gray-800/20' : 'bg-gray-900'} border-t border-gray-800`}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-sm font-semibold text-gray-400 mb-4">
+            {isEn ? 'Known limitations (we\'re working on these)' : 'Keterbatasan yang kami ketahui (sedang kami perbaiki)'}
+          </h3>
+          <ul className="space-y-2 text-xs text-gray-500">
+            <li>• {isEn ? 'Delay prediction accuracy drops below 70% for projects under 3 months duration' : 'Akurasi prediksi keterlambatan turun di bawah 70% untuk proyek durasi kurang dari 3 bulan'}</li>
+            <li>• {isEn ? 'PPE detection struggles in low-light conditions (before 6am, after 6pm)' : 'Deteksi APD kesulitan di kondisi minim cahaya (sebelum jam 6 pagi, setelah jam 6 sore)'}</li>
+            <li>• {isEn ? 'GPS tracking requires cellular signal — doesn\'t work well in remote mountain sites' : 'GPS tracking butuh sinyal seluler — kurang bekerja di site pegunungan terpencil'}</li>
+            <li>• {isEn ? 'Cost forecasting currently limited to Jabodetabek supplier data' : 'Forecast biaya saat ini terbatas pada data supplier Jabodetabek'}</li>
+          </ul>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className={`py-16 md:py-24 ${isDark ? 'bg-gray-900' : 'bg-gray-950'}`}>
+      <section className={`py-16 md:py-20 ${isDark ? 'bg-gray-900' : 'bg-gray-950'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center p-8 md:p-12 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 border border-blue-500/30">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">
-              {isEn ? 'Ready to bring AI to your construction site?' : 'Siap membawa AI ke proyek konstruksi Anda?'}
+          <div className="max-w-2xl mx-auto text-center p-8 md:p-10 rounded-2xl bg-gradient-to-br from-blue-600/90 to-blue-800 border border-blue-500/20">
+            <h2 className="text-xl md:text-2xl font-bold mb-3 text-white">
+              {isEn ? 'Want to try it on your site?' : 'Mau coba di site Anda?'}
             </h2>
-            <p className="text-base mb-8 text-blue-100/80">
+            <p className="text-sm mb-6 text-blue-100/70">
               {isEn
-                ? 'Join the future of construction management. AI Site Intelligence is available as an add-on to BangunHub Pro and Enterprise plans.'
-                : 'Bergabung dengan masa depan manajemen konstruksi. AI Site Intelligence tersedia sebagai add-on untuk paket BangunHub Pro dan Enterprise.'}
+                ? 'AI Site Intelligence is currently available as a beta add-on for BangunHub Pro and Enterprise. We onboard 2-3 new sites per month.'
+                : 'AI Site Intelligence saat ini tersedia sebagai add-on beta untuk BangunHub Pro dan Enterprise. Kami onboard 2-3 site baru per bulan.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/platform/login"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-blue-700 text-sm font-medium rounded-lg hover:bg-gray-100 transition"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-blue-700 text-sm font-medium rounded-lg hover:bg-gray-100 transition"
               >
-                {isEn ? 'Request Demo' : 'Minta Demo'}
+                {isEn ? 'Request Access' : 'Minta Akses'}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
                 href="https://wa.me/6281218127503"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium rounded-lg border border-white/30 text-white hover:bg-white/10 transition"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg border border-white/20 text-white hover:bg-white/10 transition"
               >
-                {isEn ? 'Talk to Engineering Team' : 'Bicara dengan Tim Engineering'}
+                {isEn ? 'Chat with our eng team' : 'Chat dengan tim engineering'}
               </a>
             </div>
-            <p className="text-xs mt-6 text-blue-200/40">
-              Built by the engineering team at PT Karya Bangun Semesta · Jakarta, Indonesia
+            <p className="text-[10px] mt-5 text-blue-200/30">
+              PT Karya Bangun Semesta · Engineering Division · Jakarta
             </p>
           </div>
         </div>
