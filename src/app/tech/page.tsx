@@ -112,6 +112,11 @@ export default function TechLandingPage() {
                   ? 'Manage all your construction projects from one integrated platform.'
                   : 'Kelola seluruh proyek konstruksi dari satu platform yang terintegrasi.'}
               </h1>
+              {!isEn && (
+                <p className={`text-sm italic mb-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                  All-in-one construction project management SaaS for Indonesian contractors.
+                </p>
+              )}
               <p className={`text-base md:text-lg mb-8 leading-relaxed max-w-2xl ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                 {isEn
                   ? 'Project tracking, material procurement, equipment management, and budgeting — built by practitioners who understand the construction industry.'
@@ -331,6 +336,9 @@ export default function TechLandingPage() {
                 {isEn ? 'Contact via WhatsApp' : 'Hubungi via WhatsApp'}
               </a>
             </div>
+            <p className={`text-xs mt-8 ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
+              BangunHub is a product of PT Karya Bangun Semesta · Jakarta, Indonesia
+            </p>
           </div>
         </div>
       </section>
