@@ -118,21 +118,16 @@ export default function ProfilPerusahaan() {
           },
           {
             year: "2023",
-            title: "Expansion to Eastern Indonesia",
-            desc: "Opened our first office in Makassar to serve clients in Eastern Indonesia and work on infrastructure projects in the region."
+            title: "Expansion & Green Building",
+            desc: "Opened our office in Makassar to serve Eastern Indonesia clients and launched our commitment to sustainable construction with our first certified green building project."
           },
           {
-            year: "2020",
-            title: "Pandemic Adaptation",
-            desc: "Successfully adapted to the challenges of the global pandemic, implementing innovative safety protocols and digital solutions."
+            year: "2024",
+            title: "Digital Innovation",
+            desc: "Launched the BangunHub digital platform for integrated construction project management."
           },
           {
-            year: "2023",
-            title: "Green Building Initiative",
-            desc: "Launched our commitment to sustainable construction with the completion of our first certified green building project."
-          },
-          {
-            year: "Now",
+            year: "2025",
             title: "Looking to the Future",
             desc: "Continuing to grow and innovate, with a focus on sustainable building practices and expanding our service offerings."
           }
@@ -237,21 +232,16 @@ export default function ProfilPerusahaan() {
           },
           {
             year: "2023",
-            title: "Ekspansi ke Indonesia Timur",
-            desc: "Membuka kantor pertama kami di Makassar untuk melayani klien di Indonesia Timur dan mengerjakan proyek infrastruktur di wilayah tersebut."
+            title: "Ekspansi & Bangunan Hijau",
+            desc: "Membuka kantor di Makassar untuk melayani klien di Indonesia Timur dan meluncurkan komitmen konstruksi berkelanjutan dengan proyek bangunan bersertifikat hijau pertama."
           },
           {
             year: "2024",
-            title: "Adaptasi & Inovasi Digital",
-            desc: "Berhasil beradaptasi dengan tantangan industri, menerapkan protokol keselamatan inovatif dan meluncurkan platform digital BangunHub."
+            title: "Inovasi Digital",
+            desc: "Meluncurkan platform digital BangunHub untuk manajemen proyek konstruksi terintegrasi."
           },
           {
-            year: "2023",
-            title: "Inisiatif Bangunan Hijau",
-            desc: "Meluncurkan komitmen kami untuk konstruksi berkelanjutan dengan penyelesaian proyek bangunan bersertifikat hijau pertama kami."
-          },
-          {
-            year: "Sekarang",
+            year: "2025",
             title: "Menatap Masa Depan",
             desc: "Terus tumbuh dan berinovasi, dengan fokus pada praktik bangunan berkelanjutan dan memperluas penawaran layanan kami."
           }
