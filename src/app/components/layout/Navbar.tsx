@@ -305,15 +305,24 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <div className="flex items-center mr-8">
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center gap-2">
               <Image
-                src="/images/logo-dengantulisan.png"
+                src="/images/logo-kbs.png"
                 alt="KBS Logo"
-                width={120}
-                height={48}
-                className="w-auto h-10 md:h-12"
+                width={44}
+                height={44}
+                className="w-auto h-9 md:h-10"
                 priority
               />
+              <span className={`text-xl font-bold ${
+                isScrolled || !isDarkPage
+                  ? isDark
+                    ? 'text-white'
+                    : 'text-[#153969]'
+                  : 'text-white'
+              }`}>
+                KBS
+              </span>
             </Link>
           </div>
 
