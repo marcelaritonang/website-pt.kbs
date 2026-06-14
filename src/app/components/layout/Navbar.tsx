@@ -351,6 +351,19 @@ export default function Navbar() {
           {/* Divider */}
           <div className={`w-px h-4 mx-0.5 ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`} />
 
+          {/* Dark/Light Toggle */}
+          <button
+            onClick={toggleTheme}
+            className={`p-1.5 rounded-full transition-colors ${
+              isDark
+                ? 'text-yellow-400 hover:bg-gray-700/50'
+                : 'text-gray-600 hover:bg-gray-100/80'
+            }`}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+          </button>
+
           {/* Login */}
           <Link
             href="/platform/login"
