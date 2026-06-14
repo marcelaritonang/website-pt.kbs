@@ -17,11 +17,11 @@ export default function Home() {
 
       <VisionMissionSection />
 
+      <TechSection />
+
       <ServicesSection />
 
       <PlatformSection />
-
-      <TechSection />
 
       <LocationSection />
 

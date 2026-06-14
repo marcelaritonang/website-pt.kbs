@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KBS Digital Construction Platform
+
+Platform manajemen konstruksi digital oleh **PT Karya Bangun Semesta** — menggabungkan pengalaman kontraktor dengan teknologi modern untuk efisiensi operasional proyek.
+
+## Overview
+
+KBS bukan sekadar company profile. Ini adalah platform digital end-to-end yang dibangun untuk operasional konstruksi nyata:
+
+- **Equipment Booking** — Pemesanan alat berat online dengan harga transparan
+- **Material Store** — Marketplace material bangunan dengan pengiriman ke lokasi proyek
+- **Project Tracking** — Monitoring progres proyek real-time dengan dashboard, milestone, dan budget
+- **Kalkulator RAB** — Estimasi biaya otomatis berdasarkan spesifikasi proyek
+- **Invoice & Billing** — Sistem penagihan terintegrasi
+- **AI Intelligence** — Analisis dan rekomendasi berbasis AI untuk pengambilan keputusan proyek
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router, React 19)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Animation:** Framer Motion
+- **Database:** PostgreSQL (via Vercel Postgres)
+- **Auth:** JWT + bcrypt
+- **Maps:** Mapbox GL
+- **Deployment:** Vercel
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000) untuk melihat hasilnya.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── api/          → REST API endpoints (auth, equipment, materials, projects, RAB)
+│   ├── components/   → Reusable UI components
+│   ├── context/      → Auth, Theme, Language providers
+│   ├── platform/     → Digital platform pages (booking, tracking, store, admin)
+│   ├── services/     → Service detail pages
+│   ├── insight/      → Industry articles & blog
+│   └── about/        → Company profile, history, ISO certifications
+├── lib/              → Utilities (auth, db, RAB calculation)
+├── components/       → Shared components (maps)
+└── translations/     → i18n (Bahasa Indonesia & English)
+```
 
-## Learn More
+## Key Features
 
-To learn more about Next.js, take a look at the following resources:
+- Multi-language support (ID/EN)
+- Dark/Light mode
+- Responsive design
+- Security headers (HSTS, X-Frame-Options, CSP)
+- Role-based access control
+- Real-time project monitoring dashboard
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## About PT Karya Bangun Semesta
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+General Contractor & Heavy Equipment services berbasis di Jakarta Timur. Berpengalaman dalam pembangunan gedung, infrastruktur, dan pengelolaan alat berat — kini bertransformasi digital melalui platform BangunHub.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private — All rights reserved © 2026 PT Karya Bangun Semesta

@@ -49,7 +49,7 @@ const PlatformSection = () => {
       description: language === 'id'
         ? 'Konsultasi langsung dengan tim ahli kami untuk perencanaan proyek, estimasi biaya, dan pemilihan material yang tepat. Tanpa biaya, tanpa kewajiban.'
         : 'Consult directly with our expert team for project planning, cost estimation, and material selection. No cost, no obligation.',
-      image: '/images/equipment/operator-1.jpg',
+      image: '/images/equipment/excavator-2.jpg',
       href: '/contact',
       price: language === 'id' ? 'Gratis / Free' : 'Free',
       badge: language === 'id' ? 'Tim Ahli' : 'Expert Team',

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowLeft, Share2, Bookmark, Facebook, Twitter, Linkedin, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from '../../context/ThemeContext';
 
 
 // Data artikel untuk kontraktor - versi revisi
@@ -137,6 +138,8 @@ const contractorArticle = {
 // Halaman detail artikel
 export default function ContractorArticleDetail() {
   const router = useRouter();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   // State untuk progress bar
   const [readingProgress, setReadingProgress] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -172,10 +175,10 @@ export default function ContractorArticleDetail() {
   };
   
   return (
-    <main className="bg-white min-h-screen">
+    <main className={`${isDark ? 'bg-gray-900' : 'bg-white'} min-h-screen`}>
       {/* Reading Progress Bar */}
       <div 
-        className="fixed top-0 left-0 right-0 h-1 bg-gray-200 z-50"
+        className={`fixed top-0 left-0 right-0 h-1 ${isDark ? 'bg-gray-700' : 'bg-gray-200'} z-50`}
         style={{ 
           backgroundImage: `linear-gradient(to right, #153969 ${readingProgress}%, transparent 0)` 
         }}
@@ -245,18 +248,18 @@ export default function ContractorArticleDetail() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex items-center mb-8 p-4 bg-gray-50 rounded-lg"
+            className={`flex items-center mb-8 p-4 ${isDark ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg`}
           >
             <Image 
               src={contractorArticle.authorImage} 
               alt={contractorArticle.author} 
               width={60} 
               height={60} 
-              className="rounded-full border-2 border-gray-200"
+              className={`rounded-full border-2 ${isDark ? 'border-gray-700' : 'border-gray-200'}`}
             />
             <div className="ml-4">
-              <h3 className="text-lg font-semibold text-gray-900">{contractorArticle.author}</h3>
-              <p className="text-sm text-gray-600">{contractorArticle.authorRole}</p>
+              <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{contractorArticle.author}</h3>
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{contractorArticle.authorRole}</p>
             </div>
           </motion.div>
           
@@ -265,10 +268,10 @@ export default function ContractorArticleDetail() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex justify-between items-center mb-8 sticky top-4 z-10 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-sm"
+            className={`flex justify-between items-center mb-8 sticky top-4 z-10 ${isDark ? 'bg-gray-900/90' : 'bg-white/90'} backdrop-blur-sm p-2 rounded-lg shadow-sm`}
           >
             <div className="flex items-center space-x-3">
-              <span className="text-sm text-gray-500">Share:</span>
+              <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Share:</span>
               <button 
                 onClick={() => typeof window !== 'undefined' && window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank')}
                 className="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
@@ -322,7 +325,7 @@ export default function ContractorArticleDetail() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay }}
-                      className="text-gray-700 mb-6"
+                      className={`${isDark ? 'text-gray-300' : 'text-gray-700'} mb-6`}
                     >
                       {block.content}
                     </motion.p>
@@ -335,7 +338,7 @@ export default function ContractorArticleDetail() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay }}
-                      className="text-2xl font-bold text-gray-900 mt-10 mb-4"
+                      className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mt-10 mb-4`}
                     >
                       {block.content}
                     </motion.h2>
@@ -351,7 +354,7 @@ export default function ContractorArticleDetail() {
                       className="list-disc pl-6 mb-6 space-y-2"
                     >
                       {block.items && block.items.map((item, itemIndex) => (
-                        <li key={itemIndex} className="text-gray-700">
+                        <li key={itemIndex} className={`${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                           {item}
                         </li>
                       ))}
@@ -380,7 +383,7 @@ export default function ContractorArticleDetail() {
                         )}
                       </div>
                       {block.caption && (
-                        <p className="text-sm text-gray-500 mt-2 text-center">
+                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} mt-2 text-center`}>
                           {block.caption}
                         </p>
                       )}
@@ -394,11 +397,11 @@ export default function ContractorArticleDetail() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay }}
-                      className="border-l-4 border-[#153969] pl-4 italic my-8 bg-blue-50/50 p-4 rounded-r-lg"
+                      className={`border-l-4 border-[#153969] pl-4 italic my-8 ${isDark ? 'bg-blue-900/20' : 'bg-blue-50/50'} p-4 rounded-r-lg`}
                     >
-                      <p className="text-gray-700">{block.content}</p>
+                      <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{block.content}</p>
                       {block.author && (
-                        <cite className="text-sm text-gray-500 mt-2 block">
+                        <cite className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} mt-2 block`}>
                           — {block.author}
                         </cite>
                       )}
@@ -419,11 +422,11 @@ export default function ContractorArticleDetail() {
             className="mt-12 mb-16"
           >
             <div className="flex flex-wrap gap-2">
-              <span className="text-sm text-gray-600">Tags:</span>
+              <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Tags:</span>
               {contractorArticle.tags.map((tag, index) => (
                 <span 
                   key={index}
-                  className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-700 transition-colors"
+                  className={`text-sm ${isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'} px-3 py-1 rounded-full transition-colors`}
                 >
                   {tag}
                 </span>
@@ -439,7 +442,7 @@ export default function ContractorArticleDetail() {
           transition={{ duration: 0.5, delay: 0.9 }}
           className="max-w-6xl mx-auto mt-16 mb-20"
         >
-          <h3 className="text-2xl font-bold text-gray-900 mb-8 relative">
+          <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-8 relative`}>
             Artikel Terkait
             <span className="absolute bottom-0 left-0 w-20 h-1 bg-[#153969]"></span>
           </h3>
@@ -455,7 +458,7 @@ export default function ContractorArticleDetail() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 1 + (index * 0.1) }}
-                  className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full hover:-translate-y-1"
+                  className={`group ${isDark ? 'bg-gray-800' : 'bg-white'} rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full hover:-translate-y-1`}
                 >
                   <div className="relative h-48 overflow-hidden">
                     <Image
@@ -475,7 +478,7 @@ export default function ContractorArticleDetail() {
                   </div>
                   
                   <div className="p-4">
-                    <div className="flex items-center text-gray-500 text-xs mb-2">
+                    <div className={`flex items-center ${isDark ? 'text-gray-400' : 'text-gray-500'} text-xs mb-2`}>
                       <Calendar className="h-3 w-3 mr-1" />
                       <span>{relatedArticle.date}</span>
                       <span className="mx-2">•</span>
@@ -483,11 +486,11 @@ export default function ContractorArticleDetail() {
                       <span>{relatedArticle.readTime}</span>
                     </div>
                     
-                    <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-[#153969] transition-colors line-clamp-2 h-12">
+                    <h4 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'} mb-2 group-hover:text-[#153969] transition-colors line-clamp-2 h-12`}>
                       {relatedArticle.title}
                     </h4>
                     
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-2 h-10">
+                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} line-clamp-2 mb-2 h-10`}>
                       {relatedArticle.excerpt}
                     </p>
                     

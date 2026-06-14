@@ -70,12 +70,12 @@ export default function AiIntelligencePage() {
             </div>
 
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-5 text-white">
-              AI Site Intelligence
+              Site Intelligence
             </h1>
             <p className="text-base md:text-lg mb-3 text-gray-300 leading-relaxed max-w-2xl">
               {isEn
-                ? 'We built this because spreadsheets and WhatsApp groups don\'t scale past 3 concurrent projects. This is what happens when you give construction data to machine learning models trained specifically on Indonesian project patterns.'
-                : 'Kami membangun ini karena spreadsheet dan grup WhatsApp tidak bisa scale lebih dari 3 proyek bersamaan. Inilah yang terjadi ketika data konstruksi diberikan ke model machine learning yang dilatih khusus dari pola proyek Indonesia.'}
+                ? 'We built this because spreadsheets and WhatsApp groups don\'t scale past 3 concurrent projects. This is what happens when you give construction data to prediction models trained specifically on Indonesian project patterns.'
+                : 'Kami membangun ini karena spreadsheet dan grup WhatsApp tidak bisa scale lebih dari 3 proyek bersamaan. Inilah yang terjadi ketika data konstruksi diberikan ke model prediksi yang dilatih khusus dari pola proyek Indonesia.'}
             </p>
             <p className="text-sm text-gray-500 mb-8">
               {isEn
@@ -236,7 +236,7 @@ export default function AiIntelligencePage() {
               { icon: <Globe className="w-4 h-4" />, label: 'Next.js 14', desc: 'App Router + RSC' },
               { icon: <Server className="w-4 h-4" />, label: 'Node.js', desc: 'Express + tRPC' },
               { icon: <Database className="w-4 h-4" />, label: 'PostgreSQL 15', desc: 'Primary store' },
-              { icon: <Cpu className="w-4 h-4" />, label: 'Python 3.11', desc: 'ML services' },
+              { icon: <Cpu className="w-4 h-4" />, label: 'Python 3.11', desc: 'Analytics services' },
               { icon: <Radio className="w-4 h-4" />, label: 'Redis 7', desc: 'Cache + pub/sub' },
               { icon: <Cloud className="w-4 h-4" />, label: 'AWS ap-southeast-1', desc: 'ECS Fargate' },
               { icon: <Lock className="w-4 h-4" />, label: 'Auth', desc: 'JWT + refresh tokens' },
@@ -350,8 +350,8 @@ export default function AiIntelligencePage() {
             </h2>
             <p className="text-sm mb-6 text-blue-100/70">
               {isEn
-                ? 'AI Site Intelligence is currently available as a beta add-on for BangunHub Pro and Enterprise. We onboard 2-3 new sites per month.'
-                : 'AI Site Intelligence saat ini tersedia sebagai add-on beta untuk BangunHub Pro dan Enterprise. Kami onboard 2-3 site baru per bulan.'}
+                ? 'Site Intelligence is currently available as a beta add-on for BangunHub Pro and Enterprise. We onboard 2-3 new sites per month.'
+                : 'Site Intelligence saat ini tersedia sebagai add-on beta untuk BangunHub Pro dan Enterprise. Kami onboard 2-3 site baru per bulan.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
