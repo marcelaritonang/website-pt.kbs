@@ -296,8 +296,8 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Floating Pill Navbar — appears on scroll */}
-      <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[9999] transition-all duration-500 ${
+      {/* Floating Pill Navbar — appears on scroll, desktop only */}
+      <div className={`hidden xl:block fixed top-4 left-1/2 -translate-x-1/2 z-[9999] transition-all duration-500 ${
         isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
       }`}>
         <nav className={`flex items-center gap-0.5 px-2 py-1 rounded-full border shadow-2xl backdrop-blur-xl ${
@@ -390,10 +390,10 @@ export default function Navbar() {
         </nav>
       </div>
 
-      {/* Full Navbar — visible when not scrolled */}
+      {/* Full Navbar — hides on scroll only on xl+ (where pill takes over) */}
       <header className={`fixed top-0 left-0 right-0 w-full z-[9000] transition-all duration-300 ${
         isScrolled
-          ? 'opacity-0 -translate-y-full pointer-events-none'
+          ? 'xl:opacity-0 xl:-translate-y-full xl:pointer-events-none ' + (isDark ? 'bg-gray-900/95 backdrop-blur-md shadow-lg' : 'bg-white/95 backdrop-blur-md shadow-lg')
           : isDarkPage
             ? 'bg-transparent'
             : isDark
