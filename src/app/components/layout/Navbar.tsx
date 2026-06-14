@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '../../context/ThemeContext';
-import { ChevronDown, Menu, X, Globe, Moon, Sun, LogIn, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { ChevronDown, Menu, X, Globe, Moon, Sun, LogIn, User, LogOut, LayoutDashboard, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -159,9 +159,9 @@ export default function Navbar() {
               description: language === 'id' ? 'Platform manajemen konstruksi all-in-one' : 'All-in-one construction management platform'
             },
             {
-              name: language === 'id' ? 'AI Site Intelligence' : 'AI Site Intelligence',
+              name: language === 'id' ? 'Site Intelligence' : 'Site Intelligence',
               href: '/platform/ai-intelligence',
-              description: language === 'id' ? 'Monitoring real-time proyek dengan AI prediktif' : 'Real-time project monitoring with predictive AI'
+              description: language === 'id' ? 'Monitoring real-time proyek dengan sistem prediktif' : 'Real-time project monitoring with predictive analytics'
             },
             {
               name: asString(t('nav.rabCalculator')),
@@ -295,17 +295,98 @@ export default function Navbar() {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 w-full z-[9000] ${
-      isScrolled 
-        ? isDark 
-          ? 'bg-gray-900 shadow-md' 
-          : 'bg-white shadow-md' 
-        : isDarkPage 
-          ? 'bg-transparent' 
-          : isDark 
-            ? 'bg-gray-900 shadow-sm' 
-            : 'bg-white shadow-sm'
-    }`}>
+    <>
+      {/* Floating Pill Navbar — appears on scroll */}
+      <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[9999] transition-all duration-500 ${
+        isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+      }`}>
+        <nav className={`flex items-center gap-0.5 px-2 py-1 rounded-full border shadow-2xl backdrop-blur-xl ${
+          isDark
+            ? 'bg-gray-900/80 border-gray-700/50 shadow-black/30'
+            : 'bg-white/80 border-gray-200/50 shadow-black/10'
+        }`}>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-1.5 px-2 py-1">
+            <Image
+              src="/images/logo-kbs.png"
+              alt="KBS"
+              width={24}
+              height={24}
+              className="w-6 h-6"
+            />
+            <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-[#153969]'}`}>KBS</span>
+          </Link>
+
+          {/* Divider */}
+          <div className={`w-px h-4 mx-0.5 ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+
+          {/* Pill Nav Links */}
+          {[
+            { name: asString(t('nav.whoWeAre')), href: '/about/profile' },
+            { name: asString(t('nav.services')), href: '/services' },
+            { name: asString(t('nav.projects')), href: '/projects' },
+            { name: 'Platform', href: '/platform' },
+            { name: 'BangunHub', href: '/tech' },
+            { name: asString(t('nav.rabCalculator')), href: '/kalkulator-rab' },
+            { name: asString(t('nav.careers')), href: '/karir' },
+            { name: asString(t('nav.contact')), href: '/contact' },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                isLinkActive(link.href)
+                  ? isDark
+                    ? 'bg-blue-500/20 text-blue-400'
+                    : 'bg-[#153969]/10 text-[#153969]'
+                  : isDark
+                    ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/80'
+              }`}
+            >
+              {link.name}
+            </Link>
+          ))}
+
+          {/* Divider */}
+          <div className={`w-px h-4 mx-0.5 ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+
+          {/* Login */}
+          <Link
+            href="/platform/login"
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+              isDark
+                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/80'
+            }`}
+          >
+            <LogIn className="w-3 h-3" />
+            Login
+          </Link>
+
+          {/* CTA Button */}
+          <a
+            href="https://wa.me/6281218127503?text=Halo%20saya%20tertarik%20dengan%20layanan%20konstruksi%20Anda"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#153969] text-white text-xs font-medium hover:bg-[#1a4580] transition-colors shadow-md"
+          >
+            {asString(t('nav.getQuote'))}
+            <ArrowRight className="w-3 h-3" />
+          </a>
+        </nav>
+      </div>
+
+      {/* Full Navbar — visible when not scrolled */}
+      <header className={`fixed top-0 left-0 right-0 w-full z-[9000] transition-all duration-300 ${
+        isScrolled
+          ? 'opacity-0 -translate-y-full pointer-events-none'
+          : isDarkPage
+            ? 'bg-transparent'
+            : isDark
+              ? 'bg-gray-900 shadow-sm'
+              : 'bg-white shadow-sm'
+      }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
@@ -727,5 +808,6 @@ export default function Navbar() {
         </div>
       )}
     </header>
+    </>
   );
 } 

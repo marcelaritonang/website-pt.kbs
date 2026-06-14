@@ -84,8 +84,8 @@ export default function CareerPage() {
       ]
     },
     {
-      title: "AI/ML Engineer",
-      title_en: "AI/ML Engineer",
+      title: "Data Engineer",
+      title_en: "Data Engineer",
       type: "Full Time",
       type_en: "Full Time",
       location: "Jakarta / Remote",
@@ -95,8 +95,8 @@ export default function CareerPage() {
       experience_en: "2-3 years",
       education: "S1/S2 Ilmu Komputer / Matematika / Statistik",
       education_en: "Bachelor's/Master's in CS / Mathematics / Statistics",
-      description: "Membangun model prediktif untuk AI Site Intelligence — sistem monitoring real-time dan prediksi keterlambatan proyek konstruksi.",
-      description_en: "Build predictive models for AI Site Intelligence — real-time monitoring and construction project delay prediction system.",
+      description: "Membangun model prediktif untuk Site Intelligence — sistem monitoring real-time dan prediksi keterlambatan proyek konstruksi.",
+      description_en: "Build predictive models for Site Intelligence — real-time monitoring and construction project delay prediction system.",
       requirements: [
         "Python, TensorFlow atau PyTorch",
         "Pengalaman dengan time-series forecasting",
