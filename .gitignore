@@ -45,6 +45,3 @@ next-env.d.ts
 *.zip
 *.rar
 *.tar.gz
-
-.vercel
-.env*

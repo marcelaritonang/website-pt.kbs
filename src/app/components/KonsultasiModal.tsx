@@ -42,7 +42,7 @@ const initialFormData: FormData = {
 const API_URL = 'https://backend-kbs-website.vercel.app/api/project-consultation';
 
 const USE_DIRECT_API = true;
-const DEBUG = true; // Enable console logs
+const DEBUG = false; // Set to true only for local debugging (avoid logging form PII in production)
 
 const KonsultasiModal: React.FC<KonsultasiModalProps> = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
